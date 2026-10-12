@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PanelReady: new healthcare practices by state, every week</title>
+<meta name="description" content="Weekly lists of newly registered healthcare practices from the federal NPI registry, by state and specialty, with phone and address. For credentialing and medical billing companies. First two lists free.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#f6f7f9;--card:#ffffff;--ink:#0f172a;--muted:#5b6578;--line:#e3e7ee;
+    --navy:#0b2a2e;--navy2:#0f3d44;--accent:#0e9f8a;--accent-ink:#fff;--amber:#f59e0b;--green:#16a34a;
+    --chip:#eef2ff;--chip-ink:#3730a3;
+  }
+  @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+    --bg:#0e1116;--card:#171b22;--ink:#eef2f7;--muted:#9aa5b5;--line:#272d38;--accent:#2dd4bf;--accent-ink:#0b1220;--chip:#1e2740;--chip-ink:#aab8ff}}
+  :root[data-theme="dark"]{--bg:#0e1116;--card:#171b22;--ink:#eef2f7;--muted:#9aa5b5;--line:#272d38;--accent:#2dd4bf;--accent-ink:#0b1220;--chip:#1e2740;--chip-ink:#aab8ff}
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+  .wrap{max-width:1040px;margin:0 auto;padding:0 16px}
+
+  /* header + hero on navy */
+  .top{background:linear-gradient(160deg,var(--navy) 0%,var(--navy2) 55%,#14b8a6 140%);color:#fff;position:relative;overflow:hidden}
+  .top:before{content:"";position:absolute;inset:0;background:
+    radial-gradient(600px 300px at 85% 10%,rgba(255,255,255,.10),transparent 60%),
+    repeating-linear-gradient(90deg,rgba(255,255,255,.035) 0 1px,transparent 1px 48px),
+    repeating-linear-gradient(0deg,rgba(255,255,255,.035) 0 1px,transparent 1px 48px)}
+  .top > .wrap{position:relative}
+  header{padding:22px 0;display:flex;align-items:center;justify-content:space-between;gap:16px}
+  .logo{font-weight:800;font-size:22px;letter-spacing:-.02em;display:flex;align-items:center;gap:8px}
+  .logo i{display:inline-block;width:12px;height:12px;border-radius:3px;background:var(--amber);box-shadow:0 0 0 4px rgba(245,158,11,.25)}
+  nav a{color:rgba(255,255,255,.8);text-decoration:none;margin-left:20px;font-weight:500}
+  nav a:hover{color:#fff}
+  .hero{display:grid;grid-template-columns:1.1fr .9fr;gap:40px;align-items:center;padding:36px 0 56px}
+  .kicker{display:inline-block;font-size:13px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#fcd34d;margin-bottom:14px}
+  h1{font-size:clamp(30px,4.6vw,48px);line-height:1.08;margin:0 0 16px;letter-spacing:-.025em;font-weight:800}
+  .lead{font-size:18px;color:rgba(255,255,255,.82);max-width:560px;margin:0 0 26px}
+  .cta{display:inline-block;background:var(--amber);color:#1a1200;padding:14px 24px;border-radius:999px;text-decoration:none;font-weight:700;box-shadow:0 8px 24px rgba(245,158,11,.35)}
+  .cta:hover{filter:brightness(1.05)}
+  .cta.alt{background:transparent;color:#fff;border:2px solid rgba(255,255,255,.5);box-shadow:none;margin-left:10px}
+  .trust{display:flex;flex-wrap:wrap;gap:14px 22px;margin-top:22px;font-size:14px;color:rgba(255,255,255,.75)}
+  .trust span:before{content:"✓";color:#86efac;font-weight:800;margin-right:6px}
+
+  /* inbox mock */
+  .mock{background:var(--card);color:var(--ink);border-radius:16px;box-shadow:0 30px 60px rgba(0,0,0,.35);overflow:hidden;transform:rotate(-1.5deg)}
+  .mock .bar{display:flex;align-items:center;gap:8px;padding:10px 14px;border-bottom:1px solid var(--line);background:color-mix(in srgb,var(--card) 92%,var(--line));font-size:12px;color:var(--muted)}
+  .mock .bar b{display:inline-block;width:9px;height:9px;border-radius:50%;background:#e5e7eb}
+  .mock .bar b:nth-child(1){background:#fda4af}.mock .bar b:nth-child(2){background:#fde68a}.mock .bar b:nth-child(3){background:#86efac}
+  .mock .mail{padding:14px 16px 8px}
+  .mock .from{font-size:13px;color:var(--muted)}
+  .mock .subj{font-weight:700;margin:2px 0 10px}
+  .lead-row{display:grid;grid-template-columns:auto 1fr;gap:10px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;margin:8px 0;font-size:13px}
+  .lead-row .n{width:28px;height:28px;border-radius:8px;background:var(--chip);color:var(--chip-ink);display:grid;place-items:center;font-weight:700}
+  .lead-row .a{font-weight:600}
+  .lead-row .w{color:var(--muted)}
+  .tag{display:inline-block;font-size:11px;padding:2px 8px;border-radius:999px;background:var(--chip);color:var(--chip-ink);margin:4px 4px 0 0;font-weight:600}
+  .tag.hot{background:#fff7ed;color:#c2410c}
+  .mock .foot{padding:8px 16px 14px;font-size:12px;color:var(--muted)}
+
+  /* stats strip */
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:-28px 0 0;position:relative}
+  .stat{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 18px;box-shadow:0 10px 30px rgba(15,23,42,.08)}
+  .stat b{display:block;font-size:28px;letter-spacing:-.02em;font-weight:800}
+  .stat span{color:var(--muted);font-size:13px}
+
+  section{padding:48px 0 0}
+  h2{font-size:30px;margin:0 0 8px;letter-spacing:-.02em;font-weight:800}
+  .sub{color:var(--muted);margin:0 0 22px;font-size:17px;max-width:680px}
+  .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  .step{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px}
+  .step .num{width:34px;height:34px;border-radius:10px;background:var(--navy);color:#fff;display:grid;place-items:center;font-weight:800;margin-bottom:12px}
+  .step h3{margin:0 0 6px;font-size:17px}
+  .step p{margin:0;color:var(--muted);font-size:15px}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
+  .chips span{background:var(--card);border:1px solid var(--line);border-radius:999px;padding:7px 12px;font-size:14px;font-weight:500}
+
+  .sample{background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden}
+  .sample table{width:100%;border-collapse:collapse;font-size:14px}
+  .sample th,.sample td{text-align:left;padding:12px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+  .sample th{color:var(--muted);font-weight:600;font-size:13px;background:color-mix(in srgb,var(--card) 90%,var(--line))}
+  .sample tr:last-child td{border-bottom:0}
+  .sample .note{font-size:13px;color:var(--muted);padding:12px 14px;border-top:1px solid var(--line)}
+
+  .plans{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}
+  .plan{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:26px;position:relative}
+  .plan.best{border-color:var(--accent);box-shadow:0 20px 50px rgba(14,159,138,.18)}
+  .badge{position:absolute;top:-12px;left:22px;background:var(--accent);color:var(--accent-ink);font-size:12px;font-weight:700;padding:4px 10px;border-radius:999px}
+  .plan .name{font-weight:600;color:var(--muted)}
+  .price{font-size:44px;font-weight:800;letter-spacing:-.03em;margin:6px 0 0}
+  .price small{font-size:15px;color:var(--muted);font-weight:500}
+  .plan .free{color:var(--green);font-weight:600;font-size:14px;margin-bottom:12px}
+  .plan ul{padding-left:0;list-style:none;margin:12px 0 18px;color:var(--ink)}
+  .plan li{margin:7px 0;padding-left:24px;position:relative;font-size:15px}
+  .plan li:before{content:"✓";position:absolute;left:0;color:var(--green);font-weight:800}
+  .paybox{min-height:48px}
+  .fallback{font-size:13px;color:var(--muted);margin:10px 0 0}
+  .fallback a{color:var(--accent)}
+  .ok{display:none;background:color-mix(in srgb,var(--accent) 12%,var(--card));border:1px solid var(--accent);border-radius:12px;padding:16px;margin-top:16px}
+
+  .faq details{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 18px;margin:8px 0}
+  .faq summary{cursor:pointer;font-weight:600}
+  .faq p{color:var(--muted);margin:10px 0 0}
+
+  .final{margin-top:56px;background:linear-gradient(160deg,var(--navy),#0f766e);color:#fff;border-radius:20px;padding:36px;text-align:center}
+  .final h2{color:#fff}
+  .final p{color:rgba(255,255,255,.8);margin:0 auto 20px;max-width:560px}
+  footer{margin:40px 0 28px;padding-top:20px;border-top:1px solid var(--line);color:var(--muted);font-size:13px;line-height:1.7}
+  footer a{color:var(--accent)}
+
+  @media (max-width:860px){
+    .hero{grid-template-columns:1fr;padding-bottom:40px}
+    .mock{transform:none}
+    .stats{grid-template-columns:repeat(2,1fr)}
+    .steps,.plans{grid-template-columns:1fr}
+    nav{display:none}
+    .cta.alt{margin-left:0;margin-top:10px}
+  }
+</style>
+<style>
+  .cats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+  .cat{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 18px;font-size:15px}
+  .cat b{display:block;margin-bottom:4px}
+  .cat span{color:var(--muted);font-size:14px}
+  @media (max-width:860px){.cats{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="top">
+  <div class="wrap">
+    <header>
+      <div class="logo"><i></i>PanelReady</div>
+      <nav><a href="#how">How it works</a><a href="#sample">Sample</a><a href="#categories">Categories</a><a href="#pricing">Pricing</a><a href="#faq">FAQ</a></nav>
+    </header>
+    <div class="hero">
+      <div>
+        <span class="kicker">For credentialing &amp; medical billing companies</span>
+        <h1>New practices, the week they register. Before anyone else calls.</h1>
+        <p class="lead">Every provider has to get an NPI before they can bill a single claim, and the federal registry publishes the new ones weekly. PanelReady turns that file into a clean list of newly registered practices in your state, by specialty, with phone and address, every week. Your next credentialing client, found a month before they'd have found you.</p>
+        <a class="cta" href="#pricing">Get two lists free</a>
+        <a class="cta alt" href="#sample">See a sample</a>
+        <div class="trust"><span>Federal registry data, weekly</span><span>Practices only, no employees</span><span>Cancel any time</span></div>
+      </div>
+      <div class="mock" aria-hidden="true">
+        <div class="bar"><b></b><b></b><b></b>&nbsp;leads_NY_behavioral.csv · Tue 7:04 AM</div>
+        <div class="mail">
+          <div class="from">PanelReady</div>
+          <div class="subj">PanelReady leads, week ending Oct 4: NY</div>
+          <div class="lead-row"><div class="n">1</div><div><div class="a">Rooted Presencia LCSW PLLC</div><div class="w">Clinical social worker · Wappingers Falls · (914) 246-••••</div><span class="tag hot">registered Sep 28</span><span class="tag">organization</span></div></div>
+          <div class="lead-row"><div class="n">2</div><div><div class="a">Zito Mental Health Counseling, PLLC</div><div class="w">Mental health counselor · Brooklyn · (516) 619-••••</div><span class="tag hot">registered Sep 28</span><span class="tag">organization</span></div></div>
+          <div class="lead-row"><div class="n">3</div><div><div class="a">Maison Medical PLLC</div><div class="w">General practice · Nyack · (845) 535-••••</div><span class="tag hot">registered Sep 28</span><span class="tag">organization</span></div></div>
+        </div>
+        <div class="foot">Real rows from the federal file for the week of Sep 28. Full phone numbers in the spreadsheet.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="stats">
+    <div class="stat"><b>13,479</b><span>new NPI registrations in one week, nationally</span></div>
+    <div class="stat"><b>2,670</b><span>of them new practices, clinics and agencies</span></div>
+    <div class="stat"><b>99%</b><span>come with a practice phone number</span></div>
+    <div class="stat"><b>1–2 wks</b><span>from registration to your inbox</span></div>
+  </div>
+
+  <section id="how">
+    <h2>How it works</h2>
+    <p class="sub">The registry is public. The work is reading it every week and throwing away the 80% that isn't a practice.</p>
+    <div class="steps">
+      <div class="step"><div class="num">1</div><h3>We read the weekly federal file</h3><p>Every NPI registered that week: 13,000-plus rows of providers, employees, students and practices, with specialty codes and addresses.</p></div>
+      <div class="step"><div class="num">2</div><h3>We keep the practices</h3><p>Organizations and sole proprietors only, sorted into six categories by specialty code. Employees registering for a job, students and deactivated numbers are dropped.</p></div>
+      <div class="step"><div class="num">3</div><h3>You get a spreadsheet</h3><p>Your state, your category: practice name, specialty, city, address, phone, NPI and registration date. Organizations first.</p></div>
+    </div>
+  </section>
+
+  <section id="sample">
+    <h2>Sample</h2>
+    <p class="sub">Rows from the week of September 28, New York, behavioral health. Phone numbers masked here only.</p>
+    <div class="sample">
+      <table>
+        <thead><tr><th>Registered</th><th>Practice</th><th>Specialty</th><th>City</th><th>Phone</th></tr></thead>
+        <tbody>
+          <tr><td>2026-09-28</td><td>Rooted Presencia LCSW PLLC</td><td>Clinical social worker</td><td>Wappingers Falls</td><td>(914) 246-••••</td></tr>
+          <tr><td>2026-09-28</td><td>Zito Mental Health Counseling, PLLC</td><td>Mental health counselor</td><td>Brooklyn</td><td>(516) 619-••••</td></tr>
+          <tr><td>2026-09-29</td><td>Maison Medical PLLC</td><td>General practice</td><td>Nyack</td><td>(845) 535-••••</td></tr>
+          <tr><td>2026-09-30</td><td>Raah Physical Therapy PC</td><td>Physical therapist</td><td>Whitestone</td><td>(718) 200-••••</td></tr>
+          <tr><td>2026-10-01</td><td>Bailin Medical, PLLC</td><td>General practice</td><td>Brooklyn</td><td>(203) 723-••••</td></tr>
+        </tbody>
+      </table>
+      <div class="note">Source: NPPES weekly dissemination file, CMS. Public data, provided as-is.</div>
+    </div>
+  </section>
+
+  <section id="categories">
+    <h2>Six categories, one state each</h2>
+    <p class="sub">Pick the one you sell to, or take the whole state.</p>
+    <div class="cats">
+      <div class="cat"><b>Behavioral Health</b><span>Counselors, social workers, psychologists, psychiatry, psychiatric NPs, ABA, substance-use programs. The largest category every week.</span></div>
+      <div class="cat"><b>Medical Practices &amp; Clinics</b><span>Physicians, nurse practitioners, PAs, primary care and specialty clinics, urgent care.</span></div>
+      <div class="cat"><b>Dental</b><span>General dentists, specialists, hygienists, dental groups.</span></div>
+      <div class="cat"><b>Therapy &amp; Rehab</b><span>Physical, occupational and speech therapy, chiropractic, podiatry, optometry, acupuncture, dietitians.</span></div>
+      <div class="cat"><b>Home Care &amp; Senior Living</b><span>Home health agencies, in-home care, personal care, assisted living, nursing facilities, case management.</span></div>
+      <div class="cat"><b>DME, Pharmacy &amp; Transport</b><span>Durable medical equipment suppliers, pharmacies, non-emergency medical transport.</span></div>
+    </div>
+  </section>
+
+  <section id="pricing">
+    <h2>Pricing</h2>
+    <p class="sub">One new client covers a year. The first two weekly lists are free; cancel from your PayPal account any time.</p>
+    <div class="plans">
+      <div class="plan">
+        <div class="name">One state, one category</div>
+        <div class="price">$89<small>/month</small></div>
+        <div class="free">First two lists free</div>
+        <ul><li>Weekly spreadsheet, your state and category</li><li>Practice name, specialty, city, address, phone, NPI</li><li>Organizations first, sole proprietors flagged</li><li>Change state or category by replying</li></ul>
+        <div class="paybox" id="paypal-cat"></div>
+        <p class="fallback" id="fb-cat"></p>
+      </div>
+      <div class="plan best">
+        <span class="badge">Most billing companies</span>
+        <div class="name">One state, every category</div>
+        <div class="price">$199<small>/month</small></div>
+        <div class="free">First two lists free</div>
+        <ul><li>All six categories for your state, every week</li><li>Everything in the single-category plan</li><li>Priority email support</li><li>Need several states? Email for a bundle</li></ul>
+        <div class="paybox" id="paypal-all"></div>
+        <p class="fallback" id="fb-all"></p>
+      </div>
+    </div>
+    <div class="ok" id="thanks"><strong>You're in.</strong> Check your email: we'll ask which state and category you want, and your first list goes out with the next weekly file. If nothing arrives within a day, email panelready@aol.com.</div>
+  </section>
+
+  <section class="faq" id="faq">
+    <h2>Questions</h2>
+    <details><summary>Where does the data come from?</summary><p>The National Plan and Provider Enumeration System (NPPES), run by CMS. Every provider and organization that bills must have an NPI, and CMS publishes the full registry and weekly updates as public files. We read the weekly file; we don't change it.</p></details>
+    <details><summary>How fresh is it?</summary><p>CMS posts each week's file about a week after the week ends, and most registrations in it are one to six days old at that point. So a practice is on your list one to two weeks after it registered, which is typically weeks before it has finished credentialing.</p></details>
+    <details><summary>Are these real practices or just anyone with an NPI?</summary><p>We keep organizations (practices, clinics, agencies, suppliers) and individuals who flagged themselves as sole proprietors. Employees registering for a new job, students and deactivated numbers are dropped. Roughly one row in five survives.</p></details>
+    <details><summary>Can I get more than one state?</summary><p>Yes: each state is its own plan, or email us for a bundle if you cover several.</p></details>
+    <details><summary>How do I cancel?</summary><p>In your PayPal account under Subscriptions, any time, or reply STOP to any email.</p></details>
+  </section>
+
+  <div class="final">
+    <h2>Be the first call a new practice gets.</h2>
+    <p>Two free weekly lists for your state. No card needed to try: email us the state and category.</p>
+    <a class="cta" href="#pricing">Get two lists free</a>
+  </div>
+
+  <footer>
+    PanelReady · <a href="mailto:panelready@aol.com">panelready@aol.com</a><br>
+    Not affiliated with CMS or any payer. Data comes from the public NPPES registry and is provided as-is. Sample rows are from the public file; phone numbers are masked on this page only.
+  </footer>
+</div>
+
+<script src="https://www.paypal.com/sdk/js?client-id=BAA7rpxUlDfPux5L-cnPgDlsPHBSqnTQ02gaBEhRztMPVYTII0oWEIL6lqsz7EXDVf9jar7gt83XFtVc_M&vault=true&intent=subscription"></script>
+<script>
+  // Paste the PayPal plan IDs here once the two PanelReady plans exist.
+  var PLANS = { cat: 'P-3LM945184V097602ENLGJTCY', all: 'P-2L8264840K988433PNLGJUEA' };
+  function sub(id, planId){
+    var fb = document.getElementById('fb-' + id);
+    if (!planId || planId.indexOf('PASTE') === 0 || !window.paypal) {
+      fb.innerHTML = 'Want the free lists first? Email <a href="mailto:panelready@aol.com?subject=PanelReady%20free%20lists">panelready@aol.com</a> with your state and category.';
+      return;
+    }
+    paypal.Buttons({
+      style: { shape: 'pill', color: 'gold', layout: 'vertical', label: 'subscribe' },
+      createSubscription: function(data, actions){ return actions.subscription.create({ plan_id: planId }); },
+      onApprove: function(data){ var t = document.getElementById('thanks'); t.style.display = 'block'; t.scrollIntoView({behavior:'smooth'}); }
+    }).render('#paypal-' + id);
+    fb.innerHTML = 'Want the free lists first, no card? Email <a href="mailto:panelready@aol.com?subject=PanelReady%20free%20lists">panelready@aol.com</a> with your state and category.';
+  }
+  sub('cat', PLANS.cat); sub('all', PLANS.all);
+</script>
+</body>
+</html>
