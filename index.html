@@ -3,226 +3,364 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>PanelReady: new healthcare practices by state, every week</title>
-<meta name="description" content="Weekly lists of newly registered healthcare practices from the federal NPI registry, by state and specialty, with phone and address. For credentialing and medical billing companies. First two lists free.">
+<title>PanelReady — new healthcare practices, the week they register</title>
+<meta name="description" content="Weekly lists of newly registered healthcare practices from the federal NPI registry, by state and specialty, with phone and address. Built for credentialing and medical billing companies. First two lists free.">
+<meta name="theme-color" content="#070c14">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#f6f7f9;--card:#ffffff;--ink:#0f172a;--muted:#5b6578;--line:#e3e7ee;
-    --navy:#0b2a2e;--navy2:#0f3d44;--accent:#0e9f8a;--accent-ink:#fff;--amber:#f59e0b;--green:#16a34a;
-    --chip:#eef2ff;--chip-ink:#3730a3;
+    --bg:#070c14;--bg2:#0b1220;--card:#0f1829;--card2:#131f35;--line:#1e2a44;--line2:#2a3a5c;
+    --ink:#eaf0fa;--muted:#93a1b8;--dim:#5f6d85;
+    --teal:#2dd4bf;--teal2:#14b8a6;--amber:#fbbf24;--amber2:#f59e0b;--green:#4ade80;--rose:#fb7185;--blue:#60a5fa;--violet:#a78bfa;
+    --c-beh:#a78bfa;--c-med:#60a5fa;--c-den:#f472b6;--c-the:#34d399;--c-hom:#fbbf24;--c-dme:#f97316;
+    --ease:cubic-bezier(.2,.8,.2,1);--over:cubic-bezier(.34,1.4,.64,1);
   }
-  @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
-    --bg:#0e1116;--card:#171b22;--ink:#eef2f7;--muted:#9aa5b5;--line:#272d38;--accent:#2dd4bf;--accent-ink:#0b1220;--chip:#1e2740;--chip-ink:#aab8ff}}
-  :root[data-theme="dark"]{--bg:#0e1116;--card:#171b22;--ink:#eef2f7;--muted:#9aa5b5;--line:#272d38;--accent:#2dd4bf;--accent-ink:#0b1220;--chip:#1e2740;--chip-ink:#aab8ff}
   *{box-sizing:border-box}
   html{scroll-behavior:smooth}
-  body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
-  .wrap{max-width:1040px;margin:0 auto;padding:0 16px}
+  body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+  h1,h2,h3,.display{font-family:Sora,Inter,system-ui,sans-serif;letter-spacing:-.02em}
+  a{color:var(--teal)}
+  .wrap{max-width:1120px;margin:0 auto;padding:0 20px}
+  @media (max-width:600px){.wrap{padding:0 16px}}
 
-  /* header + hero on navy */
-  .top{background:linear-gradient(160deg,var(--navy) 0%,var(--navy2) 55%,#14b8a6 140%);color:#fff;position:relative;overflow:hidden}
-  .top:before{content:"";position:absolute;inset:0;background:
-    radial-gradient(600px 300px at 85% 10%,rgba(255,255,255,.10),transparent 60%),
-    repeating-linear-gradient(90deg,rgba(255,255,255,.035) 0 1px,transparent 1px 48px),
-    repeating-linear-gradient(0deg,rgba(255,255,255,.035) 0 1px,transparent 1px 48px)}
-  .top > .wrap{position:relative}
-  header{padding:22px 0;display:flex;align-items:center;justify-content:space-between;gap:16px}
-  .logo{font-weight:800;font-size:22px;letter-spacing:-.02em;display:flex;align-items:center;gap:8px}
-  .logo i{display:inline-block;width:12px;height:12px;border-radius:3px;background:var(--amber);box-shadow:0 0 0 4px rgba(245,158,11,.25)}
-  nav a{color:rgba(255,255,255,.8);text-decoration:none;margin-left:20px;font-weight:500}
-  nav a:hover{color:#fff}
-  .hero{display:grid;grid-template-columns:1.1fr .9fr;gap:40px;align-items:center;padding:36px 0 56px}
-  .kicker{display:inline-block;font-size:13px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#fcd34d;margin-bottom:14px}
-  h1{font-size:clamp(30px,4.6vw,48px);line-height:1.08;margin:0 0 16px;letter-spacing:-.025em;font-weight:800}
-  .lead{font-size:18px;color:rgba(255,255,255,.82);max-width:560px;margin:0 0 26px}
-  .cta{display:inline-block;background:var(--amber);color:#1a1200;padding:14px 24px;border-radius:999px;text-decoration:none;font-weight:700;box-shadow:0 8px 24px rgba(245,158,11,.35)}
-  .cta:hover{filter:brightness(1.05)}
-  .cta.alt{background:transparent;color:#fff;border:2px solid rgba(255,255,255,.5);box-shadow:none;margin-left:10px}
-  .trust{display:flex;flex-wrap:wrap;gap:14px 22px;margin-top:22px;font-size:14px;color:rgba(255,255,255,.75)}
-  .trust span:before{content:"✓";color:#86efac;font-weight:800;margin-right:6px}
+  /* backdrop */
+  .sky{position:fixed;inset:0;z-index:-1;background:
+    radial-gradient(900px 500px at 15% -10%,rgba(45,212,191,.16),transparent 60%),
+    radial-gradient(700px 400px at 95% 10%,rgba(251,191,36,.10),transparent 60%),
+    radial-gradient(900px 600px at 50% 110%,rgba(96,165,250,.10),transparent 60%),var(--bg)}
+  .sky:after{content:"";position:absolute;inset:0;background:
+    repeating-linear-gradient(90deg,rgba(255,255,255,.025) 0 1px,transparent 1px 64px),
+    repeating-linear-gradient(0deg,rgba(255,255,255,.025) 0 1px,transparent 1px 64px);
+    mask-image:linear-gradient(180deg,#000 0,transparent 80vh);-webkit-mask-image:linear-gradient(180deg,#000 0,transparent 80vh)}
 
-  /* inbox mock */
-  .mock{background:var(--card);color:var(--ink);border-radius:16px;box-shadow:0 30px 60px rgba(0,0,0,.35);overflow:hidden;transform:rotate(-1.5deg)}
-  .mock .bar{display:flex;align-items:center;gap:8px;padding:10px 14px;border-bottom:1px solid var(--line);background:color-mix(in srgb,var(--card) 92%,var(--line));font-size:12px;color:var(--muted)}
-  .mock .bar b{display:inline-block;width:9px;height:9px;border-radius:50%;background:#e5e7eb}
-  .mock .bar b:nth-child(1){background:#fda4af}.mock .bar b:nth-child(2){background:#fde68a}.mock .bar b:nth-child(3){background:#86efac}
-  .mock .mail{padding:14px 16px 8px}
-  .mock .from{font-size:13px;color:var(--muted)}
-  .mock .subj{font-weight:700;margin:2px 0 10px}
-  .lead-row{display:grid;grid-template-columns:auto 1fr;gap:10px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;margin:8px 0;font-size:13px}
-  .lead-row .n{width:28px;height:28px;border-radius:8px;background:var(--chip);color:var(--chip-ink);display:grid;place-items:center;font-weight:700}
-  .lead-row .a{font-weight:600}
-  .lead-row .w{color:var(--muted)}
-  .tag{display:inline-block;font-size:11px;padding:2px 8px;border-radius:999px;background:var(--chip);color:var(--chip-ink);margin:4px 4px 0 0;font-weight:600}
-  .tag.hot{background:#fff7ed;color:#c2410c}
-  .mock .foot{padding:8px 16px 14px;font-size:12px;color:var(--muted)}
+  /* nav */
+  .nav{position:sticky;top:0;z-index:20;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);background:rgba(7,12,20,.72);border-bottom:1px solid rgba(255,255,255,.06)}
+  .nav .wrap{display:flex;align-items:center;justify-content:space-between;height:64px}
+  .logo{display:flex;align-items:center;gap:10px;font-family:Sora,sans-serif;font-weight:800;font-size:20px;color:var(--ink);text-decoration:none}
+  .logo i{width:14px;height:14px;border-radius:4px;background:var(--amber);box-shadow:0 0 0 5px rgba(251,191,36,.18),0 0 24px rgba(251,191,36,.5)}
+  .nav nav a{color:var(--muted);text-decoration:none;font-weight:500;margin-left:22px;font-size:15px}
+  .nav nav a:hover{color:var(--ink)}
+  .nav .mini{background:var(--amber);color:#1a1200;padding:9px 16px;border-radius:999px;font-weight:700;margin-left:22px;text-decoration:none}
+  @media (max-width:860px){.nav nav a:not(.mini){display:none}.nav .mini{margin-left:0}}
 
-  /* stats strip */
-  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:-28px 0 0;position:relative}
-  .stat{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 18px;box-shadow:0 10px 30px rgba(15,23,42,.08)}
-  .stat b{display:block;font-size:28px;letter-spacing:-.02em;font-weight:800}
-  .stat span{color:var(--muted);font-size:13px}
+  /* hero */
+  .hero{display:grid;grid-template-columns:1.05fr .95fr;gap:48px;align-items:center;padding:72px 0 56px}
+  .kicker{display:inline-flex;align-items:center;gap:8px;font-size:12.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--amber);margin-bottom:18px}
+  .kicker:before{content:"";width:28px;height:2px;background:var(--amber)}
+  h1{font-size:clamp(36px,5.4vw,62px);line-height:1.02;margin:0 0 20px;font-weight:800}
+  h1 em{font-style:normal;color:var(--teal)}
+  .lead{font-size:18px;color:var(--muted);max-width:560px;margin:0 0 28px}
+  .lead b{color:var(--ink);font-weight:600}
+  .btns{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+  .cta{display:inline-block;background:var(--amber);color:#1a1200;padding:15px 26px;border-radius:999px;text-decoration:none;font-weight:700;font-size:16px;box-shadow:0 10px 30px rgba(251,191,36,.3);transition:transform .25s var(--over),box-shadow .25s var(--ease),filter .2s}
+  .cta:hover{transform:translateY(-2px);box-shadow:0 16px 36px rgba(251,191,36,.38);filter:brightness(1.04)}
+  .cta.ghost{background:transparent;color:var(--ink);border:1.5px solid var(--line2);box-shadow:none}
+  .cta.ghost:hover{border-color:var(--teal);box-shadow:none}
+  .trust{display:flex;flex-wrap:wrap;gap:10px 22px;margin-top:26px;font-size:14px;color:var(--muted)}
+  .trust span:before{content:"✓";color:var(--green);font-weight:800;margin-right:7px}
 
-  section{padding:48px 0 0}
-  h2{font-size:30px;margin:0 0 8px;letter-spacing:-.02em;font-weight:800}
-  .sub{color:var(--muted);margin:0 0 22px;font-size:17px;max-width:680px}
-  .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
-  .step{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px}
-  .step .num{width:34px;height:34px;border-radius:10px;background:var(--navy);color:#fff;display:grid;place-items:center;font-weight:800;margin-bottom:12px}
-  .step h3{margin:0 0 6px;font-size:17px}
-  .step p{margin:0;color:var(--muted);font-size:15px}
-  .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
-  .chips span{background:var(--card);border:1px solid var(--line);border-radius:999px;padding:7px 12px;font-size:14px;font-weight:500}
+  /* live card */
+  .live{background:linear-gradient(180deg,var(--card2),var(--card));border:1px solid var(--line2);border-radius:20px;box-shadow:0 40px 80px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.06);overflow:hidden;position:relative}
+  .live:before{content:"";position:absolute;inset:-1px;border-radius:21px;padding:1px;background:linear-gradient(135deg,rgba(45,212,191,.5),transparent 40%,transparent 60%,rgba(251,191,36,.4));-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none}
+  .live .hd{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--line);font-size:13px;color:var(--muted)}
+  .live .hd b{color:var(--ink);font-weight:600;display:flex;align-items:center;gap:8px}
+  .dot{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 0 0 rgba(74,222,128,.6);animation:pulse 2s infinite}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(74,222,128,.55)}70%{box-shadow:0 0 0 9px rgba(74,222,128,0)}100%{box-shadow:0 0 0 0 rgba(74,222,128,0)}}
+  .feed{padding:10px 12px 6px;height:372px;overflow:hidden;position:relative}
+  .feed:after{content:"";position:absolute;left:0;right:0;bottom:0;height:70px;background:linear-gradient(180deg,transparent,var(--card));pointer-events:none}
+  .row{display:grid;grid-template-columns:44px minmax(0,1fr) auto;gap:12px;align-items:center;padding:11px 10px;border-radius:12px;border:1px solid transparent;margin-bottom:6px;transition:transform .55s var(--over),opacity .5s var(--ease)}
+  .row.new{animation:drop .7s var(--over)}
+  @keyframes drop{0%{opacity:0;transform:translateY(-18px) scaleY(.92)}55%{opacity:1;transform:translateY(3px) scaleY(1.02)}100%{transform:none}}
+  .row:first-child{background:rgba(45,212,191,.07);border-color:rgba(45,212,191,.25)}
+  .row .d{font-family:Sora,sans-serif;font-weight:700;font-size:12px;color:var(--teal);background:rgba(45,212,191,.12);border-radius:8px;padding:6px 0;text-align:center}
+  .row .n{font-weight:600;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .row .s{font-size:12.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .pill{font-size:11px;font-weight:700;padding:4px 9px;border-radius:999px;background:rgba(255,255,255,.06);color:var(--muted);white-space:nowrap}
+  .pill[data-c="behavioral"]{color:var(--c-beh);background:rgba(167,139,250,.12)}
+  .pill[data-c="medical"]{color:var(--c-med);background:rgba(96,165,250,.12)}
+  .pill[data-c="dental"]{color:var(--c-den);background:rgba(244,114,182,.12)}
+  .pill[data-c="therapy"]{color:var(--c-the);background:rgba(52,211,153,.12)}
+  .pill[data-c="home_senior"]{color:var(--c-hom);background:rgba(251,191,36,.12)}
+  .pill[data-c="dme_transport"]{color:var(--c-dme);background:rgba(249,115,22,.12)}
+  .live .ft{padding:10px 18px 14px;font-size:12px;color:var(--dim);border-top:1px solid var(--line)}
 
-  .sample{background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden}
-  .sample table{width:100%;border-collapse:collapse;font-size:14px}
-  .sample th,.sample td{text-align:left;padding:12px 14px;border-bottom:1px solid var(--line);vertical-align:top}
-  .sample th{color:var(--muted);font-weight:600;font-size:13px;background:color-mix(in srgb,var(--card) 90%,var(--line))}
+  /* stats */
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:8px 0 0}
+  .stat{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px 20px 18px}
+  .stat b{display:block;font-family:Sora,sans-serif;font-size:34px;font-weight:800;letter-spacing:-.03em;line-height:1.1;color:var(--ink)}
+  .stat b.t{color:var(--teal)}
+  .stat span{color:var(--muted);font-size:13.5px;display:block;margin-top:6px}
+
+  section{padding:88px 0 0}
+  .eyebrow{font-size:12.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--teal);margin-bottom:10px}
+  h2{font-size:clamp(28px,3.6vw,42px);line-height:1.08;margin:0 0 12px;font-weight:800}
+  .sub{color:var(--muted);font-size:17px;max-width:640px;margin:0 0 30px}
+
+  /* state picker */
+  .picker{display:grid;grid-template-columns:1fr 1.2fr;gap:28px;background:var(--card);border:1px solid var(--line);border-radius:22px;padding:28px;position:relative;overflow:hidden}
+  .picker:before{content:"";position:absolute;width:420px;height:420px;border-radius:50%;right:-120px;top:-180px;background:radial-gradient(circle,rgba(45,212,191,.14),transparent 65%);pointer-events:none}
+  .picker label{display:block;font-size:13px;color:var(--muted);margin-bottom:8px;font-weight:600}
+  .sel{position:relative}
+  select{appearance:none;-webkit-appearance:none;width:100%;background:var(--bg2);color:var(--ink);border:1.5px solid var(--line2);border-radius:12px;padding:14px 44px 14px 16px;font:600 17px Inter,sans-serif;cursor:pointer}
+  select:focus{outline:none;border-color:var(--teal);box-shadow:0 0 0 4px rgba(45,212,191,.15)}
+  .sel:after{content:"";position:absolute;right:18px;top:50%;width:9px;height:9px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:translateY(-70%) rotate(45deg);pointer-events:none}
+  .quick{display:flex;flex-wrap:wrap;gap:7px;margin-top:12px}
+  .quick button{background:transparent;border:1px solid var(--line2);color:var(--muted);border-radius:999px;padding:6px 11px;font:600 12.5px Inter,sans-serif;cursor:pointer;transition:all .2s var(--ease)}
+  .quick button:hover,.quick button.on{border-color:var(--teal);color:var(--teal);background:rgba(45,212,191,.08)}
+  .big{margin-top:22px}
+  .big b{display:block;font-family:Sora,sans-serif;font-size:clamp(52px,7vw,84px);font-weight:800;line-height:1;letter-spacing:-.04em;color:var(--ink)}
+  .big span{display:block;color:var(--muted);font-size:16px;margin-top:8px}
+  .big span strong{color:var(--ink);font-weight:600}
+  .monthly{margin-top:14px;font-size:14px;color:var(--muted);padding:10px 14px;border:1px dashed var(--line2);border-radius:10px;display:inline-block}
+  .monthly b{color:var(--amber)}
+  .bars{display:grid;gap:12px;align-self:center}
+  .bar{display:grid;grid-template-columns:168px 1fr 44px;gap:12px;align-items:center;font-size:14px}
+  .bar .l{color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .bar .trk{height:12px;background:rgba(255,255,255,.06);border-radius:999px;overflow:hidden}
+  .bar .fill{height:100%;width:0;border-radius:999px;transition:width 1s var(--over)}
+  .bar .v{font-family:Sora,sans-serif;font-weight:700;text-align:right}
+  .bar[data-c="behavioral"] .fill{background:var(--c-beh)}.bar[data-c="medical"] .fill{background:var(--c-med)}.bar[data-c="dental"] .fill{background:var(--c-den)}
+  .bar[data-c="therapy"] .fill{background:var(--c-the)}.bar[data-c="home_senior"] .fill{background:var(--c-hom)}.bar[data-c="dme_transport"] .fill{background:var(--c-dme)}
+  .picker .cta{margin-top:20px;align-self:start}
+
+  /* funnel */
+  .funnel{display:grid;gap:10px;margin-top:8px}
+  .fstep{display:grid;grid-template-columns:1fr auto;gap:16px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 18px;position:relative;overflow:hidden}
+  .fstep .glow{position:absolute;left:0;top:0;bottom:0;width:0;background:linear-gradient(90deg,rgba(45,212,191,.22),rgba(45,212,191,.04));transition:width 1.1s var(--over)}
+  .fstep > *{position:relative}
+  .fstep h3{margin:0 0 3px;font-size:16px}
+  .fstep p{margin:0;color:var(--muted);font-size:14px}
+  .fstep .k{font-family:Sora,sans-serif;font-size:30px;font-weight:800;letter-spacing:-.03em;white-space:nowrap}
+  .fstep .k small{display:block;font:500 12px Inter,sans-serif;color:var(--muted);letter-spacing:0;text-align:right}
+  .fstep.you{border-color:rgba(251,191,36,.45)}
+  .fstep.you .glow{background:linear-gradient(90deg,rgba(251,191,36,.25),rgba(251,191,36,.04))}
+  .fstep.you .k{color:var(--amber)}
+
+  /* sample */
+  .sample{background:var(--card);border:1px solid var(--line);border-radius:18px;overflow:hidden}
+  .sample .cap{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 18px;border-bottom:1px solid var(--line);font-size:13px;color:var(--muted)}
+  .sample .cap b{color:var(--ink);font-weight:600}
+  .tscroll{overflow-x:auto}
+  .sample table{width:100%;border-collapse:collapse;font-size:14px;min-width:640px}
+  .sample th,.sample td{text-align:left;padding:12px 16px;border-bottom:1px solid var(--line);vertical-align:top;white-space:nowrap}
+  .sample th{color:var(--dim);font-weight:600;font-size:12px;letter-spacing:.06em;text-transform:uppercase}
   .sample tr:last-child td{border-bottom:0}
-  .sample .note{font-size:13px;color:var(--muted);padding:12px 14px;border-top:1px solid var(--line)}
+  .sample td.nm{font-weight:600}
+  .sample td.ph{font-family:ui-monospace,Menlo,Consolas,monospace;color:var(--muted)}
+  .sample .note{font-size:13px;color:var(--dim);padding:12px 18px;border-top:1px solid var(--line)}
 
+  /* math */
+  .math{display:grid;grid-template-columns:1fr 1fr;gap:28px;align-items:center}
+  .calc{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:28px}
+  .calc label{display:flex;justify-content:space-between;font-size:14px;color:var(--muted);font-weight:600;margin-bottom:10px}
+  .calc label output{color:var(--ink);font-family:Sora,sans-serif;font-size:18px;font-weight:700}
+  input[type=range]{width:100%;accent-color:var(--amber);margin:4px 0 20px}
+  .res{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .res div{background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:16px}
+  .res b{display:block;font-family:Sora,sans-serif;font-size:30px;font-weight:800;letter-spacing:-.03em;color:var(--amber)}
+  .res span{font-size:13px;color:var(--muted)}
+  .calc p{margin:16px 0 0;font-size:13px;color:var(--dim)}
+  .math .copy h2{margin-bottom:14px}
+  .math .copy p{color:var(--muted);font-size:17px;margin:0 0 14px}
+
+  /* categories */
+  .cats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  .cat{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;transition:transform .3s var(--over),border-color .3s}
+  .cat:hover{transform:translateY(-4px);border-color:var(--line2)}
+  .cat .ic{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;margin-bottom:14px}
+  .cat .ic svg{width:22px;height:22px}
+  .cat b{display:block;font-family:Sora,sans-serif;font-size:16px;margin-bottom:6px}
+  .cat span{color:var(--muted);font-size:14px}
+  .cat .ct{display:block;margin-top:14px;font-size:12px;font-weight:700;font-style:normal;color:var(--dim)}
+
+  /* pricing */
   .plans{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}
-  .plan{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:26px;position:relative}
-  .plan.best{border-color:var(--accent);box-shadow:0 20px 50px rgba(14,159,138,.18)}
-  .badge{position:absolute;top:-12px;left:22px;background:var(--accent);color:var(--accent-ink);font-size:12px;font-weight:700;padding:4px 10px;border-radius:999px}
-  .plan .name{font-weight:600;color:var(--muted)}
-  .price{font-size:44px;font-weight:800;letter-spacing:-.03em;margin:6px 0 0}
-  .price small{font-size:15px;color:var(--muted);font-weight:500}
-  .plan .free{color:var(--green);font-weight:600;font-size:14px;margin-bottom:12px}
-  .plan ul{padding-left:0;list-style:none;margin:12px 0 18px;color:var(--ink)}
-  .plan li{margin:7px 0;padding-left:24px;position:relative;font-size:15px}
+  .plan{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:30px;position:relative}
+  .plan.best{border-color:rgba(45,212,191,.6);box-shadow:0 30px 70px rgba(45,212,191,.12);background:linear-gradient(180deg,rgba(45,212,191,.06),var(--card) 40%)}
+  .badge{position:absolute;top:-13px;left:26px;background:var(--teal);color:#06231f;font-size:12px;font-weight:800;padding:5px 12px;border-radius:999px;letter-spacing:.02em}
+  .plan .name{font-weight:600;color:var(--muted);font-size:15px}
+  .price{font-family:Sora,sans-serif;font-size:54px;font-weight:800;letter-spacing:-.04em;margin:6px 0 0;line-height:1}
+  .price small{font:500 15px Inter,sans-serif;color:var(--muted);letter-spacing:0}
+  .plan .free{color:var(--green);font-weight:600;font-size:14px;margin:10px 0 16px}
+  .plan ul{padding:0;list-style:none;margin:0 0 22px}
+  .plan li{margin:9px 0;padding-left:26px;position:relative;font-size:15px;color:var(--ink)}
   .plan li:before{content:"✓";position:absolute;left:0;color:var(--green);font-weight:800}
   .paybox{min-height:48px}
-  .fallback{font-size:13px;color:var(--muted);margin:10px 0 0}
-  .fallback a{color:var(--accent)}
-  .ok{display:none;background:color-mix(in srgb,var(--accent) 12%,var(--card));border:1px solid var(--accent);border-radius:12px;padding:16px;margin-top:16px}
+  .fallback{font-size:13px;color:var(--muted);margin:12px 0 0}
+  .ok{display:none;background:rgba(45,212,191,.1);border:1px solid var(--teal);border-radius:14px;padding:18px;margin-top:18px}
 
-  .faq details{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 18px;margin:8px 0}
-  .faq summary{cursor:pointer;font-weight:600}
-  .faq p{color:var(--muted);margin:10px 0 0}
+  /* faq */
+  .faq details{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 20px;margin:10px 0}
+  .faq summary{cursor:pointer;font-weight:600;font-size:16px;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:12px}
+  .faq summary::-webkit-details-marker{display:none}
+  .faq summary:after{content:"+";font-family:Sora,sans-serif;font-size:22px;color:var(--teal);transition:transform .3s var(--ease)}
+  .faq details[open] summary:after{transform:rotate(45deg)}
+  .faq p{color:var(--muted);margin:12px 0 0}
 
-  .final{margin-top:56px;background:linear-gradient(160deg,var(--navy),#0f766e);color:#fff;border-radius:20px;padding:36px;text-align:center}
-  .final h2{color:#fff}
-  .final p{color:rgba(255,255,255,.8);margin:0 auto 20px;max-width:560px}
-  footer{margin:40px 0 28px;padding-top:20px;border-top:1px solid var(--line);color:var(--muted);font-size:13px;line-height:1.7}
-  footer a{color:var(--accent)}
+  .final{margin-top:96px;background:linear-gradient(135deg,#0f3d44,#0b1f3a 60%,#1a1340);border:1px solid var(--line2);border-radius:26px;padding:56px 32px;text-align:center;position:relative;overflow:hidden}
+  .final:before{content:"";position:absolute;width:600px;height:600px;border-radius:50%;left:50%;top:-420px;transform:translateX(-50%);background:radial-gradient(circle,rgba(251,191,36,.18),transparent 65%)}
+  .final > *{position:relative}
+  .final h2{margin-bottom:12px}
+  .final p{color:var(--muted);margin:0 auto 26px;max-width:560px;font-size:17px}
+  footer{margin:48px 0 32px;padding-top:22px;border-top:1px solid var(--line);color:var(--dim);font-size:13px;line-height:1.7}
 
-  @media (max-width:860px){
-    .hero{grid-template-columns:1fr;padding-bottom:40px}
-    .mock{transform:none}
+  /* reveal */
+  .rv{opacity:0;transform:translateY(22px);transition:opacity .7s var(--ease),transform .8s var(--over)}
+  .rv.in{opacity:1;transform:none}
+
+  @media (max-width:900px){
+    .hero{grid-template-columns:1fr;gap:34px;padding:48px 0 40px}
     .stats{grid-template-columns:repeat(2,1fr)}
-    .steps,.plans{grid-template-columns:1fr}
-    nav{display:none}
-    .cta.alt{margin-left:0;margin-top:10px}
+    .picker,.math{grid-template-columns:1fr}
+    .cats,.plans{grid-template-columns:1fr}
+    .bar{grid-template-columns:132px 1fr 40px}
+    section{padding-top:64px}
+    .feed{height:330px}
   }
-</style>
-<style>
-  .cats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
-  .cat{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 18px;font-size:15px}
-  .cat b{display:block;margin-bottom:4px}
-  .cat span{color:var(--muted);font-size:14px}
-  @media (max-width:860px){.cats{grid-template-columns:1fr}}
+  @media (prefers-reduced-motion:reduce){
+    *{animation:none!important;transition:none!important}
+    .rv{opacity:1;transform:none}
+  }
 </style>
 </head>
 <body>
-<div class="top">
+<div class="sky" aria-hidden="true"></div>
+
+<div class="nav">
   <div class="wrap">
-    <header>
-      <div class="logo"><i></i>PanelReady</div>
-      <nav><a href="#how">How it works</a><a href="#sample">Sample</a><a href="#categories">Categories</a><a href="#pricing">Pricing</a><a href="#faq">FAQ</a></nav>
-    </header>
-    <div class="hero">
-      <div>
-        <span class="kicker">For credentialing &amp; medical billing companies</span>
-        <h1>New practices, the week they register. Before anyone else calls.</h1>
-        <p class="lead">Every provider has to get an NPI before they can bill a single claim, and the federal registry publishes the new ones weekly. PanelReady turns that file into a clean list of newly registered practices in your state, by specialty, with phone and address, every week. Your next credentialing client, found a month before they'd have found you.</p>
-        <a class="cta" href="#pricing">Get two lists free</a>
-        <a class="cta alt" href="#sample">See a sample</a>
-        <div class="trust"><span>Federal registry data, weekly</span><span>Practices only, no employees</span><span>Cancel any time</span></div>
-      </div>
-      <div class="mock" aria-hidden="true">
-        <div class="bar"><b></b><b></b><b></b>&nbsp;leads_NY_behavioral.csv · Tue 7:04 AM</div>
-        <div class="mail">
-          <div class="from">PanelReady</div>
-          <div class="subj">PanelReady leads, week ending Oct 4: NY</div>
-          <div class="lead-row"><div class="n">1</div><div><div class="a">Rooted Presencia LCSW PLLC</div><div class="w">Clinical social worker · Wappingers Falls · (914) 246-••••</div><span class="tag hot">registered Sep 28</span><span class="tag">organization</span></div></div>
-          <div class="lead-row"><div class="n">2</div><div><div class="a">Zito Mental Health Counseling, PLLC</div><div class="w">Mental health counselor · Brooklyn · (516) 619-••••</div><span class="tag hot">registered Sep 28</span><span class="tag">organization</span></div></div>
-          <div class="lead-row"><div class="n">3</div><div><div class="a">Maison Medical PLLC</div><div class="w">General practice · Nyack · (845) 535-••••</div><span class="tag hot">registered Sep 28</span><span class="tag">organization</span></div></div>
-        </div>
-        <div class="foot">Real rows from the federal file for the week of Sep 28. Full phone numbers in the spreadsheet.</div>
-      </div>
-    </div>
+    <a class="logo" href="#"><i></i>PanelReady</a>
+    <nav><a href="#state">Your state</a><a href="#how">How it works</a><a href="#sample">Sample</a><a href="#pricing">Pricing</a><a href="#faq">FAQ</a><a class="mini" href="#pricing">Get 2 lists free</a></nav>
   </div>
 </div>
 
 <div class="wrap">
-  <div class="stats">
-    <div class="stat"><b>13,479</b><span>new NPI registrations in one week, nationally</span></div>
-    <div class="stat"><b>2,670</b><span>of them new practices, clinics and agencies</span></div>
-    <div class="stat"><b>99%</b><span>come with a practice phone number</span></div>
-    <div class="stat"><b>1–2 wks</b><span>from registration to your inbox</span></div>
+  <div class="hero">
+    <div>
+      <span class="kicker">For credentialing &amp; medical billing companies</span>
+      <h1>Your next client <em>registered this week.</em> You just don't know it yet.</h1>
+      <p class="lead">Every practice has to get an NPI before it can bill a single claim, and the federal registry publishes the new ones every week. PanelReady reads that file, keeps only the real practices, and sends you <b>a spreadsheet for your state and specialty</b> — name, specialty, city, address and phone — while they're still weeks away from credentialing.</p>
+      <div class="btns"><a class="cta" href="#pricing">Get two lists free</a><a class="cta ghost" href="#state">See this week's numbers</a></div>
+      <div class="trust"><span>Federal registry data</span><span>Practices only, no employees</span><span>Practice phone numbers</span><span>Cancel any time</span></div>
+    </div>
+    <div class="live" aria-label="Real practices from this week's federal file">
+      <div class="hd"><b><span class="dot"></span>This week's federal file</b><span id="wk">week ending Oct 11</span></div>
+      <div class="feed" id="feed"></div>
+      <div class="ft">Real organizations from the NPPES weekly file. Full phone and address in the spreadsheet.</div>
+    </div>
   </div>
 
+  <div class="stats rv">
+    <div class="stat"><b class="t" data-n="4841">0</b><span>new practices &amp; sole proprietors registered last week</span></div>
+    <div class="stat"><b data-n="2658">0</b><span>of them brand-new organizations: practices, clinics, agencies</span></div>
+    <div class="stat"><b>99%</b><span>of rows come with a practice phone number</span></div>
+    <div class="stat"><b>50<small style="font-size:18px;color:var(--muted)"> +DC, PR</small></b><span>states covered, every single week</span></div>
+  </div>
+
+  <section id="state">
+    <div class="eyebrow rv">Pick your state</div>
+    <h2 class="rv">How many new practices opened near you last week?</h2>
+    <p class="sub rv">Real counts from the week ending October 11, 2026. Every one of these is a practice that will need credentialing and a billing setup in the next few months.</p>
+    <div class="picker rv">
+      <div>
+        <label for="st">State</label>
+        <div class="sel"><select id="st"></select></div>
+        <div class="quick" id="quick"></div>
+        <div class="big"><b id="bigN">0</b><span><strong id="bigS">New York</strong> practices &amp; sole proprietors registered last week</span></div>
+        <div class="monthly">That's about <b id="mo">0</b> a month you could be first to call.</div>
+        <a class="cta" id="stCta" href="#pricing">Get New York free</a>
+      </div>
+      <div class="bars" id="bars"></div>
+    </div>
+  </section>
+
   <section id="how">
-    <h2>How it works</h2>
-    <p class="sub">The registry is public. The work is reading it every week and throwing away the 80% that isn't a practice.</p>
-    <div class="steps">
-      <div class="step"><div class="num">1</div><h3>We read the weekly federal file</h3><p>Every NPI registered that week: 13,000-plus rows of providers, employees, students and practices, with specialty codes and addresses.</p></div>
-      <div class="step"><div class="num">2</div><h3>We keep the practices</h3><p>Organizations and sole proprietors only, sorted into six categories by specialty code. Employees registering for a job, students and deactivated numbers are dropped.</p></div>
-      <div class="step"><div class="num">3</div><h3>You get a spreadsheet</h3><p>Your state, your category: practice name, specialty, city, address, phone, NPI and registration date. Organizations first.</p></div>
+    <div class="eyebrow rv">How it works</div>
+    <h2 class="rv">The registry is public. The work is the sorting.</h2>
+    <p class="sub rv">The weekly file is 13,000-plus rows of providers, employees, students and practices mixed together. We throw away the two out of three that aren't a business and keep what's left, sorted by state and specialty.</p>
+    <div class="funnel rv" id="funnel">
+      <div class="fstep"><div class="glow" style="--w:100%"></div><div><h3>Every NPI registered that week</h3><p>Individuals, employees, students, practices and suppliers, all in one federal file.</p></div><div class="k">13,000<small>rows, typical week</small></div></div>
+      <div class="fstep"><div class="glow" style="--w:37%"></div><div><h3>Keep the practices and sole proprietors</h3><p>Employees registering for a job, students and deactivated numbers are dropped.</p></div><div class="k">4,841<small>last week</small></div></div>
+      <div class="fstep"><div class="glow" style="--w:14%"></div><div><h3>Your state</h3><p>Sorted into six categories by the specialty code the practice chose.</p></div><div class="k"><span id="fnState">253</span><small id="fnStateL">New York</small></div></div>
+      <div class="fstep you"><div class="glow" style="--w:7%"></div><div><h3>Your category, in your inbox</h3><p>A spreadsheet every week: practice name, specialty, city, address, phone, NPI and registration date.</p></div><div class="k"><span id="fnCat">102</span><small id="fnCatL">New York behavioral health</small></div></div>
     </div>
   </section>
 
   <section id="sample">
-    <h2>Sample</h2>
-    <p class="sub">Rows from the week of September 28, New York, behavioral health. Phone numbers masked here only.</p>
-    <div class="sample">
-      <table>
-        <thead><tr><th>Registered</th><th>Practice</th><th>Specialty</th><th>City</th><th>Phone</th></tr></thead>
+    <div class="eyebrow rv">Sample</div>
+    <h2 class="rv">What a Monday looks like.</h2>
+    <p class="sub rv">Real rows from last week's New York list, across categories. Phone numbers are masked on this page only.</p>
+    <div class="sample rv">
+      <div class="cap"><b>leads_NY_all.csv</b><span>week ending Oct 11 · 253 rows · organizations first</span></div>
+      <div class="tscroll"><table>
+        <thead><tr><th>Registered</th><th>Practice</th><th>Specialty</th><th>City</th><th>Phone</th><th>Category</th></tr></thead>
         <tbody>
-          <tr><td>2026-09-28</td><td>Rooted Presencia LCSW PLLC</td><td>Clinical social worker</td><td>Wappingers Falls</td><td>(914) 246-••••</td></tr>
-          <tr><td>2026-09-28</td><td>Zito Mental Health Counseling, PLLC</td><td>Mental health counselor</td><td>Brooklyn</td><td>(516) 619-••••</td></tr>
-          <tr><td>2026-09-29</td><td>Maison Medical PLLC</td><td>General practice</td><td>Nyack</td><td>(845) 535-••••</td></tr>
-          <tr><td>2026-09-30</td><td>Raah Physical Therapy PC</td><td>Physical therapist</td><td>Whitestone</td><td>(718) 200-••••</td></tr>
-          <tr><td>2026-10-01</td><td>Bailin Medical, PLLC</td><td>General practice</td><td>Brooklyn</td><td>(203) 723-••••</td></tr>
+          <tr><td>2026-10-08</td><td class="nm">Achievement Autism Services LLC</td><td>Behavior analyst</td><td>Malverne</td><td class="ph">(516) 229-••••</td><td><span class="pill" data-c="behavioral">Behavioral</span></td></tr>
+          <tr><td>2026-10-08</td><td class="nm">Albert NP in Psychiatry PLLC</td><td>Psychiatric nurse practitioner</td><td>Albany</td><td class="ph">(240) 421-••••</td><td><span class="pill" data-c="behavioral">Behavioral</span></td></tr>
+          <tr><td>2026-10-07</td><td class="nm">99 Madison Medical PC</td><td>Cardiovascular disease</td><td>New York</td><td class="ph">(646) 404-••••</td><td><span class="pill" data-c="medical">Medical</span></td></tr>
+          <tr><td>2026-10-07</td><td class="nm">Adela Guset Dental PLLC</td><td>Dentist, general</td><td>Honeoye</td><td class="ph">(585) 229-••••</td><td><span class="pill" data-c="dental">Dental</span></td></tr>
+          <tr><td>2026-10-10</td><td class="nm">58 Acupuncture PC</td><td>Acupuncturist</td><td>New York</td><td class="ph">(347) 964-••••</td><td><span class="pill" data-c="therapy">Therapy</span></td></tr>
+          <tr><td>2026-10-09</td><td class="nm">Clover LHCSA Management LLC</td><td>Home health agency</td><td>Carmel</td><td class="ph">(845) 878-••••</td><td><span class="pill" data-c="home_senior">Home care</span></td></tr>
+          <tr><td>2026-10-08</td><td class="nm">57 Rx Pharmacy Inc</td><td>Community pharmacy</td><td>Corona</td><td class="ph">(718) 433-••••</td><td><span class="pill" data-c="dme_transport">Pharmacy</span></td></tr>
         </tbody>
-      </table>
-      <div class="note">Source: NPPES weekly dissemination file, CMS. Public data, provided as-is.</div>
+      </table></div>
+      <div class="note">Source: NPPES weekly dissemination file, CMS. Public data, provided as-is. Columns in the real file also include full address, ZIP, NPI, taxonomy code, sole-proprietor flag and authorized official.</div>
+    </div>
+  </section>
+
+  <section id="math">
+    <div class="math">
+      <div class="copy rv">
+        <div class="eyebrow">The math</div>
+        <h2>One client pays for the year. Everything after that is margin.</h2>
+        <p>Credentialing a new practice with a handful of payers is a four-figure job, and the billing contract that usually follows is worth far more. PanelReady costs less than one of those a year.</p>
+        <p>Drag the slider to what a new client is worth to <em>you</em> in the first year and see how long a single win keeps the list paid for.</p>
+      </div>
+      <div class="calc rv">
+        <label for="worth">A new client is worth, year one <output id="worthOut">$3,000</output></label>
+        <input type="range" id="worth" min="500" max="10000" step="250" value="3000">
+        <div class="res">
+          <div><b id="m89">34 mo</b><span>of the $89 plan, covered by one client</span></div>
+          <div><b id="m199">15 mo</b><span>of the $199 plan, covered by one client</span></div>
+        </div>
+        <p>Your number, your math. We don't guarantee results; we send the list.</p>
+      </div>
     </div>
   </section>
 
   <section id="categories">
-    <h2>Six categories, one state each</h2>
-    <p class="sub">Pick the one you sell to, or take the whole state.</p>
+    <div class="eyebrow rv">Six categories</div>
+    <h2 class="rv">Pick the one you sell to, or take the whole state.</h2>
+    <p class="sub rv">Every practice is filed by the specialty code it registered under, so a therapy-billing company never wades through pharmacies.</p>
     <div class="cats">
-      <div class="cat"><b>Behavioral Health</b><span>Counselors, social workers, psychologists, psychiatry, psychiatric NPs, ABA, substance-use programs. The largest category every week.</span></div>
-      <div class="cat"><b>Medical Practices &amp; Clinics</b><span>Physicians, nurse practitioners, PAs, primary care and specialty clinics, urgent care.</span></div>
-      <div class="cat"><b>Dental</b><span>General dentists, specialists, hygienists, dental groups.</span></div>
-      <div class="cat"><b>Therapy &amp; Rehab</b><span>Physical, occupational and speech therapy, chiropractic, podiatry, optometry, acupuncture, dietitians.</span></div>
-      <div class="cat"><b>Home Care &amp; Senior Living</b><span>Home health agencies, in-home care, personal care, assisted living, nursing facilities, case management.</span></div>
-      <div class="cat"><b>DME, Pharmacy &amp; Transport</b><span>Durable medical equipment suppliers, pharmacies, non-emergency medical transport.</span></div>
+      <div class="cat rv"><div class="ic" style="background:rgba(167,139,250,.14)"><svg viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2" stroke-linecap="round"><path d="M12 3a7 7 0 0 0-7 7c0 3 2 4.5 2 7h10c0-2.5 2-4 2-7a7 7 0 0 0-7-7z"/><path d="M9 21h6"/></svg></div><b>Behavioral Health</b><span>Counselors, social workers, psychologists, psychiatry, psychiatric NPs, ABA, substance-use programs.</span><i class="ct">1,943 last week · the biggest every week</i></div>
+      <div class="cat rv"><div class="ic" style="background:rgba(96,165,250,.14)"><svg viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2" stroke-linecap="round"><path d="M12 4v16M4 12h16"/></svg></div><b>Medical Practices &amp; Clinics</b><span>Physicians, nurse practitioners, PAs, primary care and specialty clinics, urgent care, medical groups.</span><i class="ct">1,046 last week</i></div>
+      <div class="cat rv"><div class="ic" style="background:rgba(244,114,182,.14)"><svg viewBox="0 0 24 24" fill="none" stroke="#f472b6" stroke-width="2" stroke-linecap="round"><path d="M7 3c-3 0-4 3-3 6l2 11h2l1-6h6l1 6h2l2-11c1-3 0-6-3-6-2 0-3 1-5 1S9 3 7 3z"/></svg></div><b>Dental</b><span>General dentists, specialists, hygienists, dental groups and clinics.</span><i class="ct">144 last week</i></div>
+      <div class="cat rv"><div class="ic" style="background:rgba(52,211,153,.14)"><svg viewBox="0 0 24 24" fill="none" stroke="#34d399" stroke-width="2" stroke-linecap="round"><path d="M4 12h3l2-5 3 10 3-7 2 2h3"/></svg></div><b>Therapy &amp; Rehab</b><span>Physical, occupational and speech therapy, chiropractic, podiatry, optometry, acupuncture, dietitians.</span><i class="ct">632 last week</i></div>
+      <div class="cat rv"><div class="ic" style="background:rgba(251,191,36,.14)"><svg viewBox="0 0 24 24" fill="none" stroke="#fbbf24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/></svg></div><b>Home Care &amp; Senior Living</b><span>Home health agencies, in-home care, personal care, assisted living, nursing facilities, hospice, case management.</span><i class="ct">545 last week</i></div>
+      <div class="cat rv"><div class="ic" style="background:rgba(249,115,22,.14)"><svg viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h11v9H3zM14 10h4l3 3v3h-7z"/><circle cx="7" cy="18" r="1.5"/><circle cx="17" cy="18" r="1.5"/></svg></div><b>DME, Pharmacy &amp; Transport</b><span>Durable medical equipment suppliers, pharmacies, non-emergency medical transport, ambulance.</span><i class="ct">531 last week</i></div>
     </div>
   </section>
 
   <section id="pricing">
-    <h2>Pricing</h2>
-    <p class="sub">One new client covers a year. The first two weekly lists are free; cancel from your PayPal account any time.</p>
+    <div class="eyebrow rv">Pricing</div>
+    <h2 class="rv">Try it on us first.</h2>
+    <p class="sub rv">Want to try first? Email us your state and category and the next two weekly lists are free, no card. When you're ready, it's a flat monthly price per state; cancel from your PayPal account any time.</p>
     <div class="plans">
-      <div class="plan">
+      <div class="plan rv">
         <div class="name">One state, one category</div>
         <div class="price">$89<small>/month</small></div>
-        <div class="free">First two lists free</div>
-        <ul><li>Weekly spreadsheet, your state and category</li><li>Practice name, specialty, city, address, phone, NPI</li><li>Organizations first, sole proprietors flagged</li><li>Change state or category by replying</li></ul>
+        <div class="free">Two free lists first? Just email us</div>
+        <ul><li>Weekly spreadsheet, your state and category</li><li>Practice name, specialty, city, address, phone, NPI</li><li>Organizations first, sole proprietors flagged</li><li>Change state or category by replying to any email</li></ul>
         <div class="paybox" id="paypal-cat"></div>
         <p class="fallback" id="fb-cat"></p>
       </div>
-      <div class="plan best">
+      <div class="plan best rv">
         <span class="badge">Most billing companies</span>
         <div class="name">One state, every category</div>
         <div class="price">$199<small>/month</small></div>
-        <div class="free">First two lists free</div>
+        <div class="free">Two free lists first? Just email us</div>
         <ul><li>All six categories for your state, every week</li><li>Everything in the single-category plan</li><li>Priority email support</li><li>Need several states? Email for a bundle</li></ul>
         <div class="paybox" id="paypal-all"></div>
         <p class="fallback" id="fb-all"></p>
@@ -232,44 +370,168 @@
   </section>
 
   <section class="faq" id="faq">
-    <h2>Questions</h2>
-    <details><summary>Where does the data come from?</summary><p>The National Plan and Provider Enumeration System (NPPES), run by CMS. Every provider and organization that bills must have an NPI, and CMS publishes the full registry and weekly updates as public files. We read the weekly file; we don't change it.</p></details>
-    <details><summary>How fresh is it?</summary><p>CMS posts each week's file about a week after the week ends, and most registrations in it are one to six days old at that point. So a practice is on your list one to two weeks after it registered, which is typically weeks before it has finished credentialing.</p></details>
-    <details><summary>Are these real practices or just anyone with an NPI?</summary><p>We keep organizations (practices, clinics, agencies, suppliers) and individuals who flagged themselves as sole proprietors. Employees registering for a new job, students and deactivated numbers are dropped. Roughly one row in five survives.</p></details>
-    <details><summary>Can I get more than one state?</summary><p>Yes: each state is its own plan, or email us for a bundle if you cover several.</p></details>
-    <details><summary>How do I cancel?</summary><p>In your PayPal account under Subscriptions, any time, or reply STOP to any email.</p></details>
+    <div class="eyebrow rv">Questions</div>
+    <h2 class="rv">Straight answers.</h2>
+    <details class="rv"><summary>Where does the data come from?</summary><p>The National Plan and Provider Enumeration System (NPPES), run by CMS. Every provider and organization that bills must have an NPI, and CMS publishes the full registry and weekly updates as public files. We read the weekly file; we don't change it or add to it.</p></details>
+    <details class="rv"><summary>How fresh is it?</summary><p>CMS posts each week's file about a week after the week ends, and most registrations in it are one to six days old at that point. So a practice is on your list one to two weeks after it registered, which is typically weeks before it has finished credentialing with its first payer.</p></details>
+    <details class="rv"><summary>Are these real practices or just anyone with an NPI?</summary><p>We keep organizations (practices, clinics, agencies, suppliers) and individuals who flagged themselves as sole proprietors. Employees registering for a new job, students and deactivated numbers are dropped. Roughly one row in three survives.</p></details>
+    <details class="rv"><summary>Do I get email addresses?</summary><p>No. The registry has practice phone numbers and mailing addresses, not emails, and we don't guess them. What you get is a verified practice name, the specialty it registered under, the address it gave CMS and the phone it gave CMS, which is a better starting point than any purchased email list.</p></details>
+    <details class="rv"><summary>Can I get more than one state?</summary><p>Yes: each state is its own plan, or email us for a bundle if you cover several.</p></details>
+    <details class="rv"><summary>How do I cancel?</summary><p>In your PayPal account under Subscriptions, any time, or reply STOP to any email. No calls, no forms.</p></details>
   </section>
 
-  <div class="final">
+  <div class="final rv">
     <h2>Be the first call a new practice gets.</h2>
-    <p>Two free weekly lists for your state. No card needed to try: email us the state and category.</p>
+    <p>Two free weekly lists for your state, no card needed: email us the state and category. Or subscribe above and your first list goes out with the next weekly file.</p>
     <a class="cta" href="#pricing">Get two lists free</a>
   </div>
 
   <footer>
-    PanelReady · <a href="mailto:panelready@aol.com">panelready@aol.com</a><br>
-    Not affiliated with CMS or any payer. Data comes from the public NPPES registry and is provided as-is. Sample rows are from the public file; phone numbers are masked on this page only.
+    PanelReady · <a href="mailto:panelready@aol.com">panelready@aol.com</a> · an Avery Data Co. product<br>
+    Not affiliated with CMS or any payer. Data comes from the public NPPES registry and is provided as-is. Practice names on this page are from the public file; phone numbers are masked here only.
   </footer>
 </div>
 
 <script src="https://www.paypal.com/sdk/js?client-id=BAA7rpxUlDfPux5L-cnPgDlsPHBSqnTQ02gaBEhRztMPVYTII0oWEIL6lqsz7EXDVf9jar7gt83XFtVc_M&vault=true&intent=subscription"></script>
 <script>
-  // Paste the PayPal plan IDs here once the two PanelReady plans exist.
+(function(){
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var CATS = ['behavioral','medical','dental','therapy','home_senior','dme_transport'];
+  var NICE = {behavioral:'Behavioral health',medical:'Medical practices & clinics',dental:'Dental',therapy:'Therapy & rehab',home_senior:'Home care & senior living',dme_transport:'DME, pharmacy & transport'};
+  var BARL = {behavioral:'Behavioral health',medical:'Medical & clinics',dental:'Dental',therapy:'Therapy & rehab',home_senior:'Home care & senior',dme_transport:'DME & transport'};
+  var SHORT = {behavioral:'Behavioral',medical:'Medical',dental:'Dental',therapy:'Therapy',home_senior:'Home care',dme_transport:'DME & transport'};
+  // counts per state for the week ending 2026-10-11: [behavioral, medical, dental, therapy, home_senior, dme_transport]
+  var DATA = {"AK":[3,4,0,2,1,0],"AL":[19,3,1,7,4,2],"AR":[19,5,0,6,6,3],"AZ":[34,23,1,15,8,7],"CA":[238,111,25,83,41,41],"CO":[67,30,3,13,17,57],"CT":[28,2,2,7,3,7],"DC":[14,7,0,0,8,1],"DE":[3,2,0,2,0,2],"FL":[160,130,8,65,50,56],"GA":[39,60,3,10,14,35],"HI":[6,3,0,6,3,3],"IA":[13,3,0,4,0,0],"ID":[9,6,0,5,1,6],"IL":[79,29,5,14,11,26],"IN":[30,30,1,2,8,8],"KS":[17,1,0,3,3,3],"KY":[11,12,0,4,3,4],"LA":[20,8,0,5,4,10],"MA":[48,16,4,8,4,8],"MD":[57,56,4,4,24,7],"ME":[10,1,1,6,0,0],"MI":[42,24,5,30,21,9],"MN":[33,14,0,7,5,10],"MO":[21,10,1,10,5,6],"MS":[6,6,0,8,0,2],"MT":[9,2,0,3,1,0],"NC":[89,35,4,19,16,11],"ND":[1,1,2,0,10,0],"NE":[16,3,0,2,20,3],"NH":[11,2,2,2,0,3],"NJ":[69,33,3,19,11,21],"NM":[25,6,0,2,7,0],"NV":[21,8,2,5,18,3],"NY":[102,56,9,44,13,29],"OH":[66,28,9,16,80,14],"OK":[26,6,1,6,4,5],"OR":[21,10,5,14,2,4],"PA":[52,23,6,14,15,13],"PR":[15,13,0,20,1,5],"RI":[5,1,0,1,0,0],"SC":[24,8,2,13,4,3],"SD":[6,2,0,3,2,0],"TN":[28,16,3,11,7,9],"TX":[184,100,19,53,31,53],"UT":[31,11,2,7,0,3],"VA":[34,35,5,12,5,18],"VT":[5,1,0,3,0,1],"WA":[43,13,3,18,9,6],"WI":[27,8,1,16,5,10],"WV":[7,0,0,1,34,0],"WY":[0,29,1,0,6,4]};
+  var NAMES = {AL:"Alabama",AK:"Alaska",AZ:"Arizona",AR:"Arkansas",CA:"California",CO:"Colorado",CT:"Connecticut",DE:"Delaware",DC:"Washington, DC",FL:"Florida",GA:"Georgia",HI:"Hawaii",ID:"Idaho",IL:"Illinois",IN:"Indiana",IA:"Iowa",KS:"Kansas",KY:"Kentucky",LA:"Louisiana",ME:"Maine",MD:"Maryland",MA:"Massachusetts",MI:"Michigan",MN:"Minnesota",MS:"Mississippi",MO:"Missouri",MT:"Montana",NE:"Nebraska",NV:"Nevada",NH:"New Hampshire",NJ:"New Jersey",NM:"New Mexico",NY:"New York",NC:"North Carolina",ND:"North Dakota",OH:"Ohio",OK:"Oklahoma",OR:"Oregon",PA:"Pennsylvania",PR:"Puerto Rico",RI:"Rhode Island",SC:"South Carolina",SD:"South Dakota",TN:"Tennessee",TX:"Texas",UT:"Utah",VT:"Vermont",VA:"Virginia",WA:"Washington",WV:"West Virginia",WI:"Wisconsin",WY:"Wyoming"};
+  // real organizations from the same file (date, name, specialty, city, state, category)
+  var FEED = [
+    ["10-08","A Place To Heal LLC","Clinical social worker","Smyrna","GA","behavioral"],
+    ["10-09","Angelo Cacciatore DMD, Inc.","Pediatric dentist","San Diego","CA","dental"],
+    ["10-07","Agape Health Corporation LLC","Home health agency","Aurora","CO","home_senior"],
+    ["10-07","99 Madison Medical PC","Cardiovascular disease","New York","NY","medical"],
+    ["10-08","Altrivia Medical Corp","DME supplier","Orlando","FL","dme_transport"],
+    ["10-07","Agave Assessment and Therapy Group PLLC","Clinical psychologist","San Antonio","TX","behavioral"],
+    ["10-10","After Hours Chiropractic, Medical and Injury","Chiropractor","Orlando","FL","therapy"],
+    ["10-09","Bee Meek Psychiatric Care LLC","Psychiatric nurse practitioner","Roselle","NJ","behavioral"],
+    ["10-06","ACNP Healthcare Services, Inc","Nurse practitioner, primary care","Porter Ranch","CA","medical"],
+    ["10-06","Dream Smiles","Dentist, general","Norcross","GA","dental"],
+    ["10-09","Clover LHCSA Management LLC","Home health agency","Carmel","NY","home_senior"],
+    ["10-09","Brek Therapy and Wellness, PLLC","Mental health counselor","Rockford","IL","behavioral"],
+    ["10-09","AZ Ortho Joint Replacement Center LLC","Ambulatory surgical center","Scottsdale","AZ","medical"],
+    ["10-10","58 Acupuncture PC","Acupuncturist","New York","NY","therapy"],
+    ["10-08","Achievement Autism Services LLC","Behavior analyst","Malverne","NY","behavioral"],
+    ["10-05","Aba Helping Everyone LLC","Behavior analyst","Toms River","NJ","behavioral"],
+    ["10-08","Alivio Psychological Services, PLLC","Psychologist","Austin","TX","behavioral"],
+    ["10-09","Altera Health and Wellness PLLC","Nurse practitioner, adult health","Littleton","CO","medical"],
+    ["10-08","Back To Health LLC","Chiropractor","Grand Junction","CO","therapy"],
+    ["10-10","Empoweru Social Work Solutions PLLC","Clinical social worker","Farmington Hills","MI","behavioral"],
+    ["10-06","Snowflake Family Dental","Dentist, general","Snowflake","AZ","dental"],
+    ["10-05","Allygn LLC","Behavior analyst","Carnegie","PA","behavioral"],
+    ["10-06","Aloha Assisted Living LLC","Assisted living","Sacramento","CA","home_senior"],
+    ["10-09","A Peace of Serenity Support Services LLC","Behavioral health agency","Kannapolis","NC","behavioral"],
+    ["10-08","Areyto Holistic Psychotherapy PLLC","Clinical social worker","Hadley","MA","behavioral"],
+    ["10-07","Adela Guset Dental PLLC","Dentist, general","Honeoye","NY","dental"]
+  ];
+  var fmt = function(n){ return n.toLocaleString('en-US'); };
+  var $ = function(id){ return document.getElementById(id); };
+
+  // ---- live feed: one new row at a time, settles with a little overshoot
+  var feed = $('feed'), fi = 0, MAX = 7;
+  function rowEl(r){
+    var d = document.createElement('div'); d.className = 'row';
+    d.innerHTML = '<div class="d">'+r[0]+'</div><div><div class="n">'+r[1]+'</div><div class="s">'+r[2]+' · '+r[3]+', '+r[4]+'</div></div><span class="pill" data-c="'+r[5]+'">'+SHORT[r[5]]+'</span>';
+    return d;
+  }
+  for (var i = 0; i < MAX; i++) feed.appendChild(rowEl(FEED[fi++ % FEED.length]));
+  if (!reduce) setInterval(function(){
+    var el = rowEl(FEED[fi++ % FEED.length]); el.classList.add('new');
+    feed.insertBefore(el, feed.firstChild);
+    while (feed.children.length > MAX + 1) feed.removeChild(feed.lastChild);
+    var last = feed.lastChild; last.style.opacity = '0';
+  }, 3200);
+
+  // ---- counters (ease-out so they land softly)
+  function countUp(el){
+    var to = +el.getAttribute('data-n'), t0 = null, dur = 1400;
+    if (reduce) { el.textContent = fmt(to); return; }
+    function step(ts){ if (!t0) t0 = ts; var p = Math.min(1, (ts - t0) / dur); p = 1 - Math.pow(1 - p, 3);
+      el.textContent = fmt(Math.round(to * p)); if (p < 1) requestAnimationFrame(step); }
+    requestAnimationFrame(step);
+  }
+
+  // ---- reveal on scroll, staggered
+  var io = new IntersectionObserver(function(es){
+    es.forEach(function(e){ if (!e.isIntersecting) return;
+      var el = e.target, sib = [].slice.call(el.parentNode.children).filter(function(c){ return c.classList.contains('rv'); });
+      var idx = Math.max(0, sib.indexOf(el)); el.style.transitionDelay = (Math.min(idx, 6) * 70) + 'ms';
+      el.classList.add('in'); io.unobserve(el);
+      el.querySelectorAll('[data-n]').forEach(countUp);
+      if (el.id === 'funnel') el.querySelectorAll('.glow').forEach(function(g){ g.style.width = g.style.getPropertyValue('--w'); });
+      if (el.classList.contains('picker')) paintBars();
+    });
+  }, {threshold: .18});
+  document.querySelectorAll('.rv').forEach(function(el){ io.observe(el); });
+
+  // ---- state picker
+  var sel = $('st'), quick = $('quick'), cur = 'NY';
+  Object.keys(NAMES).sort(function(a,b){ return NAMES[a] < NAMES[b] ? -1 : 1; }).forEach(function(k){
+    var o = document.createElement('option'); o.value = k; o.textContent = NAMES[k]; sel.appendChild(o);
+  });
+  ['NY','CA','TX','FL','IL','NJ','PA','OH'].forEach(function(k){
+    var b = document.createElement('button'); b.type = 'button'; b.textContent = k; b.setAttribute('data-k', k);
+    b.onclick = function(){ sel.value = k; setState(k); }; quick.appendChild(b);
+  });
+  var bars = $('bars');
+  CATS.forEach(function(c){
+    var b = document.createElement('div'); b.className = 'bar'; b.setAttribute('data-c', c);
+    b.innerHTML = '<div class="l">'+BARL[c]+'</div><div class="trk"><div class="fill"></div></div><div class="v">0</div>';
+    bars.appendChild(b);
+  });
+  var painted = false;
+  function paintBars(){
+    painted = true;
+    var v = DATA[cur] || [0,0,0,0,0,0], mx = Math.max.apply(null, v) || 1;
+    [].forEach.call(bars.children, function(b, i){
+      b.querySelector('.fill').style.width = Math.max(2, Math.round(v[i] / mx * 100)) + '%';
+      b.querySelector('.v').textContent = v[i];
+    });
+  }
+  function setState(k){
+    cur = k; var v = DATA[k] || [0,0,0,0,0,0], tot = v.reduce(function(a,b){ return a+b; }, 0), nm = NAMES[k];
+    var big = $('bigN'); big.setAttribute('data-n', tot); countUp(big);
+    $('bigS').textContent = nm; $('mo').textContent = fmt(Math.round(tot * 52 / 12));
+    $('stCta').textContent = 'Get ' + nm + ' free';
+    $('fnState').textContent = fmt(tot); $('fnStateL').textContent = nm;
+    var top = v.indexOf(Math.max.apply(null, v));
+    $('fnCat').textContent = fmt(v[top]); $('fnCatL').textContent = nm + ' ' + NICE[CATS[top]].toLowerCase();
+    [].forEach.call(quick.children, function(b){ b.classList.toggle('on', b.getAttribute('data-k') === k); });
+    if (painted) paintBars();
+  }
+  sel.value = 'NY'; sel.onchange = function(){ setState(sel.value); }; setState('NY');
+
+  // ---- the math
+  var worth = $('worth');
+  function calc(){
+    var w = +worth.value; $('worthOut').textContent = '$' + fmt(w);
+    $('m89').textContent = Math.floor(w / 89) + ' mo'; $('m199').textContent = Math.floor(w / 199) + ' mo';
+  }
+  worth.oninput = calc; calc();
+
+  // ---- PayPal
   var PLANS = { cat: 'P-3LM945184V097602ENLGJTCY', all: 'P-2L8264840K988433PNLGJUEA' };
+  var MAIL = 'Want the free lists first, no card? Email <a href="mailto:panelready@aol.com?subject=PanelReady%20free%20lists">panelready@aol.com</a> with your state and category.';
   function sub(id, planId){
-    var fb = document.getElementById('fb-' + id);
-    if (!planId || planId.indexOf('PASTE') === 0 || !window.paypal) {
-      fb.innerHTML = 'Want the free lists first? Email <a href="mailto:panelready@aol.com?subject=PanelReady%20free%20lists">panelready@aol.com</a> with your state and category.';
-      return;
-    }
+    var fb = $('fb-' + id);
+    if (!planId || planId.indexOf('PASTE') === 0 || !window.paypal) { fb.innerHTML = MAIL; return; }
     paypal.Buttons({
       style: { shape: 'pill', color: 'gold', layout: 'vertical', label: 'subscribe' },
       createSubscription: function(data, actions){ return actions.subscription.create({ plan_id: planId }); },
-      onApprove: function(data){ var t = document.getElementById('thanks'); t.style.display = 'block'; t.scrollIntoView({behavior:'smooth'}); }
+      onApprove: function(){ var t = $('thanks'); t.style.display = 'block'; t.scrollIntoView({behavior:'smooth'}); }
     }).render('#paypal-' + id);
-    fb.innerHTML = 'Want the free lists first, no card? Email <a href="mailto:panelready@aol.com?subject=PanelReady%20free%20lists">panelready@aol.com</a> with your state and category.';
+    fb.innerHTML = MAIL;
   }
   sub('cat', PLANS.cat); sub('all', PLANS.all);
+})();
 </script>
 </body>
 </html>
