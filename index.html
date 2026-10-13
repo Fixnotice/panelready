@@ -231,7 +231,7 @@
 <div class="nav">
   <div class="wrap">
     <a class="logo" href="#"><i></i>PanelReady</a>
-    <nav><a href="#state">Your state</a><a href="#how">How it works</a><a href="#sample">Sample</a><a href="#pricing">Pricing</a><a href="#faq">FAQ</a><a class="mini" href="#pricing">Get 2 lists free</a></nav>
+    <nav><a href="states/">By state</a><a href="#how">How it works</a><a href="#sample">Sample</a><a href="#pricing">Pricing</a><a href="#faq">FAQ</a><a class="mini" href="#pricing">Get 2 lists free</a></nav>
   </div>
 </div>
 
@@ -507,7 +507,8 @@
     [].forEach.call(quick.children, function(b){ b.classList.toggle('on', b.getAttribute('data-k') === k); });
     if (painted) paintBars();
   }
-  sel.value = 'NY'; sel.onchange = function(){ setState(sel.value); }; setState('NY');
+  var fromQuery = (location.search.match(/[?&]state=([A-Za-z]{2})/) || [])[1]; fromQuery = fromQuery && NAMES[fromQuery.toUpperCase()] ? fromQuery.toUpperCase() : 'NY';
+  sel.value = fromQuery; sel.onchange = function(){ setState(sel.value); }; setState(fromQuery);
 
   // ---- the math
   var worth = $('worth');
