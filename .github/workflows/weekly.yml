@@ -1,0 +1,44 @@
+# PanelReady: rebuild the state pages whenever CMS posts a new weekly NPPES file.
+#
+# Put this file in the repository at  .github/workflows/weekly.yml  (GitHub -> Add file -> Create new file,
+# type that path as the name, paste this, Commit). It runs every day at 14:07 UTC; build_pages.py downloads
+# a weekly file only when there is one it hasn't seen, so most days it finishes in seconds and changes nothing.
+# "Run workflow" under the Actions tab runs it by hand. Needs nothing else: no secrets, no keys.
+name: Weekly state pages
+
+on:
+  schedule:
+    - cron: "7 14 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: weekly-pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Fetch new weekly files and rebuild the pages
+        run: python build_pages.py --fetch
+
+      - name: Commit the pages (only if something changed)
+        run: |
+          git config user.name "panelready-pages"
+          git config user.email "panelready-pages@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No new weekly file; nothing to publish."
+          else
+            git commit -m "State pages for the week ending $(python -c "import json;print(json.load(open('data/weeks.json'))['latest'])")"
+            git push
+          fi
