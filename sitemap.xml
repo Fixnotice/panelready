@@ -194,4 +194,8 @@
   <url><loc>https://panelready.co/states/wisconsin/dme-pharmacy-transport/</loc><lastmod>2026-10-11</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
   <url><loc>https://panelready.co/states/wyoming/</loc><lastmod>2026-10-11</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
   <url><loc>https://panelready.co/states/wyoming/medical-practices/</loc><lastmod>2026-10-11</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://panelready.co/about/</loc><lastmod>2026-10-11</lastmod><changefreq>monthly</changefreq><priority>0.4</priority></url>
+  <url><loc>https://panelready.co/contact/</loc><lastmod>2026-10-11</lastmod><changefreq>monthly</changefreq><priority>0.4</priority></url>
+  <url><loc>https://panelready.co/privacy/</loc><lastmod>2026-10-11</lastmod><changefreq>monthly</changefreq><priority>0.4</priority></url>
+  <url><loc>https://panelready.co/terms/</loc><lastmod>2026-10-11</lastmod><changefreq>monthly</changefreq><priority>0.4</priority></url>
 </urlset>
