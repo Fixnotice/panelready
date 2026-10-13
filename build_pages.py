@@ -33,7 +33,7 @@ for cand in (ROOT, HERE):                            # pr/npi.py lives in the pr
         break
 from pr import npi as N                              # noqa: E402
 
-SITE = "https://fixnotice.github.io/panelready"      # no trailing slash
+SITE = "https://panelready.co"                       # the site's address, no trailing slash (the old github.io address redirects here)
 BRAND, MAIL = "PanelReady", "panelready@aol.com"
 WEEKS = HERE / "data" / "weeks.json"
 CAT_PAGE_MIN = 8                                     # a category page needs at least this many rows in the newest week
@@ -667,12 +667,16 @@ def main():
     new = fetch_weeks(data) if args.fetch else local_weeks(data)
     if new:
         save(data)
-    if not new and not args.rebuild and (HERE / "states" / "index.html").exists():
+    moved = data.get("site") != SITE                     # the address changed: every page's links and the sitemap must be rewritten
+    if not new and not moved and not args.rebuild and (HERE / "states" / "index.html").exists():
         say("  nothing new; pages left as they are")
         return
     copy_pr()
     paths = build(data)
     miss = refresh_landing(data)
+    if moved:
+        data["site"] = SITE
+        save(data)
     say(f"  wrote {len(paths)} pages for the week ending {data['latest']} -> {HERE / 'states'}" + (f" (landing page: couldn't find {', '.join(miss)})" if miss else ""))
 
 
