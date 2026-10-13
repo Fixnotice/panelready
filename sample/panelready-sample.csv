@@ -1,0 +1,11 @@
+registered,category,specialty,name,entity,credential,phone,address,city,state,zip,npi,taxonomy,sole_proprietor,authorized_official
+2026-10-10,behavioral,Clinical social worker,Birch Root Psychotherapy Pllc,practice/organization,,(802) 456-0557,34 High St,Plainfield,VT,05667,1295630259,1041C0700X,,Diana Brooks
+2026-10-08,behavioral,Mental health counselor,Green Light Counseling,practice/organization,,(802) 540-0222,110 Main St Ste 3A,Burlington,VT,05401,1114821444,101YM0800X,,Benjamin Houchen
+2026-10-06,behavioral,Mental health clinic,Jordan Imhoff Llc,practice/organization,,(802) 585-9350,832 Barnes Rd,Hyde Park,VT,05655,1952205650,261QM0801X,,Jordan Imhoff
+2026-10-07,behavioral,Psychiatric nurse practitioner,Missisquoi Mental Health Pllc,practice/organization,,(802) 309-2044,73 Main St,Enosburg Falls,VT,05450,1447154869,363LP0808X,,John-Paul Cloutier
+2026-10-05,behavioral,Mental health counselor,Hollis Easter,sole proprietor,,(802) 448-2258,34 Cherry Ln,Burlington,VT,05401,1568366417,101YM0800X,yes,
+2026-10-07,dme_transport,DME supplier,Porter Hospital Inc,practice/organization,,(802) 388-1200,23 Pond Ln,Middlebury,VT,05753,1831093319,332B00000X,,Kathryn Kelly
+2026-10-06,medical,261QR0800X,The Turning Point Of Windham County,practice/organization,,(802) 257-5600,39 Elm St,Brattleboro,VT,05301,1093619850,261QR0800X,,Elias Burgess
+2026-10-08,therapy,224Z00000X,Jennifer Hafner,sole proprietor,COTA/L,(845) 216-0560,113 Pettis Rd,West Haven,VT,05743,1104721463,224Z00000X,yes,
+2026-10-08,therapy,225700000X,Julie Bacher,sole proprietor,,(802) 223-0954,200 Elm St,Montpelier,VT,05602,1003710393,225700000X,yes,
+2026-10-07,therapy,Chiropractor,Seth Gorman,sole proprietor,DC,(802) 497-2938,4 Market St Ste 2,South Burlington,VT,05403,1437053808,111N00000X,yes,

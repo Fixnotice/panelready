@@ -34,6 +34,9 @@ for cand in (ROOT, HERE):                            # pr/npi.py lives in the pr
 from pr import npi as N                              # noqa: E402
 
 SITE = "https://panelready.co"                       # the site's address, no trailing slash (the old github.io address redirects here)
+BUILD_VERSION = 4                                    # bump when the page layout changes, so the next run rewrites every page
+COMPANY = "Avery Data Co."
+SAMPLE_STATES = ["VT", "DE", "RI", "AK", "WY", "ND", "SD", "MT", "ME", "NH"]   # the free sample: the first of these with 8-25 rows this week
 BRAND, MAIL = "PanelReady", "panelready@aol.com"
 WEEKS = HERE / "data" / "weeks.json"
 CAT_PAGE_MIN = 8                                     # a category page needs at least this many rows in the newest week
@@ -49,7 +52,7 @@ CAT_WHO = {"behavioral": "counselors, social workers, psychologists, psychiatry 
            "therapy": "physical, occupational and speech therapy, chiropractic, podiatry, optometry, acupuncture and dietitians",
            "home_senior": "home health agencies, in-home and personal care, assisted living, nursing facilities, hospice and case management",
            "dme_transport": "durable medical equipment suppliers, pharmacies, non-emergency medical transport and ambulance services"}
-CAT_COLOR = {"behavioral": "#a78bfa", "medical": "#60a5fa", "dental": "#f472b6", "therapy": "#34d399", "home_senior": "#fbbf24", "dme_transport": "#f97316"}
+CAT_COLOR = {"behavioral": "#6d28d9", "medical": "#2563eb", "dental": "#be185d", "therapy": "#047857", "home_senior": "#b45309", "dme_transport": "#c2410c"}
 STATES = {"AL": "Alabama", "AK": "Alaska", "AZ": "Arizona", "AR": "Arkansas", "CA": "California", "CO": "Colorado", "CT": "Connecticut",
           "DE": "Delaware", "DC": "Washington, DC", "FL": "Florida", "GA": "Georgia", "HI": "Hawaii", "ID": "Idaho", "IL": "Illinois",
           "IN": "Indiana", "IA": "Iowa", "KS": "Kansas", "KY": "Kentucky", "LA": "Louisiana", "ME": "Maine", "MD": "Maryland",
@@ -131,6 +134,9 @@ def save(data: dict):
     WEEKS.write_text(json.dumps(data, separators=(",", ":")), encoding="utf-8")
 
 
+LATEST_LEADS: list[dict] = []                        # the newest week's rows seen this run (for the free sample file)
+
+
 def ingest(data: dict, week_end: str, leads: list[dict]):
     """Fold one week's leads into the data file: counts for every week, details for the newest week only."""
     counts: dict[str, list[int]] = defaultdict(lambda: [0] * len(CATS))
@@ -144,6 +150,7 @@ def ingest(data: dict, week_end: str, leads: list[dict]):
     if data["latest"] and week_end < data["latest"]:
         return
     data["latest"] = week_end
+    LATEST_LEADS[:] = leads
     samples, cities, specs, orgs = {}, {}, {}, {}
     by_state: dict[str, list[dict]] = defaultdict(list)
     for l in leads:
@@ -245,53 +252,56 @@ def taxonomy_names() -> dict:
 # ------------------------------------------------------------------ page pieces
 
 CSS = """
-:root{--bg:#070c14;--bg2:#0b1220;--card:#0f1829;--card2:#131f35;--line:#1e2a44;--ink:#eaf0fa;--muted:#93a1b8;--dim:#5f6d85;--teal:#2dd4bf;--amber:#fbbf24;--green:#4ade80}
+:root{--bg:#f6f8fb;--bg2:#eef2f7;--card:#ffffff;--card2:#f3f6fa;--line:#e3e8ef;--line2:#cdd5e0;--ink:#0f2340;--body:#334155;--muted:#5b6b82;--dim:#8a97a9;--teal:#0e7c7b;--green:#15803d;--shadow:0 1px 2px rgba(15,35,64,.05),0 12px 32px -12px rgba(15,35,64,.14)}
 *{box-sizing:border-box}html{scroll-behavior:smooth}
-body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-smoothing:antialiased}
-h1,h2,h3{font-family:Sora,Inter,system-ui,sans-serif;letter-spacing:-.02em;line-height:1.15;margin:0 0 10px}
-h1{font-size:clamp(28px,4.4vw,44px);font-weight:800}h2{font-size:clamp(20px,2.6vw,27px);font-weight:700;margin-top:0}
-h1 em{font-style:normal;color:var(--teal)}
+body{margin:0;background:var(--bg);color:var(--body);font:16px/1.65 Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-smoothing:antialiased}
+h1,h2,h3{font-family:"Source Serif 4",Georgia,"Times New Roman",serif;color:var(--ink);letter-spacing:-.01em;line-height:1.15;margin:0 0 10px;font-weight:600}
+h1{font-size:clamp(30px,4.4vw,46px);line-height:1.08}h2{font-size:clamp(21px,2.6vw,28px);margin-top:0}
+h1 em{font-style:italic;color:var(--teal)}
 a{color:var(--teal)}p{margin:0 0 14px}
 .wrap{max-width:1040px;margin:0 auto;padding:0 20px}@media(max-width:600px){.wrap{padding:0 16px}}
-.nav{position:sticky;top:0;z-index:5;backdrop-filter:blur(14px);background:rgba(7,12,20,.78);border-bottom:1px solid rgba(255,255,255,.06)}
-.nav .wrap{display:flex;align-items:center;justify-content:space-between;height:60px;gap:12px}
-.logo{display:flex;align-items:center;gap:9px;font-family:Sora,sans-serif;font-weight:800;font-size:19px;color:var(--ink);text-decoration:none}
-.logo i{width:12px;height:12px;border-radius:4px;background:linear-gradient(135deg,var(--teal),#14b8a6);box-shadow:0 0 14px rgba(45,212,191,.6)}
+.nav{position:sticky;top:0;z-index:5;backdrop-filter:blur(14px);background:rgba(255,255,255,.88);border-bottom:1px solid var(--line)}
+.nav .wrap{display:flex;align-items:center;justify-content:space-between;height:62px;gap:12px}
+.logo{display:flex;align-items:center;gap:9px;font-family:"Source Serif 4",Georgia,serif;font-weight:700;font-size:21px;color:var(--ink);text-decoration:none}
+.logo svg{width:28px;height:28px;border-radius:7px}
 .nav nav{display:flex;gap:18px;align-items:center}.nav nav a{color:var(--muted);text-decoration:none;font-size:14px;font-weight:600}.nav nav a:hover{color:var(--ink)}
-.nav nav a.mini{background:var(--teal);color:#04261f;padding:8px 13px;border-radius:999px}
+.nav nav a.mini{background:var(--ink);color:#fff;padding:9px 14px;border-radius:8px}
 @media(max-width:700px){.nav nav a:not(.mini){display:none}}
 .crumbs{font-size:13px;color:var(--dim);margin:18px 0 6px}.crumbs a{color:var(--muted);text-decoration:none}
 .kicker{display:inline-block;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--teal);margin-bottom:10px}
-.lead{font-size:18px;color:var(--muted);max-width:760px}
+.lead{font-size:18px;color:var(--muted);max-width:760px}.lead b{color:var(--ink)}
 .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:26px 0}
 @media(max-width:760px){.stats{grid-template-columns:repeat(2,1fr)}}
-.stat{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 16px 14px}
-.stat b{display:block;font-family:Sora,sans-serif;font-size:30px;font-weight:800;line-height:1.1}.stat b small{font-size:14px;color:var(--muted);font-weight:600}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 16px 14px;box-shadow:var(--shadow)}
+.stat b{display:block;font-family:"Source Serif 4",Georgia,serif;font-size:32px;font-weight:600;line-height:1.1;color:var(--ink)}.stat b small{font-size:14px;color:var(--muted);font-weight:600;font-family:Inter,sans-serif}
 .stat span{display:block;color:var(--muted);font-size:13px;margin-top:6px;line-height:1.4}
 section{margin:34px 0}
 .grid2{display:grid;grid-template-columns:1.1fr .9fr;gap:22px}@media(max-width:800px){.grid2{grid-template-columns:1fr}}
-.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;box-shadow:var(--shadow)}
 .bar{display:grid;grid-template-columns:150px 1fr 44px;gap:10px;align-items:center;margin:9px 0;font-size:14px}
 .bar .trk{height:12px;background:var(--bg2);border-radius:99px;overflow:hidden}.bar .fill{height:100%;border-radius:99px;min-width:3px}
-.bar .v{text-align:right;font-weight:700;font-variant-numeric:tabular-nums}.bar a{color:var(--ink);text-decoration:none}.bar a:hover{color:var(--teal)}
+.bar .v{text-align:right;font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums}.bar a{color:var(--ink);text-decoration:none}.bar a:hover{color:var(--teal)}
 @media(max-width:480px){.bar{grid-template-columns:110px 1fr 40px;font-size:13px}}
 .trend{display:flex;align-items:flex-end;gap:6px;height:150px;padding:10px 0 0}
 .trend div{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;font-size:11px;color:var(--dim);gap:4px;min-width:0}
-.trend i{display:block;width:100%;max-width:56px;background:linear-gradient(180deg,var(--teal),#0f766e);border-radius:6px 6px 2px 2px}
+.trend i{display:block;width:100%;max-width:56px;background:linear-gradient(180deg,#14b8a6,var(--teal));border-radius:6px 6px 2px 2px}
 .trend b{color:var(--ink);font-size:12px}.trend span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
 table{width:100%;border-collapse:collapse;font-size:14px}th{text-align:left;color:var(--dim);font-size:12px;text-transform:uppercase;letter-spacing:.06em;padding:8px 10px;border-bottom:1px solid var(--line)}
-td{padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}td:first-child,td:nth-child(5){white-space:nowrap}tr:last-child td{border-bottom:0}td.n{font-weight:600}td.r,th.r{text-align:right;font-variant-numeric:tabular-nums}
+td{padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}td:first-child,td:nth-child(5){white-space:nowrap}tr:last-child td{border-bottom:0}td.n{font-weight:600;color:var(--ink)}td.r,th.r{text-align:right;font-variant-numeric:tabular-nums}
 .tscroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
-.pill{display:inline-block;font-size:11px;font-weight:700;padding:3px 8px;border-radius:999px;background:var(--card2);white-space:nowrap}
-.cta{display:inline-block;background:var(--teal);color:#04261f;font-weight:800;padding:13px 22px;border-radius:999px;text-decoration:none;font-size:15px}
-.cta.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.pill{display:inline-block;font-size:11px;font-weight:700;padding:3px 8px;border-radius:999px;background:var(--bg2);white-space:nowrap}
+.cta{display:inline-block;background:var(--ink);color:#fff;font-weight:600;padding:13px 22px;border-radius:10px;text-decoration:none;font-size:15px;box-shadow:0 8px 24px -8px rgba(15,35,64,.45)}
+.cta:hover{background:#1a365d}
+.cta.ghost{background:#fff;color:var(--ink);border:1px solid var(--line2);box-shadow:none}.cta.ghost:hover{border-color:var(--teal);background:#fff}
 .btns{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
-.offer{background:linear-gradient(135deg,rgba(45,212,191,.14),rgba(96,165,250,.08));border:1px solid rgba(45,212,191,.35);border-radius:18px;padding:26px}
+.offer{background:linear-gradient(135deg,rgba(14,124,123,.08),rgba(37,99,235,.04));border:1px solid rgba(14,124,123,.35);border-radius:18px;padding:26px}
 .offer h2{margin-top:0}.offer p{color:var(--muted)}
 .links{display:flex;flex-wrap:wrap;gap:8px}.links a{background:var(--card);border:1px solid var(--line);border-radius:999px;padding:7px 13px;text-decoration:none;color:var(--ink);font-size:14px}.links a:hover{border-color:var(--teal)}
-details{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 16px;margin:8px 0}summary{cursor:pointer;font-weight:700}details p{margin:10px 0 0;color:var(--muted)}
+details{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 16px;margin:8px 0}summary{cursor:pointer;font-weight:600;color:var(--ink)}details p{margin:10px 0 0;color:var(--muted)}
 .note{color:var(--dim);font-size:13px;margin-top:10px}
 footer{color:var(--dim);font-size:13px;padding:30px 0 40px;border-top:1px solid var(--line);margin-top:40px}footer a{color:var(--muted)}
+.flinks{display:flex;flex-wrap:wrap;gap:6px 18px;margin-bottom:10px}.flinks a{text-decoration:none;font-weight:600}.flinks a:hover{color:var(--ink)}
+.prose{max-width:760px}.prose h2{margin-top:30px}.prose p,.prose li{color:var(--muted)}.prose li{margin:6px 0}.prose b{color:var(--ink)}
 .all{columns:3;column-gap:20px}.all a{display:block;padding:5px 0;color:var(--ink);text-decoration:none;font-size:15px;break-inside:avoid}.all a small{color:var(--dim);margin-left:6px}
 @media(max-width:700px){.all{columns:2}}
 """
@@ -310,20 +320,22 @@ def shell(title: str, desc: str, path: str, body: str, jsonld: dict | None = Non
 <meta name="description" content="{esc(desc)}">
 <link rel="canonical" href="{url}">
 <meta property="og:title" content="{esc(title)}"><meta property="og:description" content="{esc(desc)}"><meta property="og:url" content="{url}"><meta property="og:type" content="website">
-<meta name="theme-color" content="#070c14">
+<meta name="theme-color" content="#f6f8fb">
+<link rel="icon" href="{root}favicon.svg" type="image/svg+xml"><link rel="icon" href="{root}favicon-32.png" sizes="32x32" type="image/png"><link rel="apple-touch-icon" href="{root}apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Sora:wght@700;800&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,600;0,8..60,700;1,8..60,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>{CSS}</style>
 {ld}
 </head>
 <body>
 <div class="nav"><div class="wrap">
-  <a class="logo" href="{root}"><i></i>{BRAND}</a>
-  <nav><a href="{root}states/">All states</a><a href="{root}#how">How it works</a><a href="{root}#pricing">Pricing</a><a class="mini" href="{root}#pricing">Get 2 lists free</a></nav>
+  <a class="logo" href="{root}"><svg viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="15" fill="#0f2340"/><rect x="18" y="17" width="28" height="32" rx="4" fill="none" stroke="#ffffff" stroke-width="4.5" stroke-linejoin="round"/><rect x="25" y="13" width="14" height="8" rx="2.5" fill="#ffffff"/><path d="M25 34l5.5 5.5L40 29" fill="none" stroke="#2dd4bf" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg>{BRAND}</a>
+  <nav><a href="{root}states/">All states</a><a href="{root}#how">How it works</a><a href="{root}#pricing">Pricing</a><a class="mini" href="{root}#free">Get 2 lists free</a></nav>
 </div></div>
 <div class="wrap">
 {body}
-<footer>{BRAND} · <a href="mailto:{MAIL}">{MAIL}</a> · an Avery Data Co. product · <a href="{root}states/">every state</a><br>
+<footer><div class="flinks"><a href="{root}states/">New practices by state</a><a href="{root}about/">About</a><a href="{root}contact/">Contact</a><a href="{root}privacy/">Privacy</a><a href="{root}terms/">Terms</a><a href="{root}sample/panelready-sample.csv">Sample spreadsheet</a></div>
+{BRAND} · <a href="mailto:{MAIL}">{MAIL}</a> · an {COMPANY} product, New York<br>
 Source: NPPES weekly dissemination files published by CMS. Public data, provided as-is; not affiliated with CMS or any payer. Practice names are from the public registry; phone numbers are masked on this page and complete in the subscriber spreadsheet.</footer>
 </div>
 </body>
@@ -368,14 +380,12 @@ def offer(state_name: str, st: str, cat: str | None, root: str) -> str:
     plan = "$89/month" if cat else "$199/month"
     sub = "one spreadsheet every Monday" if cat else "every category, one spreadsheet every Monday"
     which = f"the {CAT_TITLE[cat].lower()} category" if cat else "all categories"
-    subject = f"{BRAND} free lists {st} {cat or ''}".strip() if st else f"{BRAND} free lists"
-    body = f"Please send me the next two {state_name} lists ({which}).\n\nName: \nCompany: " if st else "Please send me the next two lists for (state) in (category or all categories).\n\nName: \nCompany: "
-    mail = f"mailto:{MAIL}?subject={quote(subject)}&body={quote(body)}"
+    q = f"?state={st}&cat={cat or 'all'}" if st else ""
     where = f"in {esc(state_name)}" if st else "in your state"
     return (f'<section class="offer"><h2>Get every new {esc(what)} {where}, the week they register.</h2>'
             f'<p>This page shows a sample. Subscribers get the complete {esc(state_name) if st else "state"} list as a spreadsheet, {sub}: practice name, specialty, city, street address, phone, NPI and registration date, organizations first. '
-            f'{plan} per state, cancel from PayPal any time. Try the next two lists free first, no card needed.</p>'
-            f'<div class="btns"><a class="cta" href="{mail}">Email for two free {esc(state_name) if st else ""} lists</a><a class="cta ghost" href="{root}{"?state=" + st if st else ""}#pricing">Subscribe · {plan}</a></div></section>')
+            f'{plan} per state through PayPal (the charge shows as {COMPANY}, {BRAND}\'s parent company); cancel any time. Try the next two lists free first, no card needed.</p>'
+            f'<div class="btns"><a class="cta" href="{root}{q}#free">Get two free {esc(state_name) if st else ""} lists</a><a class="cta ghost" href="{root}{q}#pricing">Subscribe · {plan}</a></div></section>')
 
 
 def links_row(items: list[tuple[str, str]]) -> str:
@@ -454,8 +464,8 @@ def state_page(data: dict, st: str) -> str:
 </section>
 
 <section class="grid2">
-  <div class="card"><h2>Busiest cities</h2>{bars([(c, n, None, "#60a5fa") for c, n in cities]) if cities else '<p class="note">No city data this week.</p>'}</div>
-  <div class="card"><h2>Most common specialties</h2>{bars([(s, n, None, "#a78bfa") for s, n in specs]) if specs else '<p class="note">No specialty data this week.</p>'}</div>
+  <div class="card"><h2>Busiest cities</h2>{bars([(c, n, None, "#2563eb") for c, n in cities]) if cities else '<p class="note">No city data this week.</p>'}</div>
+  <div class="card"><h2>Most common specialties</h2>{bars([(s, n, None, "#6d28d9") for s, n in specs]) if specs else '<p class="note">No specialty data this week.</p>'}</div>
 </section>
 
 <section><h2>A sample of this week's {esc(name)} list</h2>
@@ -575,6 +585,134 @@ def hub_page(data: dict) -> str:
     return shell(title, desc, "states/", body, ld)
 
 
+# ------------------------------------------------------------------ about, contact, privacy, terms, sample
+
+def info_pages(data: dict) -> list[str]:
+    latest, root = data["latest"], "../"
+    since = long_date(data["weeks"][0]) if data["weeks"] else "October 2026"
+    pages = {}
+    pages["about"] = ("About PanelReady", f"{BRAND} is a weekly list of newly registered healthcare practices from the federal NPI registry, built by {COMPANY} in New York for credentialing and medical-billing companies.", f"""
+<div class="crumbs"><a href="{root}">{BRAND}</a> › About</div>
+<span class="kicker">About</span>
+<h1>Public data, sorted so you can <em>act on it</em> the week it appears.</h1>
+<div class="prose">
+<p class="lead">{BRAND} reads the federal NPI registry's weekly file, keeps the practices and sole proprietors, sorts them by state and specialty, and sends subscribers a spreadsheet every Monday. That's the whole product. No scraping, no guessed emails, no "enriched" data: the name, specialty, address and phone a practice gave CMS when it registered, one to two weeks after it did.</p>
+<h2>Who makes it</h2>
+<p>{BRAND} is a product of <b>{COMPANY}</b>, a small company in New York that builds subscription services from public data. {COMPANY} is the name you'll see on your PayPal receipt and card statement. You can reach the person who runs it at <a href="mailto:{MAIL}">{MAIL}</a>; replies come from a human, usually the same day.</p>
+<h2>Where the data comes from</h2>
+<p>The National Plan and Provider Enumeration System (NPPES), run by the Centers for Medicare &amp; Medicaid Services. Every provider and organization that bills insurance must hold a National Provider Identifier, and CMS publishes the full registry and a weekly file of changes as public data. {BRAND} processes the weekly file and nothing else. We don't alter records, and we don't add data from other sources.</p>
+<h2>What we do with it</h2>
+<ul>
+<li>Keep organizations (practices, clinics, agencies, suppliers) and individuals registered as sole proprietors; drop employees who registered to take a job, students and deactivated numbers. Roughly one row in three survives.</li>
+<li>File each one into one of six categories by the specialty code it chose: behavioral health, medical practices &amp; clinics, dental, therapy &amp; rehab, home care &amp; senior living, and DME, pharmacy &amp; transport.</li>
+<li>Write one spreadsheet per state and category, organizations first, and send each subscriber theirs the morning the file is posted.</li>
+<li>Publish the weekly counts for <a href="{root}states/">every state</a> here, free, so anyone can see the pace of new practices where they work.</li>
+</ul>
+<h2>What we don't do</h2>
+<p>We don't sell email addresses (the registry has none), we don't promise exclusivity (every subscriber to a state and category gets the same list), and we don't guarantee results. We send the list; what you do with it, and compliance with the rules that apply to your outreach, is yours.</p>
+<p>Tracking since {since}. <a href="{root}#free">Two lists are free</a> if you want to see it for yourself.</p>
+</div>
+""")
+    pages["contact"] = ("Contact PanelReady", f"How to reach {BRAND} ({COMPANY}): email, what to include, and how fast you'll hear back.", f"""
+<div class="crumbs"><a href="{root}">{BRAND}</a> › Contact</div>
+<span class="kicker">Contact</span>
+<h1>Email works best. A person <em>reads it</em>.</h1>
+<div class="prose">
+<p class="lead"><a href="mailto:{MAIL}">{MAIL}</a>, any time. Replies usually come the same business day, from the person who runs {BRAND}.</p>
+<h2>Useful things to put in the email</h2>
+<ul>
+<li><b>Free lists:</b> the quickest way is <a href="{root}#free">the form</a>, but an email with your company, state and category works just as well.</li>
+<li><b>Changing your list:</b> subscribers can reply to any {BRAND} email with the new state or category ("switch to dental", "add New Jersey") and the next list reflects it.</li>
+<li><b>Several states or an exclusive arrangement:</b> say which states and categories and we'll quote a bundle.</li>
+<li><b>Cancelling:</b> from your PayPal account under Subscriptions, or reply STOP to any email. No forms.</li>
+<li><b>Billing questions:</b> charges appear as {COMPANY}, {BRAND}'s parent company. Include the PayPal subscription ID (starts with I-) if you have it.</li>
+</ul>
+<h2>Mailing address</h2>
+<p>{COMPANY}, New York. The full postal address is in the footer of every email we send, as the law requires.</p>
+</div>
+""")
+    pages["privacy"] = ("Privacy policy", f"What {BRAND} collects (very little), what it does with it, and how to have it removed.", f"""
+<div class="crumbs"><a href="{root}">{BRAND}</a> › Privacy</div>
+<span class="kicker">Privacy policy</span>
+<h1>Short, because we collect <em>very little</em>.</h1>
+<div class="prose">
+<p class="lead">This policy covers panelready.co and the {BRAND} email service, operated by {COMPANY} ("we"). Last updated {long_date(latest)}.</p>
+<h2>What we collect</h2>
+<ul>
+<li><b>When you ask for lists or subscribe:</b> your email address, company name, the state and category you chose, and, for paid plans, the PayPal subscription ID. PayPal handles the payment itself; we never see your card or bank details.</li>
+<li><b>When you email us:</b> the email and anything you put in it.</li>
+<li><b>When you visit the site:</b> nothing we keep. The site has no analytics, no advertising pixels and sets no cookies of its own. It is hosted on GitHub Pages, whose servers keep standard access logs (IP address, pages requested) under <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement">GitHub's privacy statement</a>. Fonts load from Google Fonts, which sees your IP address when it serves them.</li>
+</ul>
+<h2>What we do with it</h2>
+<p>We use your details to send you the lists you asked for, confirmations, and replies to your messages. We don't sell, rent or share them with anyone except the services that make the product work: PayPal for payments, our email provider for sending, and Cloudflare, which receives form submissions before we collect them. We don't use your data for advertising.</p>
+<h2>Email</h2>
+<p>Every email we send carries our postal address and a way to stop. Reply STOP to any message and you'll receive nothing further; the address goes on a do-not-contact list we keep for that purpose. We also send a small number of introductory emails to credentialing and billing companies found through public sources; the same STOP applies.</p>
+<h2>The data in the lists</h2>
+<p>The practices in our lists are organizations and sole proprietors who registered with CMS, taken from the public NPPES file as published. If you are a provider and want your public record changed, that is done with CMS through <a href="https://nppes.cms.hhs.gov/">NPPES</a>; we republish the file as it stands. If you'd rather not appear on this website's sample pages, email us and we'll remove the row from the pages we control.</p>
+<h2>Keeping and deleting it</h2>
+<p>We keep subscriber details while you're a subscriber and for our accounting afterwards. Email <a href="mailto:{MAIL}">{MAIL}</a> to see what we hold about you or to have it deleted; we'll do that within 30 days, keeping only what the law requires us to keep (for example payment records).</p>
+<h2>Changes</h2>
+<p>If this policy changes, the date at the top changes with it. Questions: <a href="mailto:{MAIL}">{MAIL}</a>.</p>
+</div>
+""")
+    pages["terms"] = ("Terms of service", f"The terms for {BRAND} subscriptions and free lists: what you get, what it costs, cancelling, and the limits of a public-data product.", f"""
+<div class="crumbs"><a href="{root}">{BRAND}</a> › Terms</div>
+<span class="kicker">Terms of service</span>
+<h1>Plain terms for a <em>plain product</em>.</h1>
+<div class="prose">
+<p class="lead">These terms apply to the {BRAND} lists and website, provided by {COMPANY} ("we"). By requesting lists or subscribing you agree to them. Last updated {long_date(latest)}.</p>
+<h2>The service</h2>
+<p>{BRAND} sends you a spreadsheet of healthcare practices and sole proprietors that registered for an NPI in the previous week, for the state(s) and category(ies) on your plan, on the morning CMS posts the weekly file (normally once a week; CMS occasionally skips or delays a week). The data comes from the public NPPES registry exactly as published. We sort and deliver it; we don't verify or add to it.</p>
+<h2>Free lists</h2>
+<p>New companies can receive two weekly lists free, no payment details required. After the second list nothing further is sent unless you subscribe. We may decline or limit free lists at our discretion, for example to one per company.</p>
+<h2>Plans and payment</h2>
+<ul>
+<li><b>One state, one category:</b> $89 per month. <b>One state, every category:</b> $199 per month. Additional states are additional plans or a bundle by email.</li>
+<li>Payment is by PayPal subscription, billed monthly in advance. Charges appear as <b>{COMPANY}</b>. Prices may change with at least 30 days' notice by email; your current month is never affected.</li>
+<li>You can cancel at any time from your PayPal account or by replying STOP to any email. Lists continue to the end of the month already paid for, and no further charges are made. Partial months are not refunded, except that if your first paid list never arrives we'll refund the month in full.</li>
+</ul>
+<h2>What you may do with the lists</h2>
+<p>Use them inside your own business to find and contact practices. You may not resell, republish or redistribute the lists, or use them to build a competing product. The lists are not exclusive: other subscribers to the same state and category receive the same data. You are responsible for your own outreach and for complying with the laws that apply to it, including telephone and email marketing rules.</p>
+<h2>No warranty</h2>
+<p>The data is public information provided as-is. We don't warrant that it is complete, current or accurate, that a given practice is still operating or wants to be contacted, or that using it will produce any result. Our total liability for any claim connected with the service is limited to the amount you paid us in the three months before the claim arose. We're not affiliated with CMS or any payer.</p>
+<h2>Changes and law</h2>
+<p>We may update these terms; the date at the top changes when we do, and material changes are announced by email to subscribers. These terms are governed by the laws of the State of New York. Questions: <a href="mailto:{MAIL}">{MAIL}</a>.</p>
+</div>
+""")
+    out = []
+    for slug, (title, desc, body) in pages.items():
+        d = HERE / slug
+        d.mkdir(exist_ok=True)
+        (d / "index.html").write_text(shell(f"{title} — {BRAND}", desc, f"{slug}/", body), encoding="utf-8")
+        out.append(f"{slug}/")
+    return out
+
+
+def write_sample(data: dict) -> str | None:
+    """sample/panelready-sample.csv: one small state's complete list for the newest week, every column, nothing masked.
+    Written from the week ingested this run (PC or GitHub), else from output\\<week>\\leads_US_all.csv on the PC."""
+    leads = LATEST_LEADS
+    if not leads:
+        src = ROOT / "output" / (data["latest"] or "") / "leads_US_all.csv"
+        if not src.exists():
+            return None                                  # nothing new this run and no local files: the existing sample stays
+        with open(src, encoding="utf-8", newline="") as f:
+            leads = list(csv.DictReader(f))
+    week = data["counts"][data["latest"]]
+    pick = next((st for st in SAMPLE_STATES if 8 <= sum(week.get(st, [0])) <= 25), None) or next((st for st in SAMPLE_STATES if week.get(st)), None)
+    if not pick:
+        return None
+    rows = [r for r in leads if r["state"] == pick and r["category"] in CATS]
+    header = N.LEAD_HEADER
+    (HERE / "sample").mkdir(exist_ok=True)
+    with open(HERE / "sample" / "panelready-sample.csv", "w", newline="", encoding="utf-8") as f:
+        w = csv.DictWriter(f, fieldnames=header)
+        w.writeheader()
+        w.writerows(rows)
+    data["sample"] = {"state": pick, "week": data["latest"], "rows": len(rows)}
+    return pick
+
+
 # ------------------------------------------------------------------ landing page refresh
 
 def refresh_landing(data: dict) -> list[str]:
@@ -604,6 +742,11 @@ def refresh_landing(data: dict) -> list[str]:
     sub("sample caption", r"(week ending )[A-Z][a-z]{2} \d{1,2}( · )[\d,]+( rows · organizations first)", lambda m: m.group(1) + short_date(latest) + m.group(2) + fmt(sum(ny)) + m.group(3))
     for i, c in enumerate(CATS):
         sub(f"cat {c}", r'(<b>' + re.escape(html.escape(N.NICE[c])) + r'</b><span>[^<]*</span><i class="ct">)[\d,]+( last week)', lambda m, i=i: m.group(1) + fmt(nat["cats"][i]) + m.group(2))
+    sub("updated", r'(<span class="upd" id="updated">Data updated for the week ending )[^.<]+', lambda m: m.group(1) + long_date(latest))
+    s = re.sub(r'(<span class="wkiso">)\d{4}-\d{2}-\d{2}', lambda m: m.group(1) + latest, s)
+    sub("mail card count", r'(- NY, Behavioral Health: <b>)[\d,]+', lambda m: m.group(1) + fmt(ny[0]))
+    if data.get("sample"):
+        sub("sample link", r'(<a href="sample/panelready-sample\.csv" id="sampleDl">)[^<]*(</a> \()[^)]*\)', lambda m: f'{m.group(1)}Download a full sample spreadsheet{m.group(2)}{STATES[data["sample"]["state"]]}, {fmt(data["sample"]["rows"])} rows, every column, nothing masked)')
     if '<a href="#state">Your state</a>' in s:                # one-time: the nav points at the state pages
         sub("nav", r'<a href="#state">Your state</a>', '<a href="states/">By state</a>')
     if "fromQuery" not in s:                              # one-time: let ?state=TX preselect the picker
@@ -641,8 +784,12 @@ def build(data: dict) -> list[str]:
                 paths.append(f"states/{SLUG[st]}/{CAT_SLUG[c]}/")
             elif cd.exists():
                 shutil.rmtree(cd)                        # a category page that no longer has enough rows goes away (sitemap drops it)
+    info = info_pages(data)
+    write_sample(data)
     urls = [f"  <url><loc>{SITE}/</loc><lastmod>{latest}</lastmod><changefreq>weekly</changefreq><priority>1.0</priority></url>"]
     urls += [f"  <url><loc>{SITE}/{p}</loc><lastmod>{latest}</lastmod><changefreq>weekly</changefreq><priority>{'0.8' if p.count('/') < 3 else '0.6'}</priority></url>" for p in paths]
+    urls += [f"  <url><loc>{SITE}/{p}</loc><lastmod>{latest}</lastmod><changefreq>monthly</changefreq><priority>0.4</priority></url>" for p in info]
+    paths = paths + info
     (HERE / "sitemap.xml").write_text('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + "\n".join(urls) + "\n</urlset>\n", encoding="utf-8")
     (HERE / "robots.txt").write_text(f"User-agent: *\nAllow: /\nSitemap: {SITE}/sitemap.xml\n", encoding="utf-8")
     return paths
@@ -667,15 +814,15 @@ def main():
     new = fetch_weeks(data) if args.fetch else local_weeks(data)
     if new:
         save(data)
-    moved = data.get("site") != SITE                     # the address changed: every page's links and the sitemap must be rewritten
+    moved = data.get("site") != SITE or data.get("build") != BUILD_VERSION   # address or layout changed: every page must be rewritten
     if not new and not moved and not args.rebuild and (HERE / "states" / "index.html").exists():
         say("  nothing new; pages left as they are")
         return
     copy_pr()
     paths = build(data)
     miss = refresh_landing(data)
-    if moved:
-        data["site"] = SITE
+    if moved or data.get("sample"):
+        data["site"], data["build"] = SITE, BUILD_VERSION
         save(data)
     say(f"  wrote {len(paths)} pages for the week ending {data['latest']} -> {HERE / 'states'}" + (f" (landing page: couldn't find {', '.join(miss)})" if miss else ""))
 

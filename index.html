@@ -5,161 +5,165 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>PanelReady — new healthcare practices, the week they register</title>
 <meta name="description" content="Weekly lists of newly registered healthcare practices from the federal NPI registry, by state and specialty, with phone and address. Built for credentialing and medical billing companies. First two lists free.">
-<meta name="theme-color" content="#070c14">
+<meta name="theme-color" content="#f6f8fb">
+<link rel="canonical" href="https://panelready.co/">
+<link rel="icon" href="favicon.svg" type="image/svg+xml"><link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png"><link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta property="og:type" content="website"><meta property="og:url" content="https://panelready.co/"><meta property="og:title" content="PanelReady — new healthcare practices, the week they register"><meta property="og:description" content="Weekly lists of newly registered healthcare practices from the federal NPI registry, by state and specialty, with phone and address. First two lists free."><meta property="og:image" content="https://panelready.co/icon-512.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,600;0,8..60,700;1,8..60,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#070c14;--bg2:#0b1220;--card:#0f1829;--card2:#131f35;--line:#1e2a44;--line2:#2a3a5c;
-    --ink:#eaf0fa;--muted:#93a1b8;--dim:#5f6d85;
-    --teal:#2dd4bf;--teal2:#14b8a6;--amber:#fbbf24;--amber2:#f59e0b;--green:#4ade80;--rose:#fb7185;--blue:#60a5fa;--violet:#a78bfa;
-    --c-beh:#a78bfa;--c-med:#60a5fa;--c-den:#f472b6;--c-the:#34d399;--c-hom:#fbbf24;--c-dme:#f97316;
-    --ease:cubic-bezier(.2,.8,.2,1);--over:cubic-bezier(.34,1.4,.64,1);
+    --bg:#f6f8fb;--bg2:#eef2f7;--card:#ffffff;--card2:#f3f6fa;--line:#e3e8ef;--line2:#cdd5e0;
+    --ink:#0f2340;--body:#334155;--muted:#5b6b82;--dim:#8a97a9;
+    --teal:#0e7c7b;--teal2:#0a6362;--accent:#0f2340;--amber:#b7791f;--green:#15803d;--rose:#be123c;--blue:#2563eb;--violet:#6d28d9;
+    --c-beh:#6d28d9;--c-med:#2563eb;--c-den:#be185d;--c-the:#047857;--c-hom:#b45309;--c-dme:#c2410c;
+    --ease:cubic-bezier(.2,.8,.2,1);--over:cubic-bezier(.34,1.3,.64,1);
+    --shadow:0 1px 2px rgba(15,35,64,.05),0 12px 32px -12px rgba(15,35,64,.14);
   }
   *{box-sizing:border-box}
   html{scroll-behavior:smooth}
-  body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
-  h1,h2,h3,.display{font-family:Sora,Inter,system-ui,sans-serif;letter-spacing:-.02em}
+  body{margin:0;background:var(--bg);color:var(--body);font:16px/1.65 Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+  h1,h2,h3,.display{font-family:"Source Serif 4",Georgia,"Times New Roman",serif;color:var(--ink);letter-spacing:-.01em}
   a{color:var(--teal)}
   .wrap{max-width:1120px;margin:0 auto;padding:0 20px}
   @media (max-width:600px){.wrap{padding:0 16px}}
 
-  /* backdrop */
+  /* backdrop: a faint paper grid under the hero, nothing more */
   .sky{position:fixed;inset:0;z-index:-1;background:
-    radial-gradient(900px 500px at 15% -10%,rgba(45,212,191,.16),transparent 60%),
-    radial-gradient(700px 400px at 95% 10%,rgba(251,191,36,.10),transparent 60%),
-    radial-gradient(900px 600px at 50% 110%,rgba(96,165,250,.10),transparent 60%),var(--bg)}
+    radial-gradient(900px 480px at 10% -10%,rgba(14,124,123,.09),transparent 60%),
+    radial-gradient(700px 400px at 100% 0%,rgba(37,99,235,.06),transparent 60%),var(--bg)}
   .sky:after{content:"";position:absolute;inset:0;background:
-    repeating-linear-gradient(90deg,rgba(255,255,255,.025) 0 1px,transparent 1px 64px),
-    repeating-linear-gradient(0deg,rgba(255,255,255,.025) 0 1px,transparent 1px 64px);
-    mask-image:linear-gradient(180deg,#000 0,transparent 80vh);-webkit-mask-image:linear-gradient(180deg,#000 0,transparent 80vh)}
+    repeating-linear-gradient(90deg,rgba(15,35,64,.035) 0 1px,transparent 1px 56px),
+    repeating-linear-gradient(0deg,rgba(15,35,64,.035) 0 1px,transparent 1px 56px);
+    mask-image:linear-gradient(180deg,#000 0,transparent 70vh);-webkit-mask-image:linear-gradient(180deg,#000 0,transparent 70vh)}
 
   /* nav */
-  .nav{position:sticky;top:0;z-index:20;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);background:rgba(7,12,20,.72);border-bottom:1px solid rgba(255,255,255,.06)}
-  .nav .wrap{display:flex;align-items:center;justify-content:space-between;height:64px}
-  .logo{display:flex;align-items:center;gap:10px;font-family:Sora,sans-serif;font-weight:800;font-size:20px;color:var(--ink);text-decoration:none}
-  .logo i{width:14px;height:14px;border-radius:4px;background:var(--amber);box-shadow:0 0 0 5px rgba(251,191,36,.18),0 0 24px rgba(251,191,36,.5)}
-  .nav nav a{color:var(--muted);text-decoration:none;font-weight:500;margin-left:22px;font-size:15px}
+  .nav{position:sticky;top:0;z-index:20;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);background:rgba(255,255,255,.86);border-bottom:1px solid var(--line)}
+  .nav .wrap{display:flex;align-items:center;justify-content:space-between;height:66px}
+  .logo{display:flex;align-items:center;gap:10px;font-family:"Source Serif 4",Georgia,serif;font-weight:700;font-size:22px;color:var(--ink);text-decoration:none;letter-spacing:-.01em}
+  .logo svg{width:30px;height:30px;border-radius:8px}
+  .nav nav a{color:var(--muted);text-decoration:none;font-weight:600;margin-left:24px;font-size:14.5px}
   .nav nav a:hover{color:var(--ink)}
-  .nav .mini{background:var(--amber);color:#1a1200;padding:9px 16px;border-radius:999px;font-weight:700;margin-left:22px;text-decoration:none}
+  .nav .mini{background:var(--ink);color:#fff;padding:10px 16px;border-radius:8px;font-weight:600;margin-left:24px;text-decoration:none}
+  .nav .mini:hover{background:#1a365d;color:#fff}
   @media (max-width:860px){.nav nav a:not(.mini){display:none}.nav .mini{margin-left:0}}
 
   /* hero */
-  .hero{display:grid;grid-template-columns:1.05fr .95fr;gap:48px;align-items:center;padding:72px 0 56px}
-  .kicker{display:inline-flex;align-items:center;gap:8px;font-size:12.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--amber);margin-bottom:18px}
-  .kicker:before{content:"";width:28px;height:2px;background:var(--amber)}
-  h1{font-size:clamp(36px,5.4vw,62px);line-height:1.02;margin:0 0 20px;font-weight:800}
-  h1 em{font-style:normal;color:var(--teal)}
+  .hero{display:grid;grid-template-columns:1.05fr .95fr;gap:48px;align-items:center;padding:76px 0 56px}
+  .kicker{display:inline-flex;align-items:center;gap:8px;font-size:12.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--teal);margin-bottom:18px}
+  .kicker:before{content:"";width:28px;height:2px;background:var(--teal)}
+  h1{font-size:clamp(36px,5vw,58px);line-height:1.05;margin:0 0 20px;font-weight:600}
+  h1 em{font-style:italic;color:var(--teal)}
   .lead{font-size:18px;color:var(--muted);max-width:560px;margin:0 0 28px}
   .lead b{color:var(--ink);font-weight:600}
   .btns{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
-  .cta{display:inline-block;background:var(--amber);color:#1a1200;padding:15px 26px;border-radius:999px;text-decoration:none;font-weight:700;font-size:16px;box-shadow:0 10px 30px rgba(251,191,36,.3);transition:transform .25s var(--over),box-shadow .25s var(--ease),filter .2s}
-  .cta:hover{transform:translateY(-2px);box-shadow:0 16px 36px rgba(251,191,36,.38);filter:brightness(1.04)}
-  .cta.ghost{background:transparent;color:var(--ink);border:1.5px solid var(--line2);box-shadow:none}
-  .cta.ghost:hover{border-color:var(--teal);box-shadow:none}
+  .cta{display:inline-block;background:var(--ink);color:#fff;padding:15px 26px;border-radius:10px;text-decoration:none;font-weight:600;font-size:16px;box-shadow:0 8px 24px -8px rgba(15,35,64,.45);transition:transform .25s var(--over),box-shadow .25s var(--ease),background .2s}
+  .cta:hover{transform:translateY(-2px);background:#1a365d;box-shadow:0 14px 30px -10px rgba(15,35,64,.5)}
+  .cta.ghost{background:#fff;color:var(--ink);border:1.5px solid var(--line2);box-shadow:none}
+  .cta.ghost:hover{border-color:var(--teal);background:#fff;box-shadow:none}
   .trust{display:flex;flex-wrap:wrap;gap:10px 22px;margin-top:26px;font-size:14px;color:var(--muted)}
   .trust span:before{content:"✓";color:var(--green);font-weight:800;margin-right:7px}
 
   /* live card */
-  .live{background:linear-gradient(180deg,var(--card2),var(--card));border:1px solid var(--line2);border-radius:20px;box-shadow:0 40px 80px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.06);overflow:hidden;position:relative}
-  .live:before{content:"";position:absolute;inset:-1px;border-radius:21px;padding:1px;background:linear-gradient(135deg,rgba(45,212,191,.5),transparent 40%,transparent 60%,rgba(251,191,36,.4));-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none}
-  .live .hd{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--line);font-size:13px;color:var(--muted)}
+  .live{background:var(--card);border:1px solid var(--line);border-radius:18px;box-shadow:0 30px 60px -24px rgba(15,35,64,.25),0 1px 2px rgba(15,35,64,.06);overflow:hidden;position:relative}
+  .live:before{display:none}
+  .live .hd{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--line);font-size:13px;color:var(--muted);background:var(--card2)}
   .live .hd b{color:var(--ink);font-weight:600;display:flex;align-items:center;gap:8px}
-  .dot{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 0 0 rgba(74,222,128,.6);animation:pulse 2s infinite}
-  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(74,222,128,.55)}70%{box-shadow:0 0 0 9px rgba(74,222,128,0)}100%{box-shadow:0 0 0 0 rgba(74,222,128,0)}}
+  .dot{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 0 0 rgba(21,128,61,.5);animation:pulse 2s infinite}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(21,128,61,.45)}70%{box-shadow:0 0 0 9px rgba(21,128,61,0)}100%{box-shadow:0 0 0 0 rgba(21,128,61,0)}}
   .feed{padding:10px 12px 6px;height:372px;overflow:hidden;position:relative}
-  .feed:after{content:"";position:absolute;left:0;right:0;bottom:0;height:70px;background:linear-gradient(180deg,transparent,var(--card));pointer-events:none}
+  .feed:after{content:"";position:absolute;left:0;right:0;bottom:0;height:70px;background:linear-gradient(180deg,rgba(255,255,255,0),var(--card));pointer-events:none}
   .row{display:grid;grid-template-columns:44px minmax(0,1fr) auto;gap:12px;align-items:center;padding:11px 10px;border-radius:12px;border:1px solid transparent;margin-bottom:6px;transition:transform .55s var(--over),opacity .5s var(--ease)}
   .row.new{animation:drop .7s var(--over)}
   @keyframes drop{0%{opacity:0;transform:translateY(-18px) scaleY(.92)}55%{opacity:1;transform:translateY(3px) scaleY(1.02)}100%{transform:none}}
-  .row:first-child{background:rgba(45,212,191,.07);border-color:rgba(45,212,191,.25)}
-  .row .d{font-family:Sora,sans-serif;font-weight:700;font-size:12px;color:var(--teal);background:rgba(45,212,191,.12);border-radius:8px;padding:6px 0;text-align:center}
-  .row .n{font-weight:600;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .row:first-child{background:rgba(14,124,123,.06);border-color:rgba(14,124,123,.25)}
+  .row .d{font-weight:700;font-size:12px;color:var(--teal);background:rgba(14,124,123,.1);border-radius:8px;padding:6px 0;text-align:center}
+  .row .n{font-weight:600;font-size:14px;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .row .s{font-size:12.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .pill{font-size:11px;font-weight:700;padding:4px 9px;border-radius:999px;background:rgba(255,255,255,.06);color:var(--muted);white-space:nowrap}
-  .pill[data-c="behavioral"]{color:var(--c-beh);background:rgba(167,139,250,.12)}
-  .pill[data-c="medical"]{color:var(--c-med);background:rgba(96,165,250,.12)}
-  .pill[data-c="dental"]{color:var(--c-den);background:rgba(244,114,182,.12)}
-  .pill[data-c="therapy"]{color:var(--c-the);background:rgba(52,211,153,.12)}
-  .pill[data-c="home_senior"]{color:var(--c-hom);background:rgba(251,191,36,.12)}
-  .pill[data-c="dme_transport"]{color:var(--c-dme);background:rgba(249,115,22,.12)}
+  .pill{font-size:11px;font-weight:700;padding:4px 9px;border-radius:999px;background:var(--bg2);color:var(--muted);white-space:nowrap}
+  .pill[data-c="behavioral"]{color:var(--c-beh);background:rgba(109,40,217,.1)}
+  .pill[data-c="medical"]{color:var(--c-med);background:rgba(37,99,235,.1)}
+  .pill[data-c="dental"]{color:var(--c-den);background:rgba(190,24,93,.1)}
+  .pill[data-c="therapy"]{color:var(--c-the);background:rgba(4,120,87,.1)}
+  .pill[data-c="home_senior"]{color:var(--c-hom);background:rgba(180,83,9,.1)}
+  .pill[data-c="dme_transport"]{color:var(--c-dme);background:rgba(194,65,12,.1)}
   .live .ft{padding:10px 18px 14px;font-size:12px;color:var(--dim);border-top:1px solid var(--line)}
 
   /* stats */
   .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:8px 0 0}
-  .stat{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px 20px 18px}
-  .stat b{display:block;font-family:Sora,sans-serif;font-size:34px;font-weight:800;letter-spacing:-.03em;line-height:1.1;color:var(--ink)}
+  .stat{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px 20px 18px;box-shadow:var(--shadow)}
+  .stat b{display:block;font-family:"Source Serif 4",Georgia,serif;font-size:36px;font-weight:600;letter-spacing:-.02em;line-height:1.1;color:var(--ink)}
   .stat b.t{color:var(--teal)}
   .stat span{color:var(--muted);font-size:13.5px;display:block;margin-top:6px}
 
   section{padding:88px 0 0}
   .eyebrow{font-size:12.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--teal);margin-bottom:10px}
-  h2{font-size:clamp(28px,3.6vw,42px);line-height:1.08;margin:0 0 12px;font-weight:800}
+  h2{font-size:clamp(28px,3.4vw,40px);line-height:1.1;margin:0 0 12px;font-weight:600}
   .sub{color:var(--muted);font-size:17px;max-width:640px;margin:0 0 30px}
 
   /* state picker */
-  .picker{display:grid;grid-template-columns:1fr 1.2fr;gap:28px;background:var(--card);border:1px solid var(--line);border-radius:22px;padding:28px;position:relative;overflow:hidden}
-  .picker:before{content:"";position:absolute;width:420px;height:420px;border-radius:50%;right:-120px;top:-180px;background:radial-gradient(circle,rgba(45,212,191,.14),transparent 65%);pointer-events:none}
+  .picker{display:grid;grid-template-columns:1fr 1.2fr;gap:28px;background:var(--card);border:1px solid var(--line);border-radius:20px;padding:28px;position:relative;overflow:hidden;box-shadow:var(--shadow)}
+  .picker:before{content:"";position:absolute;width:420px;height:420px;border-radius:50%;right:-120px;top:-180px;background:radial-gradient(circle,rgba(14,124,123,.08),transparent 65%);pointer-events:none}
   .picker label{display:block;font-size:13px;color:var(--muted);margin-bottom:8px;font-weight:600}
   .sel{position:relative}
-  select{appearance:none;-webkit-appearance:none;width:100%;background:var(--bg2);color:var(--ink);border:1.5px solid var(--line2);border-radius:12px;padding:14px 44px 14px 16px;font:600 17px Inter,sans-serif;cursor:pointer}
-  select:focus{outline:none;border-color:var(--teal);box-shadow:0 0 0 4px rgba(45,212,191,.15)}
+  select{appearance:none;-webkit-appearance:none;width:100%;background:#fff;color:var(--ink);border:1.5px solid var(--line2);border-radius:10px;padding:14px 44px 14px 16px;font:600 16px Inter,sans-serif;cursor:pointer}
+  select:focus{outline:none;border-color:var(--teal);box-shadow:0 0 0 4px rgba(14,124,123,.14)}
   .sel:after{content:"";position:absolute;right:18px;top:50%;width:9px;height:9px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:translateY(-70%) rotate(45deg);pointer-events:none}
   .quick{display:flex;flex-wrap:wrap;gap:7px;margin-top:12px}
-  .quick button{background:transparent;border:1px solid var(--line2);color:var(--muted);border-radius:999px;padding:6px 11px;font:600 12.5px Inter,sans-serif;cursor:pointer;transition:all .2s var(--ease)}
-  .quick button:hover,.quick button.on{border-color:var(--teal);color:var(--teal);background:rgba(45,212,191,.08)}
+  .quick button{background:#fff;border:1px solid var(--line2);color:var(--muted);border-radius:999px;padding:6px 11px;font:600 12.5px Inter,sans-serif;cursor:pointer;transition:all .2s var(--ease)}
+  .quick button:hover,.quick button.on{border-color:var(--teal);color:var(--teal);background:rgba(14,124,123,.06)}
   .big{margin-top:22px}
-  .big b{display:block;font-family:Sora,sans-serif;font-size:clamp(52px,7vw,84px);font-weight:800;line-height:1;letter-spacing:-.04em;color:var(--ink)}
+  .big b{display:block;font-family:"Source Serif 4",Georgia,serif;font-size:clamp(52px,7vw,84px);font-weight:600;line-height:1;letter-spacing:-.03em;color:var(--ink)}
   .big span{display:block;color:var(--muted);font-size:16px;margin-top:8px}
   .big span strong{color:var(--ink);font-weight:600}
-  .monthly{margin-top:14px;font-size:14px;color:var(--muted);padding:10px 14px;border:1px dashed var(--line2);border-radius:10px;display:inline-block}
-  .monthly b{color:var(--amber)}
+  .monthly{margin-top:14px;font-size:14px;color:var(--muted);padding:10px 14px;border:1px dashed var(--line2);border-radius:10px;display:inline-block;background:var(--card2)}
+  .monthly b{color:var(--teal)}
   .bars{display:grid;gap:12px;align-self:center}
   .bar{display:grid;grid-template-columns:168px 1fr 44px;gap:12px;align-items:center;font-size:14px}
   .bar .l{color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .bar .trk{height:12px;background:rgba(255,255,255,.06);border-radius:999px;overflow:hidden}
+  .bar .trk{height:12px;background:var(--bg2);border-radius:999px;overflow:hidden}
   .bar .fill{height:100%;width:0;border-radius:999px;transition:width 1s var(--over)}
-  .bar .v{font-family:Sora,sans-serif;font-weight:700;text-align:right}
+  .bar .v{font-weight:700;text-align:right;color:var(--ink);font-variant-numeric:tabular-nums}
   .bar[data-c="behavioral"] .fill{background:var(--c-beh)}.bar[data-c="medical"] .fill{background:var(--c-med)}.bar[data-c="dental"] .fill{background:var(--c-den)}
   .bar[data-c="therapy"] .fill{background:var(--c-the)}.bar[data-c="home_senior"] .fill{background:var(--c-hom)}.bar[data-c="dme_transport"] .fill{background:var(--c-dme)}
   .picker .cta{margin-top:20px;align-self:start}
 
   /* funnel */
   .funnel{display:grid;gap:10px;margin-top:8px}
-  .fstep{display:grid;grid-template-columns:1fr auto;gap:16px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 18px;position:relative;overflow:hidden}
-  .fstep .glow{position:absolute;left:0;top:0;bottom:0;width:0;background:linear-gradient(90deg,rgba(45,212,191,.22),rgba(45,212,191,.04));transition:width 1.1s var(--over)}
+  .fstep{display:grid;grid-template-columns:1fr auto;gap:16px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 18px;position:relative;overflow:hidden;box-shadow:var(--shadow)}
+  .fstep .glow{position:absolute;left:0;top:0;bottom:0;width:0;background:linear-gradient(90deg,rgba(14,124,123,.14),rgba(14,124,123,.02));transition:width 1.1s var(--over)}
   .fstep > *{position:relative}
-  .fstep h3{margin:0 0 3px;font-size:16px}
+  .fstep h3{margin:0 0 3px;font-size:17px;font-weight:600}
   .fstep p{margin:0;color:var(--muted);font-size:14px}
-  .fstep .k{font-family:Sora,sans-serif;font-size:30px;font-weight:800;letter-spacing:-.03em;white-space:nowrap}
+  .fstep .k{font-family:"Source Serif 4",Georgia,serif;font-size:30px;font-weight:600;letter-spacing:-.02em;white-space:nowrap;color:var(--ink)}
   .fstep .k small{display:block;font:500 12px Inter,sans-serif;color:var(--muted);letter-spacing:0;text-align:right}
-  .fstep.you{border-color:rgba(251,191,36,.45)}
-  .fstep.you .glow{background:linear-gradient(90deg,rgba(251,191,36,.25),rgba(251,191,36,.04))}
-  .fstep.you .k{color:var(--amber)}
+  .fstep.you{border-color:rgba(14,124,123,.5)}
+  .fstep.you .glow{background:linear-gradient(90deg,rgba(14,124,123,.2),rgba(14,124,123,.03))}
+  .fstep.you .k{color:var(--teal)}
 
   /* sample */
-  .sample{background:var(--card);border:1px solid var(--line);border-radius:18px;overflow:hidden}
-  .sample .cap{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 18px;border-bottom:1px solid var(--line);font-size:13px;color:var(--muted)}
-  .sample .cap b{color:var(--ink);font-weight:600}
+  .sample{background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:var(--shadow)}
+  .sample .cap{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 18px;border-bottom:1px solid var(--line);font-size:13px;color:var(--muted);background:var(--card2)}
+  .sample .cap b{color:var(--ink);font-weight:600;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12.5px}
   .tscroll{overflow-x:auto}
   .sample table{width:100%;border-collapse:collapse;font-size:14px;min-width:640px}
   .sample th,.sample td{text-align:left;padding:12px 16px;border-bottom:1px solid var(--line);vertical-align:top;white-space:nowrap}
   .sample th{color:var(--dim);font-weight:600;font-size:12px;letter-spacing:.06em;text-transform:uppercase}
   .sample tr:last-child td{border-bottom:0}
-  .sample td.nm{font-weight:600}
+  .sample td.nm{font-weight:600;color:var(--ink)}
   .sample td.ph{font-family:ui-monospace,Menlo,Consolas,monospace;color:var(--muted)}
   .sample .note{font-size:13px;color:var(--dim);padding:12px 18px;border-top:1px solid var(--line)}
 
   /* math */
   .math{display:grid;grid-template-columns:1fr 1fr;gap:28px;align-items:center}
-  .calc{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:28px}
+  .calc{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:28px;box-shadow:var(--shadow)}
   .calc label{display:flex;justify-content:space-between;font-size:14px;color:var(--muted);font-weight:600;margin-bottom:10px}
-  .calc label output{color:var(--ink);font-family:Sora,sans-serif;font-size:18px;font-weight:700}
-  input[type=range]{width:100%;accent-color:var(--amber);margin:4px 0 20px}
+  .calc label output{color:var(--ink);font-family:"Source Serif 4",Georgia,serif;font-size:20px;font-weight:600}
+  input[type=range]{width:100%;accent-color:var(--teal);margin:4px 0 20px}
   .res{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-  .res div{background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:16px}
-  .res b{display:block;font-family:Sora,sans-serif;font-size:30px;font-weight:800;letter-spacing:-.03em;color:var(--amber)}
+  .res div{background:var(--card2);border:1px solid var(--line);border-radius:14px;padding:16px}
+  .res b{display:block;font-family:"Source Serif 4",Georgia,serif;font-size:32px;font-weight:600;letter-spacing:-.02em;color:var(--teal)}
   .res span{font-size:13px;color:var(--muted)}
   .calc p{margin:16px 0 0;font-size:13px;color:var(--dim)}
   .math .copy h2{margin-bottom:14px}
@@ -167,44 +171,80 @@
 
   /* categories */
   .cats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
-  .cat{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;transition:transform .3s var(--over),border-color .3s}
-  .cat:hover{transform:translateY(-4px);border-color:var(--line2)}
+  .cat{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;transition:transform .3s var(--over),box-shadow .3s;box-shadow:var(--shadow)}
+  .cat:hover{transform:translateY(-4px);box-shadow:0 18px 40px -16px rgba(15,35,64,.25)}
   .cat .ic{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;margin-bottom:14px}
   .cat .ic svg{width:22px;height:22px}
-  .cat b{display:block;font-family:Sora,sans-serif;font-size:16px;margin-bottom:6px}
+  .cat b{display:block;font-family:"Source Serif 4",Georgia,serif;font-size:18px;font-weight:600;color:var(--ink);margin-bottom:6px}
   .cat span{color:var(--muted);font-size:14px}
   .cat .ct{display:block;margin-top:14px;font-size:12px;font-weight:700;font-style:normal;color:var(--dim)}
 
   /* pricing */
   .plans{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}
-  .plan{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:30px;position:relative}
-  .plan.best{border-color:rgba(45,212,191,.6);box-shadow:0 30px 70px rgba(45,212,191,.12);background:linear-gradient(180deg,rgba(45,212,191,.06),var(--card) 40%)}
-  .badge{position:absolute;top:-13px;left:26px;background:var(--teal);color:#06231f;font-size:12px;font-weight:800;padding:5px 12px;border-radius:999px;letter-spacing:.02em}
+  .plan{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:30px;position:relative;box-shadow:var(--shadow)}
+  .plan.best{border-color:rgba(14,124,123,.6);box-shadow:0 30px 60px -24px rgba(14,124,123,.35),0 1px 2px rgba(15,35,64,.06)}
+  .badge{position:absolute;top:-13px;left:26px;background:var(--teal);color:#fff;font-size:12px;font-weight:700;padding:5px 12px;border-radius:999px;letter-spacing:.02em}
   .plan .name{font-weight:600;color:var(--muted);font-size:15px}
-  .price{font-family:Sora,sans-serif;font-size:54px;font-weight:800;letter-spacing:-.04em;margin:6px 0 0;line-height:1}
+  .price{font-family:"Source Serif 4",Georgia,serif;font-size:54px;font-weight:600;letter-spacing:-.03em;margin:6px 0 0;line-height:1;color:var(--ink)}
   .price small{font:500 15px Inter,sans-serif;color:var(--muted);letter-spacing:0}
   .plan .free{color:var(--green);font-weight:600;font-size:14px;margin:10px 0 16px}
   .plan ul{padding:0;list-style:none;margin:0 0 22px}
-  .plan li{margin:9px 0;padding-left:26px;position:relative;font-size:15px;color:var(--ink)}
+  .plan li{margin:9px 0;padding-left:26px;position:relative;font-size:15px;color:var(--body)}
   .plan li:before{content:"✓";position:absolute;left:0;color:var(--green);font-weight:800}
   .paybox{min-height:48px}
   .fallback{font-size:13px;color:var(--muted);margin:12px 0 0}
-  .ok{display:none;background:rgba(45,212,191,.1);border:1px solid var(--teal);border-radius:14px;padding:18px;margin-top:18px}
+  .ok{display:none;background:rgba(14,124,123,.07);border:1px solid var(--teal);border-radius:14px;padding:18px;margin-top:18px}
+  .paynote{margin:18px 0 0;font-size:14px;color:var(--muted);padding:12px 16px;border:1px dashed var(--line2);border-radius:12px;background:var(--card2)}
+  .paynote b{color:var(--ink)}
 
   /* faq */
   .faq details{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 20px;margin:10px 0}
-  .faq summary{cursor:pointer;font-weight:600;font-size:16px;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:12px}
+  .faq summary{cursor:pointer;font-weight:600;font-size:16px;color:var(--ink);list-style:none;display:flex;justify-content:space-between;align-items:center;gap:12px}
   .faq summary::-webkit-details-marker{display:none}
-  .faq summary:after{content:"+";font-family:Sora,sans-serif;font-size:22px;color:var(--teal);transition:transform .3s var(--ease)}
+  .faq summary:after{content:"+";font-family:Inter,sans-serif;font-size:22px;color:var(--teal);transition:transform .3s var(--ease)}
   .faq details[open] summary:after{transform:rotate(45deg)}
   .faq p{color:var(--muted);margin:12px 0 0}
 
-  .final{margin-top:96px;background:linear-gradient(135deg,#0f3d44,#0b1f3a 60%,#1a1340);border:1px solid var(--line2);border-radius:26px;padding:56px 32px;text-align:center;position:relative;overflow:hidden}
-  .final:before{content:"";position:absolute;width:600px;height:600px;border-radius:50%;left:50%;top:-420px;transform:translateX(-50%);background:radial-gradient(circle,rgba(251,191,36,.18),transparent 65%)}
+  .final{margin-top:96px;background:var(--ink);color:#fff;border-radius:24px;padding:56px 32px;text-align:center;position:relative;overflow:hidden}
+  .final:before{content:"";position:absolute;width:600px;height:600px;border-radius:50%;left:50%;top:-420px;transform:translateX(-50%);background:radial-gradient(circle,rgba(14,124,123,.45),transparent 65%)}
   .final > *{position:relative}
-  .final h2{margin-bottom:12px}
-  .final p{color:var(--muted);margin:0 auto 26px;max-width:560px;font-size:17px}
+  .final h2{margin-bottom:12px;color:#fff}
+  .final p{color:rgba(255,255,255,.78);margin:0 auto 26px;max-width:560px;font-size:17px}
+  .final .cta{background:#fff;color:var(--ink)}
+  .final .cta:hover{background:#f1f5f9}
   footer{margin:48px 0 32px;padding-top:22px;border-top:1px solid var(--line);color:var(--dim);font-size:13px;line-height:1.7}
+  footer .links{display:flex;flex-wrap:wrap;gap:6px 18px;margin-bottom:10px}
+  footer .links a{color:var(--muted);text-decoration:none;font-weight:600}footer .links a:hover{color:var(--ink)}
+  footer .upd{color:var(--muted)}
+
+  /* free-lists form */
+  .signup{background:var(--card);border:1px solid rgba(14,124,123,.4);border-radius:20px;padding:28px;box-shadow:0 30px 60px -24px rgba(14,124,123,.3),0 1px 2px rgba(15,35,64,.06);position:relative;overflow:hidden}
+  .signup:before{content:"";position:absolute;width:420px;height:420px;border-radius:50%;left:-160px;bottom:-240px;background:radial-gradient(circle,rgba(14,124,123,.08),transparent 65%);pointer-events:none}
+  .signup > *{position:relative}
+  .f2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+  .signup label{display:block;font-size:13px;color:var(--muted);font-weight:600;margin-bottom:8px}
+  .signup input[type=text],.signup input[type=email]{width:100%;background:#fff;color:var(--ink);border:1.5px solid var(--line2);border-radius:10px;padding:14px 16px;font:500 16px Inter,sans-serif}
+  .signup input:focus{outline:none;border-color:var(--teal);box-shadow:0 0 0 4px rgba(14,124,123,.14)}
+  .signup .hp{position:absolute;left:-9999px;top:-9999px;height:0;width:0;opacity:0}
+  .signup .row2{display:flex;flex-wrap:wrap;gap:14px;align-items:center;margin-top:6px}
+  .signup .cta{border:0;cursor:pointer;font-family:Inter,sans-serif}
+  .signup .cta[disabled]{opacity:.6;cursor:wait;transform:none}
+  .signup .fine{font-size:13px;color:var(--dim);margin:0;max-width:420px}
+  .signup .msg{display:none;margin-top:16px;padding:16px 18px;border-radius:14px;font-size:15px}
+  .signup .msg.good{display:block;background:rgba(14,124,123,.07);border:1px solid var(--teal);color:var(--ink)}
+  .signup .msg.bad{display:block;background:rgba(190,18,60,.06);border:1px solid var(--rose);color:var(--ink)}
+  .signup .msg a{color:var(--teal)}
+  .after{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+  .after div{background:var(--card2);border:1px solid var(--line);border-radius:14px;padding:14px 16px;font-size:14px;color:var(--muted)}
+  .after b{display:block;color:var(--ink);font-weight:600;margin-bottom:4px}
+  .mailcard{margin-top:18px;background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:var(--shadow)}
+  .mailcard .mh{padding:14px 18px;border-bottom:1px solid var(--line);font-size:13px;color:var(--muted);display:flex;flex-wrap:wrap;gap:6px 18px;background:var(--card2)}
+  .mailcard .mh b{color:var(--ink);font-weight:600}
+  .mailcard pre{margin:0;padding:18px;white-space:pre-wrap;font:14px/1.6 Inter,sans-serif;color:var(--muted)}
+  .mailcard pre b{color:var(--ink);font-weight:600}
+  .mailcard .att{display:inline-flex;align-items:center;gap:8px;margin:0 18px 16px;padding:8px 12px;border:1px solid var(--line2);border-radius:10px;font-size:13px;color:var(--ink);background:var(--card2)}
+  .mailcard .att i{width:18px;height:18px;border-radius:4px;background:#1d6f42;display:inline-grid;place-items:center;font:700 10px Inter,sans-serif;font-style:normal;color:#fff}
+  @media (max-width:700px){.f2,.after{grid-template-columns:1fr}}
 
   /* reveal */
   .rv{opacity:0;transform:translateY(22px);transition:opacity .7s var(--ease),transform .8s var(--over)}
@@ -230,8 +270,8 @@
 
 <div class="nav">
   <div class="wrap">
-    <a class="logo" href="#"><i></i>PanelReady</a>
-    <nav><a href="states/">By state</a><a href="#how">How it works</a><a href="#sample">Sample</a><a href="#pricing">Pricing</a><a href="#faq">FAQ</a><a class="mini" href="#pricing">Get 2 lists free</a></nav>
+    <a class="logo" href="#"><svg viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="15" fill="#0f2340"/><rect x="18" y="17" width="28" height="32" rx="4" fill="none" stroke="#ffffff" stroke-width="4.5" stroke-linejoin="round"/><rect x="25" y="13" width="14" height="8" rx="2.5" fill="#ffffff"/><path d="M25 34l5.5 5.5L40 29" fill="none" stroke="#2dd4bf" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg>PanelReady</a>
+    <nav><a href="states/">By state</a><a href="#how">How it works</a><a href="#sample">Sample</a><a href="#pricing">Pricing</a><a href="#faq">FAQ</a><a class="mini" href="#free">Get 2 lists free</a></nav>
   </div>
 </div>
 
@@ -241,7 +281,7 @@
       <span class="kicker">For credentialing &amp; medical billing companies</span>
       <h1>Your next client <em>registered this week.</em> You just don't know it yet.</h1>
       <p class="lead">Every practice has to get an NPI before it can bill a single claim, and the federal registry publishes the new ones every week. PanelReady reads that file, keeps only the real practices, and sends you <b>a spreadsheet for your state and specialty</b> — name, specialty, city, address and phone — while they're still weeks away from credentialing.</p>
-      <div class="btns"><a class="cta" href="#pricing">Get two lists free</a><a class="cta ghost" href="#state">See this week's numbers</a></div>
+      <div class="btns"><a class="cta" href="#free">Get two lists free</a><a class="cta ghost" href="#state">See this week's numbers</a></div>
       <div class="trust"><span>Federal registry data</span><span>Practices only, no employees</span><span>Practice phone numbers</span><span>Cancel any time</span></div>
     </div>
     <div class="live" aria-label="Real practices from this week's federal file">
@@ -269,7 +309,7 @@
         <div class="quick" id="quick"></div>
         <div class="big"><b id="bigN">0</b><span><strong id="bigS">New York</strong> practices &amp; sole proprietors registered last week</span></div>
         <div class="monthly">That's about <b id="mo">0</b> a month you could be first to call.</div>
-        <a class="cta" id="stCta" href="#pricing">Get New York free</a>
+        <a class="cta" id="stCta" href="#free">Get New York free</a>
       </div>
       <div class="bars" id="bars"></div>
     </div>
@@ -305,7 +345,18 @@
           <tr><td>2026-10-08</td><td class="nm">57 Rx Pharmacy Inc</td><td>Community pharmacy</td><td>Corona</td><td class="ph">(718) 433-••••</td><td><span class="pill" data-c="dme_transport">Pharmacy</span></td></tr>
         </tbody>
       </table></div>
-      <div class="note">Source: NPPES weekly dissemination file, CMS. Public data, provided as-is. Columns in the real file also include full address, ZIP, NPI, taxonomy code, sole-proprietor flag and authorized official.</div>
+      <div class="note">Source: NPPES weekly dissemination file, CMS. Public data, provided as-is. Columns in the real file also include full address, ZIP, NPI, taxonomy code, sole-proprietor flag and authorized official. <a href="sample/panelready-sample.csv" id="sampleDl">Download a full sample spreadsheet</a> (Vermont, 10 rows, every column, nothing masked).</div>
+    </div>
+    <div class="mailcard rv" aria-label="What the Monday email looks like">
+      <div class="mh"><span><b>From:</b> Matt at PanelReady</span><span><b>Subject:</b> PanelReady leads, week ending <span class="wkiso">2026-10-11</span>: NY</span></div>
+<pre>Hi there,
+
+Your PanelReady list for the week ending <span class="wkiso">2026-10-11</span>.
+
+- NY, Behavioral Health: <b>102</b> newly registered practices and sole proprietors (attached), with specialty, phone and address.
+
+Open the attached spreadsheet in Excel. Organizations are listed first; each row is a provider that registered for an NPI in that week, which usually means a practice that is about to start credentialing and billing.</pre>
+      <span class="att"><i>X</i> leads_NY_behavioral.csv</span>
     </div>
   </section>
 
@@ -334,24 +385,47 @@
     <h2 class="rv">Pick the one you sell to, or take the whole state.</h2>
     <p class="sub rv">Every practice is filed by the specialty code it registered under, so a therapy-billing company never wades through pharmacies.</p>
     <div class="cats">
-      <div class="cat rv"><div class="ic" style="background:rgba(167,139,250,.14)"><svg viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2" stroke-linecap="round"><path d="M12 3a7 7 0 0 0-7 7c0 3 2 4.5 2 7h10c0-2.5 2-4 2-7a7 7 0 0 0-7-7z"/><path d="M9 21h6"/></svg></div><b>Behavioral Health</b><span>Counselors, social workers, psychologists, psychiatry, psychiatric NPs, ABA, substance-use programs.</span><i class="ct">1,943 last week · the biggest every week</i></div>
-      <div class="cat rv"><div class="ic" style="background:rgba(96,165,250,.14)"><svg viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2" stroke-linecap="round"><path d="M12 4v16M4 12h16"/></svg></div><b>Medical Practices &amp; Clinics</b><span>Physicians, nurse practitioners, PAs, primary care and specialty clinics, urgent care, medical groups.</span><i class="ct">1,046 last week</i></div>
-      <div class="cat rv"><div class="ic" style="background:rgba(244,114,182,.14)"><svg viewBox="0 0 24 24" fill="none" stroke="#f472b6" stroke-width="2" stroke-linecap="round"><path d="M7 3c-3 0-4 3-3 6l2 11h2l1-6h6l1 6h2l2-11c1-3 0-6-3-6-2 0-3 1-5 1S9 3 7 3z"/></svg></div><b>Dental</b><span>General dentists, specialists, hygienists, dental groups and clinics.</span><i class="ct">144 last week</i></div>
-      <div class="cat rv"><div class="ic" style="background:rgba(52,211,153,.14)"><svg viewBox="0 0 24 24" fill="none" stroke="#34d399" stroke-width="2" stroke-linecap="round"><path d="M4 12h3l2-5 3 10 3-7 2 2h3"/></svg></div><b>Therapy &amp; Rehab</b><span>Physical, occupational and speech therapy, chiropractic, podiatry, optometry, acupuncture, dietitians.</span><i class="ct">632 last week</i></div>
-      <div class="cat rv"><div class="ic" style="background:rgba(251,191,36,.14)"><svg viewBox="0 0 24 24" fill="none" stroke="#fbbf24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/></svg></div><b>Home Care &amp; Senior Living</b><span>Home health agencies, in-home care, personal care, assisted living, nursing facilities, hospice, case management.</span><i class="ct">545 last week</i></div>
-      <div class="cat rv"><div class="ic" style="background:rgba(249,115,22,.14)"><svg viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h11v9H3zM14 10h4l3 3v3h-7z"/><circle cx="7" cy="18" r="1.5"/><circle cx="17" cy="18" r="1.5"/></svg></div><b>DME, Pharmacy &amp; Transport</b><span>Durable medical equipment suppliers, pharmacies, non-emergency medical transport, ambulance.</span><i class="ct">531 last week</i></div>
+      <div class="cat rv"><div class="ic" style="background:rgba(109,40,217,.1)"><svg viewBox="0 0 24 24" fill="none" stroke="#6d28d9" stroke-width="2" stroke-linecap="round"><path d="M12 3a7 7 0 0 0-7 7c0 3 2 4.5 2 7h10c0-2.5 2-4 2-7a7 7 0 0 0-7-7z"/><path d="M9 21h6"/></svg></div><b>Behavioral Health</b><span>Counselors, social workers, psychologists, psychiatry, psychiatric NPs, ABA, substance-use programs.</span><i class="ct">1,943 last week · the biggest every week</i></div>
+      <div class="cat rv"><div class="ic" style="background:rgba(37,99,235,.1)"><svg viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round"><path d="M12 4v16M4 12h16"/></svg></div><b>Medical Practices &amp; Clinics</b><span>Physicians, nurse practitioners, PAs, primary care and specialty clinics, urgent care, medical groups.</span><i class="ct">1,046 last week</i></div>
+      <div class="cat rv"><div class="ic" style="background:rgba(190,24,93,.1)"><svg viewBox="0 0 24 24" fill="none" stroke="#be185d" stroke-width="2" stroke-linecap="round"><path d="M7 3c-3 0-4 3-3 6l2 11h2l1-6h6l1 6h2l2-11c1-3 0-6-3-6-2 0-3 1-5 1S9 3 7 3z"/></svg></div><b>Dental</b><span>General dentists, specialists, hygienists, dental groups and clinics.</span><i class="ct">144 last week</i></div>
+      <div class="cat rv"><div class="ic" style="background:rgba(4,120,87,.1)"><svg viewBox="0 0 24 24" fill="none" stroke="#047857" stroke-width="2" stroke-linecap="round"><path d="M4 12h3l2-5 3 10 3-7 2 2h3"/></svg></div><b>Therapy &amp; Rehab</b><span>Physical, occupational and speech therapy, chiropractic, podiatry, optometry, acupuncture, dietitians.</span><i class="ct">632 last week</i></div>
+      <div class="cat rv"><div class="ic" style="background:rgba(180,83,9,.1)"><svg viewBox="0 0 24 24" fill="none" stroke="#b45309" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/></svg></div><b>Home Care &amp; Senior Living</b><span>Home health agencies, in-home care, personal care, assisted living, nursing facilities, hospice, case management.</span><i class="ct">545 last week</i></div>
+      <div class="cat rv"><div class="ic" style="background:rgba(194,65,12,.1)"><svg viewBox="0 0 24 24" fill="none" stroke="#c2410c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h11v9H3zM14 10h4l3 3v3h-7z"/><circle cx="7" cy="18" r="1.5"/><circle cx="17" cy="18" r="1.5"/></svg></div><b>DME, Pharmacy &amp; Transport</b><span>Durable medical equipment suppliers, pharmacies, non-emergency medical transport, ambulance.</span><i class="ct">531 last week</i></div>
     </div>
+  </section>
+
+  <section id="free">
+    <div class="eyebrow rv">Two free lists, no card</div>
+    <h2 class="rv">Tell us the state. The next two weekly lists are on us.</h2>
+    <p class="sub rv">Pick the state and category you sell to. Your first spreadsheet goes out with the next weekly federal file, the second one the week after. No call, no card; if it isn't useful, that's the end of it.</p>
+    <form class="signup rv" id="signup" novalidate>
+      <div class="f2">
+        <div><label for="suEmail">Work email</label><input type="email" id="suEmail" name="email" placeholder="you@yourbillingco.com" autocomplete="email" required></div>
+        <div><label for="suCompany">Company</label><input type="text" id="suCompany" name="company" placeholder="Your credentialing or billing company" autocomplete="organization" required></div>
+      </div>
+      <div class="f2">
+        <div><label for="suState">State</label><div class="sel"><select id="suState" name="state"></select></div></div>
+        <div><label for="suCat">Category</label><div class="sel"><select id="suCat" name="category"></select></div></div>
+      </div>
+      <div class="hp" aria-hidden="true"><label>Website<input type="text" name="website" tabindex="-1" autocomplete="off"></label></div>
+      <div class="row2"><button class="cta" type="submit" id="suBtn">Send me the next two lists free</button><p class="fine">You'll get a confirmation by email within a day, then the lists on the next two federal files. Reply STOP to any email to end it.</p></div>
+      <div class="msg" id="suMsg" role="status"></div>
+      <div class="after">
+        <div><b>1 · Next weekly file</b>Your first spreadsheet: every new practice in your state and category, phone and address included.</div>
+        <div><b>2 · The week after</b>Your second list, with a link to keep them coming at $89 or $199 a month. Or do nothing, and that's that.</div>
+      </div>
+    </form>
   </section>
 
   <section id="pricing">
     <div class="eyebrow rv">Pricing</div>
     <h2 class="rv">Try it on us first.</h2>
-    <p class="sub rv">Want to try first? Email us your state and category and the next two weekly lists are free, no card. When you're ready, it's a flat monthly price per state; cancel from your PayPal account any time.</p>
+    <p class="sub rv">Want to try first? <a href="#free">Two weekly lists are free</a>, no card. When you're ready, it's a flat monthly price per state; cancel from your PayPal account any time.</p>
     <div class="plans">
       <div class="plan rv">
         <div class="name">One state, one category</div>
         <div class="price">$89<small>/month</small></div>
-        <div class="free">Two free lists first? Just email us</div>
+        <div class="free"><a href="#free" style="color:inherit;text-decoration:none">Two free lists first? Start above ↑</a></div>
         <ul><li>Weekly spreadsheet, your state and category</li><li>Practice name, specialty, city, address, phone, NPI</li><li>Organizations first, sole proprietors flagged</li><li>Change state or category by replying to any email</li></ul>
         <div class="paybox" id="paypal-cat"></div>
         <p class="fallback" id="fb-cat"></p>
@@ -360,13 +434,22 @@
         <span class="badge">Most billing companies</span>
         <div class="name">One state, every category</div>
         <div class="price">$199<small>/month</small></div>
-        <div class="free">Two free lists first? Just email us</div>
+        <div class="free"><a href="#free" style="color:inherit;text-decoration:none">Two free lists first? Start above ↑</a></div>
         <ul><li>All six categories for your state, every week</li><li>Everything in the single-category plan</li><li>Priority email support</li><li>Need several states? Email for a bundle</li></ul>
         <div class="paybox" id="paypal-all"></div>
         <p class="fallback" id="fb-all"></p>
       </div>
     </div>
-    <div class="ok" id="thanks"><strong>You're in.</strong> Check your email: we'll ask which state and category you want, and your first list goes out with the next weekly file. If nothing arrives within a day, email panelready@aol.com.</div>
+    <p class="paynote rv">Payments are handled by PayPal and show up as <b>Avery Data Co.</b>, the company behind PanelReady, on your PayPal receipt and card statement. Cancel from your PayPal account any time; the lists stop at the end of the paid month.</p>
+    <div class="ok" id="thanks"><strong>You're in.</strong> One more thing so the right list goes out with the next weekly file: which state, and where to send it?
+      <form id="paidForm" novalidate style="margin-top:14px">
+        <div class="f2"><div><label for="pdEmail">Send the lists to</label><input type="email" id="pdEmail" name="email" placeholder="you@company.com" required></div><div><label for="pdCompany">Company</label><input type="text" id="pdCompany" name="company" placeholder="Your company"></div></div>
+        <div class="f2"><div><label for="pdState">State</label><div class="sel"><select id="pdState" name="state"></select></div></div><div><label for="pdCat">Category</label><div class="sel"><select id="pdCat" name="category"></select></div></div></div>
+        <input type="hidden" id="pdSub" name="sub" value="">
+        <div class="row2"><button class="cta" type="submit">Save</button><p class="fine">Or reply to the welcome email with your state and category.</p></div>
+        <div class="msg" id="paidMsg"></div>
+      </form>
+    </div>
   </section>
 
   <section class="faq" id="faq">
@@ -376,18 +459,21 @@
     <details class="rv"><summary>How fresh is it?</summary><p>CMS posts each week's file about a week after the week ends, and most registrations in it are one to six days old at that point. So a practice is on your list one to two weeks after it registered, which is typically weeks before it has finished credentialing with its first payer.</p></details>
     <details class="rv"><summary>Are these real practices or just anyone with an NPI?</summary><p>We keep organizations (practices, clinics, agencies, suppliers) and individuals who flagged themselves as sole proprietors. Employees registering for a new job, students and deactivated numbers are dropped. Roughly one row in three survives.</p></details>
     <details class="rv"><summary>Do I get email addresses?</summary><p>No. The registry has practice phone numbers and mailing addresses, not emails, and we don't guess them. What you get is a verified practice name, the specialty it registered under, the address it gave CMS and the phone it gave CMS, which is a better starting point than any purchased email list.</p></details>
+    <details class="rv"><summary>Is my list exclusive to me?</summary><p>No. PanelReady is a data subscription, not an exclusive-lead service: the Texas behavioral-health list is the same list for every company that subscribes to Texas behavioral health, and a new one arrives every week. In practice a state produces far more new practices each week than any one firm can call, and what you're paying for is being weeks ahead of everyone who isn't on the list. If you need a state and category reserved for your company alone, email us; that's a separate arrangement at a different price.</p></details>
     <details class="rv"><summary>Can I get more than one state?</summary><p>Yes: each state is its own plan, or email us for a bundle if you cover several.</p></details>
+    <details class="rv"><summary>Who is Avery Data Co.?</summary><p>PanelReady's parent company. Avery Data Co. is the New York business that builds subscription services from public data; PanelReady is one of its products. It's the name PayPal shows at checkout and on your statement, so a charge from Avery Data Co. is your PanelReady subscription.</p></details>
     <details class="rv"><summary>How do I cancel?</summary><p>In your PayPal account under Subscriptions, any time, or reply STOP to any email. No calls, no forms.</p></details>
   </section>
 
   <div class="final rv">
     <h2>Be the first call a new practice gets.</h2>
-    <p>Two free weekly lists for your state, no card needed: email us the state and category. Or subscribe above and your first list goes out with the next weekly file.</p>
-    <a class="cta" href="#pricing">Get two lists free</a>
+    <p>Two free weekly lists for your state, no card needed. Or subscribe above and your first list goes out with the next weekly file.</p>
+    <a class="cta" href="#free">Get two lists free</a>
   </div>
 
   <footer>
-    PanelReady · <a href="mailto:panelready@aol.com">panelready@aol.com</a> · an Avery Data Co. product<br>
+    <div class="links"><a href="states/">New practices by state</a><a href="about/">About</a><a href="contact/">Contact</a><a href="privacy/">Privacy</a><a href="terms/">Terms</a><a href="sample/panelready-sample.csv">Sample spreadsheet</a></div>
+    <span class="upd" id="updated">Data updated for the week ending October 11, 2026.</span> PanelReady · <a href="mailto:panelready@aol.com">panelready@aol.com</a> · an Avery Data Co. product, New York<br>
     Not affiliated with CMS or any payer. Data comes from the public NPPES registry and is provided as-is. Practice names on this page are from the public file; phone numbers are masked here only.
   </footer>
 </div>
@@ -518,16 +604,49 @@
   }
   worth.oninput = calc; calc();
 
+  // ---- free lists / paid-subscriber forms -> the signup worker (falls back to email if it can't be reached)
+  var SIGNUP = 'https://panelready-signup.matt-fixnotice.workers.dev';
+  var MAILTO = 'mailto:panelready@aol.com?subject=PanelReady%20free%20lists';
+  var qs = {}; location.search.replace(/[?&]([^=&]+)=([^&]*)/g, function(_, k, v){ qs[k] = decodeURIComponent(v); });
+  function fillSelects(stateSel, catSel, state, cat){
+    Object.keys(NAMES).sort(function(a,b){ return NAMES[a] < NAMES[b] ? -1 : 1; }).forEach(function(k){ var o = document.createElement('option'); o.value = k; o.textContent = NAMES[k]; stateSel.appendChild(o); });
+    var o0 = document.createElement('option'); o0.value = 'all'; o0.textContent = 'All six categories'; catSel.appendChild(o0);
+    CATS.forEach(function(c){ var o = document.createElement('option'); o.value = c; o.textContent = NICE[c]; catSel.appendChild(o); });
+    stateSel.value = NAMES[state] ? state : 'NY'; catSel.value = (CATS.indexOf(cat) >= 0 || cat === 'all') ? cat : 'all';
+  }
+  var pre = (qs.state || '').toUpperCase(), preCat = (qs.cat || qs.category || '').toLowerCase();
+  fillSelects($('suState'), $('suCat'), pre || fromQuery, preCat);
+  fillSelects($('pdState'), $('pdCat'), pre || fromQuery, preCat);
+  $('stCta').onclick = function(){ $('suState').value = cur; };
+  function post(form, msgEl, btn, extra){
+    var f = new FormData(form), body = {}; f.forEach(function(v, k){ body[k] = v; }); Object.keys(extra || {}).forEach(function(k){ body[k] = extra[k]; });
+    body.src = location.pathname + location.search;
+    if (!/^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i.test(body.email || '')) { msgEl.className = 'msg bad'; msgEl.textContent = 'Please enter a work email address.'; return; }
+    if (btn) btn.disabled = true; msgEl.className = 'msg'; msgEl.textContent = '';
+    var mail = MAILTO + '&body=' + encodeURIComponent('Please send me the next two lists.\nState: ' + NAMES[body.state] + '\nCategory: ' + (body.category === 'all' ? 'all categories' : NICE[body.category]) + '\nCompany: ' + (body.company || '') + '\nEmail: ' + body.email);
+    var fail = function(){ if (btn) btn.disabled = false; msgEl.className = 'msg bad'; msgEl.innerHTML = 'That didn\'t go through. <a href="' + mail + '">Send it by email instead</a> and we\'ll set it up by hand.'; };
+    var ctrl = window.AbortController ? new AbortController() : null, timer = ctrl && setTimeout(function(){ ctrl.abort(); }, 12000);
+    fetch(SIGNUP + '/signup', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body), signal: ctrl && ctrl.signal })
+      .then(function(r){ return r.json(); })
+      .then(function(j){ clearTimeout(timer); if (!j || !j.ok) { if (btn) btn.disabled = false; msgEl.className = 'msg bad'; msgEl.textContent = (j && j.error) || 'Something was missing.'; return; }
+        msgEl.className = 'msg good'; msgEl.innerHTML = '<strong>Done.</strong> ' + (extra && extra.sub ? 'Your ' + NAMES[body.state] + ' list goes out with the next weekly file.' : 'Your first free ' + NAMES[body.state] + ' list goes out with the next weekly federal file, usually Monday or Tuesday morning, from panelready@aol.com. Add it to your contacts so it doesn\'t land in spam.');
+        form.querySelectorAll('input,select,button').forEach(function(el){ if (el.type !== 'hidden') el.disabled = true; }); })
+      .catch(function(){ clearTimeout(timer); fail(); });
+  }
+  $('signup').onsubmit = function(e){ e.preventDefault(); post(this, $('suMsg'), $('suBtn')); };
+  $('paidForm').onsubmit = function(e){ e.preventDefault(); post(this, $('paidMsg'), this.querySelector('button'), { sub: $('pdSub').value }); };
+  if (qs.state && $('free')) setTimeout(function(){ $('free').scrollIntoView({behavior: reduce ? 'auto' : 'smooth'}); }, 300);
+
   // ---- PayPal
   var PLANS = { cat: 'P-3LM945184V097602ENLGJTCY', all: 'P-2L8264840K988433PNLGJUEA' };
-  var MAIL = 'Want the free lists first, no card? Email <a href="mailto:panelready@aol.com?subject=PanelReady%20free%20lists">panelready@aol.com</a> with your state and category.';
+  var MAIL = 'Want the free lists first, no card? <a href="#free">Use the form above</a>.';
   function sub(id, planId){
     var fb = $('fb-' + id);
     if (!planId || planId.indexOf('PASTE') === 0 || !window.paypal) { fb.innerHTML = MAIL; return; }
     paypal.Buttons({
       style: { shape: 'pill', color: 'gold', layout: 'vertical', label: 'subscribe' },
       createSubscription: function(data, actions){ return actions.subscription.create({ plan_id: planId }); },
-      onApprove: function(){ var t = $('thanks'); t.style.display = 'block'; t.scrollIntoView({behavior:'smooth'}); }
+      onApprove: function(data){ $('pdSub').value = (data && data.subscriptionID) || ''; if (id === 'all') $('pdCat').value = 'all'; var t = $('thanks'); t.style.display = 'block'; t.scrollIntoView({behavior:'smooth'}); }
     }).render('#paypal-' + id);
     fb.innerHTML = MAIL;
   }
