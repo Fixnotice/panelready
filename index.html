@@ -222,18 +222,20 @@
   .signup:before{content:"";position:absolute;width:420px;height:420px;border-radius:50%;left:-160px;bottom:-240px;background:radial-gradient(circle,rgba(14,124,123,.08),transparent 65%);pointer-events:none}
   .signup > *{position:relative}
   .f2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
-  .signup label{display:block;font-size:13px;color:var(--muted);font-weight:600;margin-bottom:8px}
-  .signup input[type=text],.signup input[type=email]{width:100%;background:#fff;color:var(--ink);border:1.5px solid var(--line2);border-radius:10px;padding:14px 16px;font:500 16px Inter,sans-serif}
-  .signup input:focus{outline:none;border-color:var(--teal);box-shadow:0 0 0 4px rgba(14,124,123,.14)}
-  .signup .hp{position:absolute;left:-9999px;top:-9999px;height:0;width:0;opacity:0}
-  .signup .row2{display:flex;flex-wrap:wrap;gap:14px;align-items:center;margin-top:6px}
-  .signup .cta{border:0;cursor:pointer;font-family:Inter,sans-serif}
-  .signup .cta[disabled]{opacity:.6;cursor:wait;transform:none}
-  .signup .fine{font-size:13px;color:var(--dim);margin:0;max-width:420px}
-  .signup .msg{display:none;margin-top:16px;padding:16px 18px;border-radius:14px;font-size:15px}
-  .signup .msg.good{display:block;background:rgba(14,124,123,.07);border:1px solid var(--teal);color:var(--ink)}
-  .signup .msg.bad{display:block;background:rgba(190,18,60,.06);border:1px solid var(--rose);color:var(--ink)}
-  .signup .msg a{color:var(--teal)}
+  .signup label,.ok label{display:block;font-size:13px;color:var(--muted);font-weight:600;margin-bottom:8px}
+  .signup input[type=text],.signup input[type=email],.ok input[type=text],.ok input[type=email]{width:100%;background:#fff;color:var(--ink);border:1.5px solid var(--line2);border-radius:10px;padding:14px 16px;font:500 16px Inter,sans-serif}
+  .signup input:focus,.ok input:focus{outline:none;border-color:var(--teal);box-shadow:0 0 0 4px rgba(14,124,123,.14)}
+  .signup .hp,.ok .hp{position:absolute;left:-9999px;top:-9999px;height:0;width:0;opacity:0}
+  .signup .row2,.ok .row2{display:flex;flex-wrap:wrap;gap:14px;align-items:center;margin-top:6px}
+  .signup .cta,.ok .cta{border:0;cursor:pointer;font-family:Inter,sans-serif}
+  .signup .cta[disabled],.ok .cta[disabled]{opacity:.6;cursor:wait;transform:none}
+  .signup .cta.done,.signup .cta.done[disabled],.ok .cta.done,.ok .cta.done[disabled]{opacity:1;cursor:default;background:var(--teal);color:#fff;box-shadow:none}
+  .signup .cta.done::before,.ok .cta.done::before{content:'\2713  '}
+  .signup .fine,.ok .fine{font-size:13px;color:var(--dim);margin:0;max-width:420px}
+  .signup .msg,.ok .msg{display:none;margin-top:16px;padding:16px 18px;border-radius:14px;font-size:15px}
+  .signup .msg.good,.ok .msg.good{display:block;background:rgba(14,124,123,.07);border:1px solid var(--teal);color:var(--ink)}
+  .signup .msg.bad,.ok .msg.bad{display:block;background:rgba(190,18,60,.06);border:1px solid var(--rose);color:var(--ink)}
+  .signup .msg a,.ok .msg a{color:var(--teal)}
   .after{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
   .after div{background:var(--card2);border:1px solid var(--line);border-radius:14px;padding:14px 16px;font-size:14px;color:var(--muted)}
   .after b{display:block;color:var(--ink);font-weight:600;margin-bottom:4px}
@@ -622,15 +624,17 @@ Open the attached spreadsheet in Excel. Organizations are listed first; each row
     var f = new FormData(form), body = {}; f.forEach(function(v, k){ body[k] = v; }); Object.keys(extra || {}).forEach(function(k){ body[k] = extra[k]; });
     body.src = location.pathname + location.search;
     if (!/^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i.test(body.email || '')) { msgEl.className = 'msg bad'; msgEl.textContent = 'Please enter a work email address.'; return; }
-    if (btn) btn.disabled = true; msgEl.className = 'msg'; msgEl.textContent = '';
+    if (btn) { btn.disabled = true; btn.setAttribute('data-label', btn.textContent); btn.textContent = 'Sending\u2026'; } msgEl.className = 'msg'; msgEl.textContent = '';
     var mail = MAILTO + '&body=' + encodeURIComponent('Please send me the next two lists.\nState: ' + NAMES[body.state] + '\nCategory: ' + (body.category === 'all' ? 'all categories' : NICE[body.category]) + '\nCompany: ' + (body.company || '') + '\nEmail: ' + body.email);
-    var fail = function(){ if (btn) btn.disabled = false; msgEl.className = 'msg bad'; msgEl.innerHTML = 'That didn\'t go through. <a href="' + mail + '">Send it by email instead</a> and we\'ll set it up by hand.'; };
+    var undo = function(){ if (btn) { btn.disabled = false; btn.textContent = btn.getAttribute('data-label') || btn.textContent; } };
+    var fail = function(){ undo(); msgEl.className = 'msg bad'; msgEl.innerHTML = 'That didn\'t go through. <a href="' + mail + '">Send it by email instead</a> and we\'ll set it up by hand.'; };
     var ctrl = window.AbortController ? new AbortController() : null, timer = ctrl && setTimeout(function(){ ctrl.abort(); }, 12000);
     fetch(SIGNUP + '/signup', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body), signal: ctrl && ctrl.signal })
       .then(function(r){ return r.json(); })
-      .then(function(j){ clearTimeout(timer); if (!j || !j.ok) { if (btn) btn.disabled = false; msgEl.className = 'msg bad'; msgEl.textContent = (j && j.error) || 'Something was missing.'; return; }
+      .then(function(j){ clearTimeout(timer); if (!j || !j.ok) { undo(); msgEl.className = 'msg bad'; msgEl.textContent = (j && j.error) || 'Something was missing.'; return; }
         msgEl.className = 'msg good'; msgEl.innerHTML = '<strong>Done.</strong> ' + (extra && extra.sub ? 'Your ' + NAMES[body.state] + ' list goes out with the next weekly file.' : 'Your first free ' + NAMES[body.state] + ' list goes out with the next weekly federal file, usually Monday or Tuesday morning, from matt@panelready.co. Add it to your contacts so it doesn\'t land in spam.');
-        form.querySelectorAll('input,select,button').forEach(function(el){ if (el.type !== 'hidden') el.disabled = true; }); })
+        form.querySelectorAll('input,select,button').forEach(function(el){ if (el.type !== 'hidden') el.disabled = true; });
+        if (btn) { btn.textContent = extra && extra.sub ? 'All set' : 'You\'re on the list'; btn.classList.add('done'); } })
       .catch(function(){ clearTimeout(timer); fail(); });
   }
   $('signup').onsubmit = function(e){ e.preventDefault(); post(this, $('suMsg'), $('suBtn')); };
