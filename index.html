@@ -473,7 +473,7 @@ Open the attached spreadsheet in Excel. Organizations are listed first; each row
 
   <footer>
     <div class="links"><a href="states/">New practices by state</a><a href="about/">About</a><a href="contact/">Contact</a><a href="privacy/">Privacy</a><a href="terms/">Terms</a><a href="sample/panelready-sample.csv">Sample spreadsheet</a></div>
-    <span class="upd" id="updated">Data updated for the week ending October 11, 2026.</span> PanelReady · <a href="mailto:panelready@aol.com">panelready@aol.com</a> · an Avery Data Co. product, New York<br>
+    <span class="upd" id="updated">Data updated for the week ending October 11, 2026.</span> PanelReady · <a href="mailto:matt@panelready.co">matt@panelready.co</a> · an Avery Data Co. product, New York<br>
     Not affiliated with CMS or any payer. Data comes from the public NPPES registry and is provided as-is. Practice names on this page are from the public file; phone numbers are masked here only.
   </footer>
 </div>
@@ -606,7 +606,7 @@ Open the attached spreadsheet in Excel. Organizations are listed first; each row
 
   // ---- free lists / paid-subscriber forms -> the signup worker (falls back to email if it can't be reached)
   var SIGNUP = 'https://panelready-signup.matt-fixnotice.workers.dev';
-  var MAILTO = 'mailto:panelready@aol.com?subject=PanelReady%20free%20lists';
+  var MAILTO = 'mailto:matt@panelready.co?subject=PanelReady%20free%20lists';
   var qs = {}; location.search.replace(/[?&]([^=&]+)=([^&]*)/g, function(_, k, v){ qs[k] = decodeURIComponent(v); });
   function fillSelects(stateSel, catSel, state, cat){
     Object.keys(NAMES).sort(function(a,b){ return NAMES[a] < NAMES[b] ? -1 : 1; }).forEach(function(k){ var o = document.createElement('option'); o.value = k; o.textContent = NAMES[k]; stateSel.appendChild(o); });
@@ -629,7 +629,7 @@ Open the attached spreadsheet in Excel. Organizations are listed first; each row
     fetch(SIGNUP + '/signup', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body), signal: ctrl && ctrl.signal })
       .then(function(r){ return r.json(); })
       .then(function(j){ clearTimeout(timer); if (!j || !j.ok) { if (btn) btn.disabled = false; msgEl.className = 'msg bad'; msgEl.textContent = (j && j.error) || 'Something was missing.'; return; }
-        msgEl.className = 'msg good'; msgEl.innerHTML = '<strong>Done.</strong> ' + (extra && extra.sub ? 'Your ' + NAMES[body.state] + ' list goes out with the next weekly file.' : 'Your first free ' + NAMES[body.state] + ' list goes out with the next weekly federal file, usually Monday or Tuesday morning, from panelready@aol.com. Add it to your contacts so it doesn\'t land in spam.');
+        msgEl.className = 'msg good'; msgEl.innerHTML = '<strong>Done.</strong> ' + (extra && extra.sub ? 'Your ' + NAMES[body.state] + ' list goes out with the next weekly file.' : 'Your first free ' + NAMES[body.state] + ' list goes out with the next weekly federal file, usually Monday or Tuesday morning, from matt@panelready.co. Add it to your contacts so it doesn\'t land in spam.');
         form.querySelectorAll('input,select,button').forEach(function(el){ if (el.type !== 'hidden') el.disabled = true; }); })
       .catch(function(){ clearTimeout(timer); fail(); });
   }

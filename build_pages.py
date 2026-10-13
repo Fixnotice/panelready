@@ -34,10 +34,10 @@ for cand in (ROOT, HERE):                            # pr/npi.py lives in the pr
 from pr import npi as N                              # noqa: E402
 
 SITE = "https://panelready.co"                       # the site's address, no trailing slash (the old github.io address redirects here)
-BUILD_VERSION = 4                                    # bump when the page layout changes, so the next run rewrites every page
+BUILD_VERSION = 5                                    # bump when the page layout changes, so the next run rewrites every page
 COMPANY = "Avery Data Co."
 SAMPLE_STATES = ["VT", "DE", "RI", "AK", "WY", "ND", "SD", "MT", "ME", "NH"]   # the free sample: the first of these with 8-25 rows this week
-BRAND, MAIL = "PanelReady", "panelready@aol.com"
+BRAND, MAIL = "PanelReady", "matt@panelready.co"
 WEEKS = HERE / "data" / "weeks.json"
 CAT_PAGE_MIN = 8                                     # a category page needs at least this many rows in the newest week
 TREND_WEEKS = 12
@@ -74,7 +74,7 @@ NEIGHBORS = {"AL": "FL GA MS TN", "AK": "WA HI OR", "AZ": "CA CO NM NV UT", "AR"
              "WI": "IL IA MI MN", "WY": "CO ID MT NE SD UT"}
 CODE_RE = re.compile(r"^\d{3}[A-Z0-9]{7}$")           # a bare taxonomy code where a specialty name should be
 CMS_INDEX, CMS_BASE = "https://download.cms.gov/nppes/NPI_Files.html", "https://download.cms.gov/nppes/"
-UA = {"User-Agent": "PanelReady/1.0 (public data; panelready@aol.com)"}
+UA = {"User-Agent": "PanelReady/1.0 (public data; matt@panelready.co)"}
 
 
 def say(m):
