@@ -1,3 +1,3 @@
 User-agent: *
 Allow: /
-Sitemap: https://fixnotice.github.io/panelready/sitemap.xml
+Sitemap: https://panelready.co/sitemap.xml
