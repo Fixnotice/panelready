@@ -34,9 +34,10 @@ for cand in (ROOT, HERE):                            # pr/npi.py lives in the pr
 from pr import npi as N                              # noqa: E402
 
 SITE = "https://panelready.co"                       # the site's address, no trailing slash (the old github.io address redirects here)
-BUILD_VERSION = 9                                    # bump when the page layout changes, so the next run rewrites every page
+BUILD_VERSION = 10                                    # bump when the page layout changes, so the next run rewrites every page
 COMPANY = "Avery Data Co."
 PAYPAL_CLIENT_ID = "BAAQ4G4Hizw2wHo9EZQsTxcW_oBtYKOFEIoI41YQZJvC8ufp2vM9Z_lIU4ASqIUZvXAUrin0KLaYIpr8Js"   # the "PanelReady site" app on developer.paypal.com (Live); one-time orders
+PAYPAL_ME = ""                                       # optional plan B: a PayPal.me handle (e.g. "averydataco"); shown as a second way to pay $39
 WEEK_PRICE = 39                                      # one-time: this week's list for one state, every category
 SAMPLE_STATES = ["VT", "DE", "RI", "AK", "WY", "ND", "SD", "MT", "ME", "NH"]   # the free sample: the first of these with 8-25 rows this week
 BRAND, MAIL = "PanelReady", "matt@panelready.co"
@@ -398,12 +399,16 @@ def sample_table(rows: list, caption: str) -> str:
 def week_box(state_name: str, st: str, latest: str, total: int) -> str:
     """One-time purchase: this week's complete list for the state, every category, $39, sent to the PayPal email."""
     desc = f"PanelReady week list [{st}/all] week ending {latest}"
+    payme = (f'<a class="cta ghost" href="https://paypal.me/{PAYPAL_ME}/{WEEK_PRICE}USD" target="_blank" rel="noopener">Pay ${WEEK_PRICE} with PayPal.me</a>'
+             f' <span class="note">(type <b>{esc(state_name)}</b> in the note so the right list goes out)</span>') if PAYPAL_ME else ""
+    PAYME_HTML = (f"Or <a href=\"https://paypal.me/{PAYPAL_ME}/{WEEK_PRICE}USD\" target=\"_blank\" rel=\"noopener\">pay ${WEEK_PRICE} with PayPal.me</a> and type {esc(state_name)} in the note."
+                  if PAYPAL_ME else "Email matt@panelready.co for a PayPal invoice for $" + str(WEEK_PRICE) + ".")
     return f"""
 <div class="week" id="week">
   <h3>Just this week: ${WEEK_PRICE}, one time</h3>
   <p>The complete {esc(state_name)} list for the week ending {esc(short_date(latest))}: all {fmt(total)} rows, every category, as a spreadsheet, emailed to your PayPal address within the hour. One payment, nothing recurring. The charge shows as {COMPANY}</p>
   <div class="paybox" id="paypal-week"></div>
-  <p class="note" id="week-done"></p>
+  <p class="note" id="week-done"></p>{('<p>' + payme + '</p>') if payme else ''}
 </div>
 <script src="https://www.paypal.com/sdk/js?client-id={PAYPAL_CLIENT_ID}&currency=USD&intent=capture&disable-funding=paylater"></script>
 <script>
@@ -413,7 +418,8 @@ def week_box(state_name: str, st: str, latest: str, total: int) -> str:
   paypal.Buttons({{
     style: {{ shape: 'pill', color: 'gold', layout: 'horizontal', label: 'pay', tagline: false, height: 44 }},
     createOrder: function(data, actions) {{
-      return actions.order.create({{ purchase_units: [{{ amount: {{ currency_code: 'USD', value: '{WEEK_PRICE}.00' }},
+      return actions.order.create({{ purchase_units: [{{
+        amount: {{ currency_code: 'USD', value: '{WEEK_PRICE}.00', breakdown: {{ item_total: {{ currency_code: 'USD', value: '{WEEK_PRICE}.00' }} }} }},
         description: {json.dumps(desc)}, custom_id: 'week:{st}:all:{latest}',
         items: [{{ name: {json.dumps(desc[:120])}, quantity: '1', unit_amount: {{ currency_code: 'USD', value: '{WEEK_PRICE}.00' }} }}] }}],
         application_context: {{ shipping_preference: 'NO_SHIPPING', brand_name: '{BRAND} ({COMPANY})' }} }});
@@ -425,7 +431,7 @@ def week_box(state_name: str, st: str, latest: str, total: int) -> str:
         done.innerHTML = "<b>Paid, thank you.</b> This week's {esc(state_name)} list goes to " + em + " within the hour. If it hasn't arrived in two hours, email matt@panelready.co with your PayPal receipt.";
       }});
     }},
-    onError: function() {{ done.textContent = "PayPal didn't load. Email matt@panelready.co for a PayPal invoice for ${WEEK_PRICE}."; }}
+    onError: function(err) {{ done.innerHTML = "PayPal couldn't start the checkout" + (err && err.message ? " (" + String(err.message).slice(0, 160) + ")" : "") + ". {PAYME_HTML}"; console.error('PayPal week button', err); }}
   }}).render('#paypal-week');
 }})();
 </script>"""
