@@ -34,7 +34,7 @@ for cand in (ROOT, HERE):                            # pr/npi.py lives in the pr
 from pr import npi as N                              # noqa: E402
 
 SITE = "https://panelready.co"                       # the site's address, no trailing slash (the old github.io address redirects here)
-BUILD_VERSION = 5                                    # bump when the page layout changes, so the next run rewrites every page
+BUILD_VERSION = 6                                    # bump when the page layout changes, so the next run rewrites every page
 COMPANY = "Avery Data Co."
 SAMPLE_STATES = ["VT", "DE", "RI", "AK", "WY", "ND", "SD", "MT", "ME", "NH"]   # the free sample: the first of these with 8-25 rows this week
 BRAND, MAIL = "PanelReady", "matt@panelready.co"
@@ -72,6 +72,23 @@ NEIGHBORS = {"AL": "FL GA MS TN", "AK": "WA HI OR", "AZ": "CA CO NM NV UT", "AR"
              "RI": "CT MA", "SC": "GA NC", "SD": "IA MN MT NE ND WY", "TN": "AL AR GA KY MS MO NC VA", "TX": "AR LA NM OK",
              "UT": "AZ CO ID NV NM WY", "VT": "MA NH NY", "VA": "DC KY MD NC TN WV", "WA": "ID OR", "WV": "KY MD OH PA VA",
              "WI": "IL IA MI MN", "WY": "CO ID MT NE SD UT"}
+# resident population (millions, 2023 Census Bureau estimates) and the name the state's Medicaid program goes by:
+# the per-100,000 rate and the program name are what make each state's page say something no other state's page says
+STATE_FACTS = {
+    "AL": (5.1, "Alabama Medicaid"), "AK": (0.7, "Alaska Medicaid"), "AZ": (7.4, "AHCCCS"), "AR": (3.1, "Arkansas Medicaid"),
+    "CA": (39.0, "Medi-Cal"), "CO": (5.9, "Health First Colorado"), "CT": (3.6, "HUSKY Health"), "DE": (1.0, "Delaware Medicaid"),
+    "DC": (0.7, "DC Medicaid"), "FL": (22.6, "Florida Medicaid"), "GA": (11.0, "Georgia Medicaid"), "HI": (1.4, "Med-QUEST"),
+    "ID": (2.0, "Idaho Medicaid"), "IL": (12.5, "HealthChoice Illinois"), "IN": (6.9, "Indiana Medicaid"), "IA": (3.2, "Iowa Medicaid"),
+    "KS": (2.9, "KanCare"), "KY": (4.5, "Kentucky Medicaid"), "LA": (4.6, "Healthy Louisiana"), "ME": (1.4, "MaineCare"),
+    "MD": (6.2, "Maryland Medicaid"), "MA": (7.0, "MassHealth"), "MI": (10.0, "Michigan Medicaid"), "MN": (5.7, "Minnesota Medical Assistance"),
+    "MS": (2.9, "Mississippi Medicaid"), "MO": (6.2, "MO HealthNet"), "MT": (1.1, "Montana Medicaid"), "NE": (2.0, "Heritage Health"),
+    "NV": (3.2, "Nevada Medicaid"), "NH": (1.4, "New Hampshire Medicaid"), "NJ": (9.3, "NJ FamilyCare"), "NM": (2.1, "Turquoise Care"),
+    "NY": (19.6, "New York Medicaid"), "NC": (10.8, "NC Medicaid"), "ND": (0.8, "North Dakota Medicaid"), "OH": (11.8, "Ohio Medicaid"),
+    "OK": (4.1, "SoonerCare"), "OR": (4.2, "the Oregon Health Plan"), "PA": (13.0, "Pennsylvania Medical Assistance"), "PR": (3.2, "Plan Vital"),
+    "RI": (1.1, "Rhode Island Medicaid"), "SC": (5.4, "Healthy Connections"), "SD": (0.9, "South Dakota Medicaid"), "TN": (7.1, "TennCare"),
+    "TX": (30.5, "Texas Medicaid"), "UT": (3.4, "Utah Medicaid"), "VT": (0.6, "Vermont Medicaid"), "VA": (8.7, "Cardinal Care"),
+    "WA": (7.8, "Apple Health"), "WV": (1.8, "West Virginia Medicaid"), "WI": (5.9, "BadgerCare Plus"), "WY": (0.6, "Wyoming Medicaid")}
+US_POP = sum(v[0] for v in STATE_FACTS.values())
 CODE_RE = re.compile(r"^\d{3}[A-Z0-9]{7}$")           # a bare taxonomy code where a specialty name should be
 CMS_INDEX, CMS_BASE = "https://download.cms.gov/nppes/NPI_Files.html", "https://download.cms.gov/nppes/"
 UA = {"User-Agent": "PanelReady/1.0 (public data; matt@panelready.co)"}
@@ -414,6 +431,84 @@ def avg4(series: dict[str, int]) -> float:
     return sum(vals) / len(vals) if vals else 0.0
 
 
+def pct(a: float, b: float) -> float:
+    return a / b * 100 if b else 0.0
+
+
+def state_context(data: dict, st: str, v: list, series: dict) -> str:
+    """The paragraphs that are specific to this state: rate per resident, how it compares with its neighbors and
+    with the national mix, which cities carry it, and what a new practice there has to do next. All of it is
+    computed from the week's numbers, so it changes every week and differs from every other state's page."""
+    name, latest = STATES[st], data["latest"]
+    total, orgs = sum(v), data["orgs"].get(st, 0)
+    pop, medicaid = STATE_FACTS.get(st, (0, "the state Medicaid program"))
+    nat, week = data["national"], data["counts"][latest]
+    people = f"{pop:g} million" if pop >= 1 else f"{pop * 1000:.0f},000"
+    paras = []
+    # 1. rate per 100,000 residents against the national rate, and against the state's own recent weeks
+    if pop and total:
+        rate, nat_rate = total / (pop * 10), nat["total"] / (US_POP * 10)
+        rel = pct(rate, nat_rate) - 100
+        how = ("about the national rate" if abs(rel) < 8 else
+               f"{rate / nat_rate:.1f} times the national rate of {nat_rate:.1f}" if rel > 100 else
+               f"{abs(rel):.0f}% {'above' if rel > 0 else 'below'} the national rate of {nat_rate:.1f}")
+        s1 = (f"{name} has about {people} residents, so this week's {fmt(total)} registrations work out to "
+              f"{rate:.1f} new practices per 100,000 people, {how}.")
+        if len(series) >= 2:
+            prev = series[sorted(series)[-2]]
+            if prev:
+                ch = pct(total - prev, prev)
+                s1 += (f" That is {'up' if ch > 0 else 'down'} {abs(ch):.0f}% from the {fmt(prev)} registered the week before"
+                       if abs(ch) >= 3 else f" That is level with the week before ({fmt(prev)}).")
+        paras.append(s1)
+    # 2. the category mix, where it differs from the country
+    if total and nat.get("cats"):
+        diffs = []
+        for i, c in enumerate(CATS):
+            here, there = pct(v[i], total), pct(nat["cats"][i], nat["total"])
+            if v[i] >= 5 and abs(here - there) >= 4:
+                diffs.append((here - there, c, here, there))
+        diffs.sort(key=lambda d: -abs(d[0]))
+        if diffs:
+            d = diffs[0]
+            s2 = (f"The mix leans {'toward' if d[0] > 0 else 'away from'} {CAT_TITLE[d[1]].lower()}: {d[2]:.0f}% of {name}'s new practices "
+                  f"this week against {d[3]:.0f}% nationally")
+            if len(diffs) > 1:
+                e = diffs[1]
+                s2 += f", and {CAT_TITLE[e[1]].lower()} is {'over' if e[0] > 0 else 'under'}-represented too ({e[2]:.0f}% vs {e[3]:.0f}%)"
+            s2 += "."
+        else:
+            s2 = f"The category mix in {name} this week is close to the national mix."
+        s2 += (f" {pct(orgs, total):.0f}% of the registrations are organizations rather than individual sole proprietors"
+               f" (nationally {pct(nat['orgs'], nat['total']):.0f}%); organizations are the ones most likely to hire out credentialing and billing.")
+        paras.append(s2)
+    # 3. neighbors
+    nb = [(STATES[n], sum(week[n])) for n in NEIGHBORS.get(st, "").split() if n in STATES and n in week]
+    if nb:
+        nb.sort(key=lambda x: -x[1])
+        ahead = [n for n, k in nb if k > total]
+        s3 = "Among neighboring states, " + ", ".join(f"{esc(n)} registered {fmt(k)}" for n, k in nb[:4]) + "."
+        s3 += (f" {name} out-registered every neighbor this week." if not ahead else
+               f" {name} trails {' and '.join(esc(a) for a in ahead[:2])} but is ahead of the rest." if len(ahead) < len(nb) else
+               f" Every neighbor registered more than {name} this week.")
+        paras.append(s3)
+    # 4. where in the state
+    cities = data["cities"].get(st, [])
+    if cities and total:
+        top3 = sum(k for _, k in cities[:3])
+        s4 = (f"The top three cities ({', '.join(esc(c) for c, _ in cities[:3])}) account for {pct(top3, total):.0f}% of the state's new practices; "
+              f"the rest are spread across smaller towns, which is where a weekly list earns its keep: nobody is driving past those offices to notice the new sign.")
+        paras.append(s4)
+    # 5. what happens next for a new practice in this state
+    paras.append(f"A practice that registers in {name} still has its paperwork ahead of it. Seeing {medicaid} patients means enrolling with the "
+                 f"state separately from the NPI, most commercial plans want a CAQH profile before they will credential anyone, and the whole "
+                 f"cycle usually takes 60 to 120 days. That window, between the registry and the first claim, is when a {name} practice decides "
+                 f"whether to do credentialing and billing in-house or hire it out, and it is why the practices on this page are worth a call "
+                 f"this week rather than next quarter.")
+    return (f'<section><h2>What stands out in {esc(name)} this week</h2>' + "".join(f"<p>{x}</p>" for x in paras) +
+            f'<p class="note">Rates use the Census Bureau\'s 2023 population estimate ({people if pop else "n/a"}). Comparisons are to the same week\'s national file.</p></section>')
+
+
 def state_page(data: dict, st: str) -> str:
     name, slug, latest = STATES[st], SLUG[st], data["latest"]
     v = data["counts"][latest].get(st, [0] * len(CATS))
@@ -457,6 +552,8 @@ def state_page(data: dict, st: str) -> str:
 </div>
 <section><p>{p2}</p><p>{p3}</p></section>
 
+{state_context(data, st, v, series)}
+
 <section class="grid2">
   <div class="card"><h2>By category this week</h2>{bars([(CAT_TITLE[c], v[CATS.index(c)], cat_pages.get(c), CAT_COLOR[c]) for c in CATS])}
     <p class="note">Each practice is filed by the specialty code it registered under. Categories with a link have their own weekly page.</p></div>
@@ -494,7 +591,7 @@ def state_page(data: dict, st: str) -> str:
     ld = {"@context": "https://schema.org", "@type": "Dataset", "name": f"New healthcare practices registered in {name}, by week",
           "description": desc, "url": f"{SITE}/states/{slug}/", "creator": {"@type": "Organization", "name": "Avery Data Co.", "url": SITE + "/"},
           "isBasedOn": "https://download.cms.gov/nppes/NPI_Files.html", "temporalCoverage": f"{data['weeks'][0]}/{latest}",
-          "spatialCoverage": {"@type": "Place", "name": f"{name}, United States"}, "license": "https://www.cms.gov/about-cms/information-systems/privacy/privacy-statement",
+          "spatialCoverage": {"@type": "Place", "name": f"{name}, United States"}, "license": "https://www.usa.gov/government-works", "isAccessibleForFree": True,
           "variableMeasured": ["new NPI registrations by category", "new organizations", "busiest cities", "most common specialties"],
           "dateModified": latest}
     return shell(title, desc, f"states/{slug}/", body, ld)
@@ -504,6 +601,24 @@ def cat_row(data: dict, st: str, c: str, v: list, cat_pages: dict) -> str:
     label = f'<a href="{cat_pages[c]}">{esc(CAT_TITLE[c])}</a>' if c in cat_pages else esc(CAT_TITLE[c])
     return (f'<tr><td class="n">{label}</td><td style="color:var(--muted)">{esc(CAT_WHO[c])}</td><td class="r">{fmt(v[CATS.index(c)])}</td>'
             f'<td class="r">{fmt(avg4(state_series(data, st, c)))}</td></tr>')
+
+
+def cat_context(data: dict, st: str, cat: str, n: int, total: int) -> str:
+    name, ci, latest = STATES[st], CATS.index(cat), data["latest"]
+    nat, week = data["national"], data["counts"][latest]
+    pop, medicaid = STATE_FACTS.get(st, (0, "the state Medicaid program"))
+    here, there = pct(n, total), pct(nat["cats"][ci], nat["total"])
+    bits = []
+    if pop:
+        bits.append(f"That is {n / (pop * 10):.1f} new {CAT_TITLE[cat].lower()} practices per 100,000 {name} residents this week")
+        bits[-1] += (f", a {'bigger' if here > there else 'smaller'} share of the state's registrations ({here:.0f}%) than this category takes nationally ({there:.0f}%)."
+                     if abs(here - there) >= 3 else f", about the same share of the state's registrations as this category takes nationally ({there:.0f}%).")
+    nb = sorted([(STATES[k], week[k][ci]) for k in NEIGHBORS.get(st, "").split() if k in STATES and k in week], key=lambda x: -x[1])
+    if nb:
+        bits.append("Next door, " + ", ".join(f"{esc(k)} had {fmt(c)}" for k, c in nb[:3]) + ".")
+    bits.append(f"Each of these practices has to enroll with {medicaid} and the commercial plans it wants to bill before it can collect, "
+                f"which is the stretch of weeks in which it chooses a credentialing or billing partner.")
+    return " ".join(bits)
 
 
 def cat_page(data: dict, st: str, cat: str) -> str:
@@ -533,7 +648,7 @@ def cat_page(data: dict, st: str, cat: str) -> str:
   <div class="stat"><b>{n / max(total, 1) * 100:.0f}%</b><span>of all new {esc(name)} practices this week ({fmt(total)})</span></div>
   <div class="stat"><b>{fmt(n * 52 / 12)}<small> /mo</small></b><span>new {esc(ct.lower())} practices a month at this pace</span></div>
 </div>
-<section><p>{p2}</p></section>
+<section><p>{p2}</p><p>{cat_context(data, st, cat, n, total)}</p></section>
 <section class="grid2">
   <div class="card"><h2>Most common specialties</h2>{bars([(s, k, None, CAT_COLOR[cat]) for s, k in specs]) if specs else '<p class="note">No specialty data this week.</p>'}</div>
   <div class="card"><h2>Week by week</h2>{trend(data, series, f"New {ct.lower()} practices in {name}")}</div>
