@@ -34,7 +34,7 @@ for cand in (ROOT, HERE):                            # pr/npi.py lives in the pr
 from pr import npi as N                              # noqa: E402
 
 SITE = "https://panelready.co"                       # the site's address, no trailing slash (the old github.io address redirects here)
-BUILD_VERSION = 6                                    # bump when the page layout changes, so the next run rewrites every page
+BUILD_VERSION = 7                                    # bump when the page layout changes, so the next run rewrites every page
 COMPANY = "Avery Data Co."
 SAMPLE_STATES = ["VT", "DE", "RI", "AK", "WY", "ND", "SD", "MT", "ME", "NH"]   # the free sample: the first of these with 8-25 rows this week
 BRAND, MAIL = "PanelReady", "matt@panelready.co"
@@ -665,7 +665,8 @@ def cat_page(data: dict, st: str, cat: str) -> str:
     ld = {"@context": "https://schema.org", "@type": "Dataset", "name": f"New {ct.lower()} practices registered in {name}, by week", "description": desc,
           "url": f"{SITE}/states/{slug}/{CAT_SLUG[cat]}/", "creator": {"@type": "Organization", "name": "Avery Data Co.", "url": SITE + "/"},
           "isBasedOn": "https://download.cms.gov/nppes/NPI_Files.html", "temporalCoverage": f"{data['weeks'][0]}/{latest}", "dateModified": latest,
-          "spatialCoverage": {"@type": "Place", "name": f"{name}, United States"}}
+          "spatialCoverage": {"@type": "Place", "name": f"{name}, United States"},
+          "license": "https://www.usa.gov/government-works", "isAccessibleForFree": True}
     return shell(title, desc, f"states/{slug}/{CAT_SLUG[cat]}/", body, ld)
 
 
@@ -696,7 +697,8 @@ def hub_page(data: dict) -> str:
     desc = f"{fmt(nat['total'])} healthcare practices and sole proprietors registered for an NPI in the week ending {long_date(latest)}. Weekly counts, trends, cities and specialties for every U.S. state from the federal NPPES registry."
     ld = {"@context": "https://schema.org", "@type": "Dataset", "name": "New healthcare practices registered in the U.S., by state and week", "description": desc,
           "url": f"{SITE}/states/", "creator": {"@type": "Organization", "name": "Avery Data Co.", "url": SITE + "/"}, "isBasedOn": "https://download.cms.gov/nppes/NPI_Files.html",
-          "temporalCoverage": f"{data['weeks'][0]}/{latest}", "dateModified": latest, "spatialCoverage": {"@type": "Place", "name": "United States"}}
+          "temporalCoverage": f"{data['weeks'][0]}/{latest}", "dateModified": latest, "spatialCoverage": {"@type": "Place", "name": "United States"},
+          "license": "https://www.usa.gov/government-works", "isAccessibleForFree": True}
     return shell(title, desc, "states/", body, ld)
 
 
