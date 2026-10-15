@@ -119,7 +119,8 @@ footer{color:var(--dim);font-size:13px;padding:30px 0 40px;border-top:1px solid 
   paypal.Buttons({
     style: { shape: 'pill', color: 'gold', layout: 'horizontal', label: 'pay', tagline: false, height: 44 },
     createOrder: function(data, actions) {
-      return actions.order.create({ purchase_units: [{ amount: { currency_code: 'USD', value: '39.00' },
+      return actions.order.create({ purchase_units: [{
+        amount: { currency_code: 'USD', value: '39.00', breakdown: { item_total: { currency_code: 'USD', value: '39.00' } } },
         description: "PanelReady week list [NE/all] week ending 2026-10-11", custom_id: 'week:NE:all:2026-10-11',
         items: [{ name: "PanelReady week list [NE/all] week ending 2026-10-11", quantity: '1', unit_amount: { currency_code: 'USD', value: '39.00' } }] }],
         application_context: { shipping_preference: 'NO_SHIPPING', brand_name: 'PanelReady (Avery Data Co.)' } });
@@ -131,7 +132,7 @@ footer{color:var(--dim);font-size:13px;padding:30px 0 40px;border-top:1px solid 
         done.innerHTML = "<b>Paid, thank you.</b> This week's Nebraska list goes to " + em + " within the hour. If it hasn't arrived in two hours, email matt@panelready.co with your PayPal receipt.";
       });
     },
-    onError: function() { done.textContent = "PayPal didn't load. Email matt@panelready.co for a PayPal invoice for $39."; }
+    onError: function(err) { done.innerHTML = "PayPal couldn't start the checkout" + (err && err.message ? " (" + String(err.message).slice(0, 160) + ")" : "") + ". Email matt@panelready.co for a PayPal invoice for $39."; console.error('PayPal week button', err); }
   }).render('#paypal-week');
 })();
 </script></section>
