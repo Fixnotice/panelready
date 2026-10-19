@@ -115,7 +115,7 @@ footer{color:var(--dim);font-size:13px;padding:30px 0 40px;border-top:1px solid 
 <script>
 (function(){
   var box = document.getElementById('paypal-week'), done = document.getElementById('week-done');
-  if (!window.paypal || !box) { if (done) done.textContent = "To buy this week's list, email matt@panelready.co with the state."; return; }
+  if (!window.paypal || !box) { if (done) done.textContent = "To buy this list, email matt@panelready.co with the state."; return; }
   paypal.Buttons({
     style: { shape: 'pill', color: 'gold', layout: 'horizontal', label: 'pay', tagline: false, height: 44 },
     createOrder: function(data, actions) {
