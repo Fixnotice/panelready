@@ -34,11 +34,12 @@ for cand in (ROOT, HERE):                            # pr/npi.py lives in the pr
 from pr import npi as N                              # noqa: E402
 
 SITE = "https://panelready.co"                       # the site's address, no trailing slash (the old github.io address redirects here)
-BUILD_VERSION = 17                                    # bump when the page layout changes, so the next run rewrites every page
+BUILD_VERSION = 18                                    # bump when the page layout changes, so the next run rewrites every page
 COMPANY = "Avery Data Co."
 PAYPAL_CLIENT_ID = "BAAQ4G4Hizw2wHo9EZQsTxcW_oBtYKOFEIoI41YQZJvC8ufp2vM9Z_lIU4ASqIUZvXAUrin0KLaYIpr8Js"   # the "PanelReady site" app on developer.paypal.com (Live); one-time orders
 PAYPAL_ME = ""                                       # optional plan B: a PayPal.me handle (e.g. "averydataco"); shown as a second way to pay $39
 WEEK_PRICE = 39                                      # one-time: this week's list for one state, every category
+SMALL_WEEK, SMALL_WEEKS = 25, 4                      # a state under 25 new practices this week sells its last 4 weeks for the $39
 LOCAL_PRICE, CAT_PRICE, ALL_PRICE, MULTI_PRICE = 49, 89, 149, 199   # monthly plans (yearly = 10 months); see pr/plans.py
 SAMPLE_STATES = ["VT", "DE", "RI", "AK", "WY", "ND", "SD", "MT", "ME", "NH"]   # the free sample: the first of these with 8-25 rows this week
 BRAND, MAIL = "PanelReady", "matt@panelready.co"
@@ -403,17 +404,31 @@ def sample_table(rows: list, caption: str) -> str:
             f'<tbody>{body}</tbody></table></div><p class="note">Real rows from the federal file. Subscribers get the full phone, street address, ZIP, NPI, taxonomy code and authorized official for every row.</p></div>')
 
 
-def week_box(state_name: str, st: str, latest: str, total: int) -> str:
-    """One-time purchase: this week's complete list for the state, every category, $39, sent to the PayPal email."""
-    desc = f"PanelReady week list [{st}/all] week ending {latest}"
+def week_box(state_name: str, st: str, latest: str, total: int, avg: float = 0.0) -> str:
+    """One-time purchase: this week's complete list for the state, every category, $39, sent to the PayPal email.
+    A small state (under SMALL_WEEK rows this week) gets every new practice from the last 4 weeks for the same $39."""
+    small = total < SMALL_WEEK
+    if small:
+        desc = f"PanelReady week list [{st}/all] last {SMALL_WEEKS} weeks ending {latest}"      # the PC reads 'last 4 weeks'
+        est = max(total, round(avg * SMALL_WEEKS))
+        head = f"The last {SMALL_WEEKS} weeks: ${WEEK_PRICE}, one time"
+        what = (f"{esc(state_name)} is one of the smaller states, so the one-time list covers more than a week: every new practice "
+                f"registered in {esc(state_name)} in the {SMALL_WEEKS} weeks ending {esc(short_date(latest))}"
+                + (f", about {fmt(est)} rows at the recent pace" if est else "") + ", every category")
+        paid = f"Your {esc(state_name)} list (the last {SMALL_WEEKS} weeks)"
+    else:
+        desc = f"PanelReady week list [{st}/all] week ending {latest}"
+        head = f"Just this week: ${WEEK_PRICE}, one time"
+        what = f"The complete {esc(state_name)} list for the week ending {esc(short_date(latest))}: all {fmt(total)} rows, every category"
+        paid = f"This week's {esc(state_name)} list"
     payme = (f'<a class="cta ghost" href="https://paypal.me/{PAYPAL_ME}/{WEEK_PRICE}USD" target="_blank" rel="noopener">Pay ${WEEK_PRICE} with PayPal.me</a>'
              f' <span class="note">(type <b>{esc(state_name)}</b> in the note so the right list goes out)</span>') if PAYPAL_ME else ""
     PAYME_HTML = (f"Or <a href=\"https://paypal.me/{PAYPAL_ME}/{WEEK_PRICE}USD\" target=\"_blank\" rel=\"noopener\">pay ${WEEK_PRICE} with PayPal.me</a> and type {esc(state_name)} in the note."
                   if PAYPAL_ME else "Email matt@panelready.co for a PayPal invoice for $" + str(WEEK_PRICE) + ".")
     return f"""
 <div class="week" id="week">
-  <h3>Just this week: ${WEEK_PRICE}, one time</h3>
-  <p>The complete {esc(state_name)} list for the week ending {esc(short_date(latest))}: all {fmt(total)} rows, every category, as a spreadsheet, emailed to your PayPal address within the hour. One payment, nothing recurring. The charge shows as {COMPANY}</p>
+  <h3>{head}</h3>
+  <p>{what}, as a spreadsheet, emailed to your PayPal address within the hour. One payment, nothing recurring. The charge shows as {COMPANY}</p>
   <div class="paybox" id="paypal-week"></div>
   <p class="note" id="week-done"></p>{('<p>' + payme + '</p>') if payme else ''}
 </div>
@@ -421,13 +436,13 @@ def week_box(state_name: str, st: str, latest: str, total: int) -> str:
 <script>
 (function(){{
   var box = document.getElementById('paypal-week'), done = document.getElementById('week-done');
-  if (!window.paypal || !box) {{ if (done) done.textContent = "To buy this week's list, email matt@panelready.co with the state."; return; }}
+  if (!window.paypal || !box) {{ if (done) done.textContent = "To buy this list, email matt@panelready.co with the state."; return; }}
   paypal.Buttons({{
     style: {{ shape: 'pill', color: 'gold', layout: 'horizontal', label: 'pay', tagline: false, height: 44 }},
     createOrder: function(data, actions) {{
       return actions.order.create({{ purchase_units: [{{
         amount: {{ currency_code: 'USD', value: '{WEEK_PRICE}.00', breakdown: {{ item_total: {{ currency_code: 'USD', value: '{WEEK_PRICE}.00' }} }} }},
-        description: {json.dumps(desc)}, custom_id: 'week:{st}:all:{latest}',
+        description: {json.dumps(desc)}, custom_id: '{"week4" if small else "week"}:{st}:all:{latest}',
         items: [{{ name: {json.dumps(desc[:120])}, quantity: '1', unit_amount: {{ currency_code: 'USD', value: '{WEEK_PRICE}.00' }} }}] }}],
         application_context: {{ shipping_preference: 'NO_SHIPPING', brand_name: '{BRAND} ({COMPANY})' }} }});
     }},
@@ -435,7 +450,7 @@ def week_box(state_name: str, st: str, latest: str, total: int) -> str:
       return actions.order.capture().then(function(o) {{
         var em = (o && o.payer && o.payer.email_address) || 'your PayPal email';
         box.style.display = 'none';
-        done.innerHTML = "<b>Paid, thank you.</b> This week's {esc(state_name)} list goes to " + em + " within the hour. If it hasn't arrived in two hours, email matt@panelready.co with your PayPal receipt.";
+        done.innerHTML = "<b>Paid, thank you.</b> {paid} goes to " + em + " within the hour. If it hasn't arrived in two hours, email matt@panelready.co with your PayPal receipt.";
       }});
     }},
     onError: function(err) {{ done.innerHTML = "PayPal couldn't start the checkout" + (err && err.message ? " (" + String(err.message).slice(0, 160) + ")" : "") + ". {PAYME_HTML}"; console.error('PayPal week button', err); }}
@@ -444,7 +459,7 @@ def week_box(state_name: str, st: str, latest: str, total: int) -> str:
 </script>"""
 
 
-def offer(state_name: str, st: str, cat: str | None, root: str, latest: str = "", total: int = 0) -> str:
+def offer(state_name: str, st: str, cat: str | None, root: str, latest: str = "", total: int = 0, avg: float = 0.0) -> str:
     """The subscribe block. st="" makes the generic version for the hub."""
     what = f"{CAT_TITLE[cat].lower()} practice" if cat else "practice"
     plan = f"${CAT_PRICE}/month" if cat else f"${ALL_PRICE}/month"
@@ -452,7 +467,7 @@ def offer(state_name: str, st: str, cat: str | None, root: str, latest: str = ""
     which = f"the {CAT_TITLE[cat].lower()} category" if cat else "all categories"
     q = f"?state={st}&cat={cat or 'all'}" if st else ""
     where = f"in {esc(state_name)}" if st else "in your state"
-    week = week_box(state_name, st, latest, total) if st and latest and total else ""
+    week = week_box(state_name, st, latest, total, avg) if st and latest and (total or avg) else ""
     return (f'<section class="offer"><h2>Get every new {esc(what)} {where}, the week they register.</h2>'
             f'<p>This page shows a sample. Subscribers get the complete {esc(state_name) if st else "state"} list as a spreadsheet, {sub}, sorted best-first: the top 25 marked, a score and a ready-to-say opener for every practice, the owner\'s direct line where the registry lists it, phone, address and NPI, websites, emails and practice software for organizations where we can find them, an OIG exclusion check, and the practices that moved or added a specialty that week. Once a month: practices due for Medicare revalidation and practices that look stuck in credentialing. Your first list includes the last 90 days, teammates get copies, Roster Watch checks your own clients every week, and a webhook sends each list to your CRM. Backed by a 90-day guarantee. '
             f'{plan} per state through PayPal (or ${LOCAL_PRICE}/month for just your local area, ${MULTI_PRICE}/month for three states, 2 months free yearly; the charge shows as {COMPANY}, {BRAND}\'s parent company); cancel any time. Try the next two lists free first, no card needed.</p>'
@@ -622,7 +637,7 @@ def state_page(data: dict, st: str) -> str:
 <section><h2>A sample of this week's {esc(name)} list</h2>
 {sample_table(data["samples"].get(st, {}).get("all", []), f"leads_{st}_all.csv · week ending {short_date(latest)} · {fmt(total)} rows · organizations first")}</section>
 
-{offer(name, st, None, root, latest, total)}
+{offer(name, st, None, root, latest, total, avg4(series))}
 
 <section><h2>{esc(name)} by category</h2>
 <p class="lead" style="font-size:16px">One state, one category is ${CAT_PRICE}/month; every category is ${ALL_PRICE}/month; three states are ${MULTI_PRICE}/month; just your local area (a ZIP code and a radius) is ${LOCAL_PRICE}/month. {('Weekly pages for: ' + ', '.join(f'<a href="{cat_pages[c]}">{esc(CAT_TITLE[c])}</a>' for c in CATS if c in cat_pages) + '.') if cat_pages else 'Category pages appear once a category has ' + str(CAT_PAGE_MIN) + '+ new practices in a week.'}</p>
@@ -709,7 +724,7 @@ def cat_page(data: dict, st: str, cat: str) -> str:
 </section>
 <section><h2>A sample of this week's {esc(name)} {esc(ct.lower())} list</h2>
 {sample_table(rows, f"leads_{st}_{cat}.csv · week ending {short_date(latest)} · {fmt(n)} rows · organizations first")}</section>
-{offer(name, st, cat, root, latest, total)}
+{offer(name, st, cat, root, latest, total, avg4(state_series(data, st)))}
 <section><h2>Other {esc(name)} categories</h2>{links_row([(CAT_TITLE[c], f"../{CAT_SLUG[c]}/") for c in CATS if c != cat and v[CATS.index(c)] >= CAT_PAGE_MIN] + [(f"All of {name}", "../")])}</section>
 <section><h2>{esc(ct)} in nearby states</h2>{links_row([(STATES[k], f"../../{SLUG[k]}/{CAT_SLUG[cat]}/") for k in NEIGHBORS.get(st, "").split() if k in STATES and data["counts"][latest].get(k, [0] * 6)[ci] >= CAT_PAGE_MIN] + [("All states", "../../")])}</section>
 """
