@@ -1,0 +1,290 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Your account — PanelReady</title>
+<meta name="description" content="Your PanelReady subscription: past lists, territory, teammates and Roster Watch.">
+<link rel="canonical" href="https://panelready.co/account/">
+<meta property="og:title" content="Your account — PanelReady"><meta property="og:description" content="Your PanelReady subscription: past lists, territory, teammates and Roster Watch."><meta property="og:url" content="https://panelready.co/account/"><meta property="og:type" content="website">
+<meta name="theme-color" content="#f6f8fb">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml"><link rel="icon" href="../favicon-32.png" sizes="32x32" type="image/png"><link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,600;0,8..60,700;1,8..60,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<meta name="robots" content="noindex, nofollow">
+<style>
+.acct{max-width:860px}.acct h1{margin-top:6px}
+.acct .card{margin:16px 0}.acct .card h2{font-size:22px;margin:0 0 6px}.acct .card p.help{color:var(--muted);font-size:14px;margin:0 0 12px}
+.acct label{display:block;font-size:13px;color:var(--muted);font-weight:600;margin:10px 0 6px}
+.acct input,.acct select,.acct textarea{width:100%;background:#fff;color:var(--ink);border:1.5px solid var(--line2);border-radius:10px;padding:11px 13px;font:500 15px Inter,sans-serif}
+.acct textarea{min-height:110px;font:13px ui-monospace,Menlo,Consolas,monospace}
+.acct input:focus,.acct select:focus,.acct textarea:focus{outline:none;border-color:var(--teal);box-shadow:0 0 0 4px rgba(14,124,123,.14)}
+.acct button.cta{border:0;cursor:pointer;margin-top:12px}
+.acct .row3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.acct .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:640px){.acct .row3,.acct .row2{grid-template-columns:1fr}}
+.acct .msg{min-height:1.2em;font-size:14px;margin-top:8px}.acct .msg.ok{color:var(--green)}.acct .msg.err{color:#be123c}
+.acct .badge{display:inline-block;font-size:12px;font-weight:700;padding:4px 10px;border-radius:999px;background:rgba(14,124,123,.1);color:var(--teal);margin-right:6px}
+.acct .dl a{font-weight:600}.acct .dl td{white-space:normal}.acct .muted{color:var(--muted)}
+.acct .up{background:linear-gradient(135deg,rgba(14,124,123,.08),rgba(37,99,235,.04));border-color:rgba(14,124,123,.35)}
+.acct .hide{display:none}
+
+.week{margin-top:22px;padding:18px 20px;border:1px dashed rgba(14,124,123,.5);border-radius:14px;background:rgba(14,124,123,.06)}
+.week h3{margin:0 0 6px;font-size:18px}.week p{margin:0 0 12px}.week .paybox{max-width:320px}.week .note{min-height:1em}
+:root{--bg:#f6f8fb;--bg2:#eef2f7;--card:#ffffff;--card2:#f3f6fa;--line:#e3e8ef;--line2:#cdd5e0;--ink:#0f2340;--body:#334155;--muted:#5b6b82;--dim:#8a97a9;--teal:#0e7c7b;--green:#15803d;--shadow:0 1px 2px rgba(15,35,64,.05),0 12px 32px -12px rgba(15,35,64,.14)}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--body);font:16px/1.65 Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-smoothing:antialiased}
+h1,h2,h3{font-family:"Source Serif 4",Georgia,"Times New Roman",serif;color:var(--ink);letter-spacing:-.01em;line-height:1.15;margin:0 0 10px;font-weight:600}
+h1{font-size:clamp(30px,4.4vw,46px);line-height:1.08}h2{font-size:clamp(21px,2.6vw,28px);margin-top:0}
+h1 em{font-style:italic;color:var(--teal)}
+a{color:var(--teal)}p{margin:0 0 14px}
+.wrap{max-width:1040px;margin:0 auto;padding:0 20px}@media(max-width:600px){.wrap{padding:0 16px}}
+.nav{position:sticky;top:0;z-index:5;backdrop-filter:blur(14px);background:rgba(255,255,255,.88);border-bottom:1px solid var(--line)}
+.nav .wrap{display:flex;align-items:center;justify-content:space-between;height:62px;gap:12px}
+.logo{display:flex;align-items:center;gap:9px;font-family:"Source Serif 4",Georgia,serif;font-weight:700;font-size:21px;color:var(--ink);text-decoration:none}
+.logo svg{width:28px;height:28px;border-radius:7px}
+.nav nav{display:flex;gap:18px;align-items:center}.nav nav a{color:var(--muted);text-decoration:none;font-size:14px;font-weight:600}.nav nav a:hover{color:var(--ink)}
+.nav nav a.mini{background:var(--ink);color:#fff;padding:9px 14px;border-radius:8px}
+@media(max-width:700px){.nav nav a:not(.mini){display:none}}
+.crumbs{font-size:13px;color:var(--dim);margin:18px 0 6px}.crumbs a{color:var(--muted);text-decoration:none}
+.kicker{display:inline-block;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--teal);margin-bottom:10px}
+.lead{font-size:18px;color:var(--muted);max-width:760px}.lead b{color:var(--ink)}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:26px 0}
+@media(max-width:760px){.stats{grid-template-columns:repeat(2,1fr)}}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 16px 14px;box-shadow:var(--shadow)}
+.stat b{display:block;font-family:"Source Serif 4",Georgia,serif;font-size:32px;font-weight:600;line-height:1.1;color:var(--ink)}.stat b small{font-size:14px;color:var(--muted);font-weight:600;font-family:Inter,sans-serif}
+.stat span{display:block;color:var(--muted);font-size:13px;margin-top:6px;line-height:1.4}
+section{margin:34px 0}
+.grid2{display:grid;grid-template-columns:1.1fr .9fr;gap:22px}@media(max-width:800px){.grid2{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;box-shadow:var(--shadow)}
+.bar{display:grid;grid-template-columns:150px 1fr 44px;gap:10px;align-items:center;margin:9px 0;font-size:14px}
+.bar .trk{height:12px;background:var(--bg2);border-radius:99px;overflow:hidden}.bar .fill{height:100%;border-radius:99px;min-width:3px}
+.bar .v{text-align:right;font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums}.bar a{color:var(--ink);text-decoration:none}.bar a:hover{color:var(--teal)}
+@media(max-width:480px){.bar{grid-template-columns:110px 1fr 40px;font-size:13px}}
+.trend{display:flex;align-items:flex-end;gap:6px;height:150px;padding:10px 0 0}
+.trend div{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;font-size:11px;color:var(--dim);gap:4px;min-width:0}
+.trend i{display:block;width:100%;max-width:56px;background:linear-gradient(180deg,#14b8a6,var(--teal));border-radius:6px 6px 2px 2px}
+.trend b{color:var(--ink);font-size:12px}.trend span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+table{width:100%;border-collapse:collapse;font-size:14px}th{text-align:left;color:var(--dim);font-size:12px;text-transform:uppercase;letter-spacing:.06em;padding:8px 10px;border-bottom:1px solid var(--line)}
+td{padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}td:first-child,td:nth-child(5){white-space:nowrap}tr:last-child td{border-bottom:0}td.n{font-weight:600;color:var(--ink)}td.r,th.r{text-align:right;font-variant-numeric:tabular-nums}
+.tscroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.pill{display:inline-block;font-size:11px;font-weight:700;padding:3px 8px;border-radius:999px;background:var(--bg2);white-space:nowrap}
+.cta{display:inline-block;background:var(--ink);color:#fff;font-weight:600;padding:13px 22px;border-radius:10px;text-decoration:none;font-size:15px;box-shadow:0 8px 24px -8px rgba(15,35,64,.45)}
+.cta:hover{background:#1a365d}
+.cta.ghost{background:#fff;color:var(--ink);border:1px solid var(--line2);box-shadow:none}.cta.ghost:hover{border-color:var(--teal);background:#fff}
+.btns{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+.offer{background:linear-gradient(135deg,rgba(14,124,123,.08),rgba(37,99,235,.04));border:1px solid rgba(14,124,123,.35);border-radius:18px;padding:26px}
+.offer h2{margin-top:0}.offer p{color:var(--muted)}
+.links{display:flex;flex-wrap:wrap;gap:8px}.links a{background:var(--card);border:1px solid var(--line);border-radius:999px;padding:7px 13px;text-decoration:none;color:var(--ink);font-size:14px}.links a:hover{border-color:var(--teal)}
+details{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 16px;margin:8px 0}summary{cursor:pointer;font-weight:600;color:var(--ink)}details p{margin:10px 0 0;color:var(--muted)}
+.note{color:var(--dim);font-size:13px;margin-top:10px}
+footer{color:var(--dim);font-size:13px;padding:30px 0 40px;border-top:1px solid var(--line);margin-top:40px}footer a{color:var(--muted)}
+.flinks{display:flex;flex-wrap:wrap;gap:6px 18px;margin-bottom:10px}.flinks a{text-decoration:none;font-weight:600}.flinks a:hover{color:var(--ink)}
+.prose{max-width:760px}.prose h2{margin-top:30px}.prose p,.prose li{color:var(--muted)}.prose li{margin:6px 0}.prose b{color:var(--ink)}
+.all{columns:3;column-gap:20px}.all a{display:block;padding:5px 0;color:var(--ink);text-decoration:none;font-size:15px;break-inside:avoid}.all a small{color:var(--dim);margin-left:6px}
+@media(max-width:700px){.all{columns:2}}
+</style>
+
+</head>
+<body>
+<div class="nav"><div class="wrap">
+  <a class="logo" href="../"><svg viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="15" fill="#0f2340"/><rect x="18" y="17" width="28" height="32" rx="4" fill="none" stroke="#ffffff" stroke-width="4.5" stroke-linejoin="round"/><rect x="25" y="13" width="14" height="8" rx="2.5" fill="#ffffff"/><path d="M25 34l5.5 5.5L40 29" fill="none" stroke="#2dd4bf" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg>PanelReady</a>
+  <nav><a href="../states/">All states</a><a href="../#how">How it works</a><a href="../#pricing">Pricing</a><a class="mini" href="../#free">Get 2 lists free</a></nav>
+</div></div>
+<div class="wrap">
+
+<div class="crumbs"><a href="../">PanelReady</a> › Your account</div>
+<div class="acct">
+<span class="kicker">Your account</span>
+<h1 id="hello">Your PanelReady account</h1>
+<p class="lead" id="planline">Loading your account…</p>
+
+<div class="card hide" id="needLink">
+  <h2>Get your account link</h2>
+  <p class="help">Your account page opens from the private link in any PanelReady email. Enter the address your lists go to and we'll email the link (within the hour).</p>
+  <form id="linkForm" novalidate><label for="lkEmail">Email</label><input type="email" id="lkEmail" placeholder="you@company.com" required>
+  <input type="text" name="website" id="lkHp" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px" aria-hidden="true">
+  <button class="cta" type="submit">Email me my link</button><div class="msg" id="linkMsg"></div></form>
+</div>
+
+<div id="acctBody" class="hide">
+<div class="card up hide" id="upsell"><h2>Keep the full lists coming</h2><p class="help" id="upsellText"></p><a class="cta" href="../#pricing">See plans</a></div>
+
+<div class="card"><h2>Your lists</h2>
+  <p class="help">Every weekly email, as one zip per week (kept about 8 weeks). The first one includes the last 90 days of new practices in your territory.</p>
+  <div class="tscroll"><table class="dl"><thead><tr><th>Week ending</th><th>Files</th><th class="r">Download</th></tr></thead><tbody id="dlRows"></tbody></table></div>
+</div>
+
+<div class="card"><h2>Territory</h2>
+  <p class="help" id="terrHelp"></p>
+  <form id="terrForm" novalidate>
+    <div id="areaBox" class="row2 hide"><div><label for="zip">ZIP code</label><input id="zip" inputmode="numeric" maxlength="5" placeholder="12207"></div>
+      <div><label for="radius">Radius (miles)</label><input id="radius" type="number" min="5" max="100" value="25"></div></div>
+    <div id="stateBox" class="hide"><div class="row3" id="stateSels"></div>
+      <div id="catBox"><label for="cat">Category</label><div class="sel"><select id="cat"></select></div></div></div>
+    <button class="cta" type="submit">Save territory</button><div class="msg" id="terrMsg"></div>
+  </form>
+</div>
+
+<div class="card" id="teamCard"><h2>Teammates</h2>
+  <p class="help" id="teamHelp"></p>
+  <form id="teamForm" novalidate><label for="team">Teammates' emails, one per line</label><textarea id="team" style="min-height:80px;font:500 15px Inter,sans-serif"></textarea>
+  <button class="cta" type="submit">Save teammates</button><div class="msg" id="teamMsg"></div></form>
+</div>
+
+<div class="card" id="rosterCard"><h2>Roster Watch</h2>
+  <p class="help">Paste the NPIs of your own providers (your current clients). Every week we check each one against the OIG exclusion list, Medicare opt-outs, NPI deactivations, Medicare revalidation due dates, Medicare enrollment and pending applications, and its registered address, and your weekly email tells you only what changed. <span id="rosterLimit"></span></p>
+  <form id="rosterForm" novalidate><label for="roster">NPIs (any format: one per line, commas, or pasted from a spreadsheet)</label><textarea id="roster" placeholder="1234567893"></textarea>
+  <button class="cta" type="submit">Save roster</button><div class="msg" id="rosterMsg"></div></form>
+  <div id="rosterReport" class="hide"><h3 style="margin-top:18px;font-size:17px">Worth a look <span class="muted" id="rosterChecked" style="font:500 13px Inter,sans-serif"></span></h3>
+  <div class="tscroll"><table><thead><tr><th>NPI</th><th>Provider</th><th>Notes</th></tr></thead><tbody id="rosterRows"></tbody></table></div></div>
+</div>
+
+<div class="card" id="hookCard"><h2>Send each list to your CRM (webhook)</h2>
+  <p class="help">Paste a "catch hook" address from Zapier (Webhooks by Zapier → Catch Hook) or Make (Custom webhook), or your own HTTPS endpoint. Every week, right after the email, we POST the rows as JSON, 500 per request: <code>{"source","week","part","parts","rows":[{"Company","First Name","Phone","Email","NPI",…}]}</code>, the same columns as the CRM import file.</p>
+  <form id="hookForm" novalidate><label for="hook">Webhook address (https://…)</label><input id="hook" type="url" placeholder="https://hooks.zapier.com/hooks/catch/…">
+  <button class="cta" type="submit">Save webhook</button><div class="msg" id="hookMsg"></div></form>
+</div>
+
+<div class="card"><h2>Billing</h2>
+  <p class="help">Payments go through PayPal and show as Avery Data Co. To change plans, pick the new one on the <a href="../#pricing">pricing section</a> with the same email, then cancel the old one. To cancel: PayPal → Settings → Payments → Manage automatic payments, or reply STOP to any email. Questions: reply to any list email.</p>
+</div>
+<p class="note">Keep this page's link private: anyone with it can see your lists and change your settings. Changes are applied within the hour and confirmed by email. <span id="updated"></span></p>
+</div>
+</div>
+<script>
+(function(){
+  var W = 'https://panelready-signup.matt-fixnotice.workers.dev';
+  var NICE = {"behavioral": "Behavioral health", "medical": "Medical practices & clinics", "dental": "Dental", "therapy": "Therapy & rehab", "home_senior": "Home care & senior living", "dme_transport": "DME, pharmacy & transport"}, NAMES = {"AL": "Alabama", "AK": "Alaska", "AZ": "Arizona", "AR": "Arkansas", "CA": "California", "CO": "Colorado", "CT": "Connecticut", "DE": "Delaware", "DC": "Washington, DC", "FL": "Florida", "GA": "Georgia", "HI": "Hawaii", "ID": "Idaho", "IL": "Illinois", "IN": "Indiana", "IA": "Iowa", "KS": "Kansas", "KY": "Kentucky", "LA": "Louisiana", "ME": "Maine", "MD": "Maryland", "MA": "Massachusetts", "MI": "Michigan", "MN": "Minnesota", "MS": "Mississippi", "MO": "Missouri", "MT": "Montana", "NE": "Nebraska", "NV": "Nevada", "NH": "New Hampshire", "NJ": "New Jersey", "NM": "New Mexico", "NY": "New York", "NC": "North Carolina", "ND": "North Dakota", "OH": "Ohio", "OK": "Oklahoma", "OR": "Oregon", "PA": "Pennsylvania", "PR": "Puerto Rico", "RI": "Rhode Island", "SC": "South Carolina", "SD": "South Dakota", "TN": "Tennessee", "TX": "Texas", "UT": "Utah", "VT": "Vermont", "VA": "Virginia", "WA": "Washington", "WV": "West Virginia", "WI": "Wisconsin", "WY": "Wyoming"};
+  var t = (location.hash.match(/[#&]t=([A-Za-z0-9_-]{20,64})/) || [])[1] || '';
+  var $ = function(id){ return document.getElementById(id); };
+  var show = function(id, on){ $(id).classList.toggle('hide', !on); };
+  function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+  function msg(id, text, ok){ var m = $(id); m.textContent = text; m.className = 'msg ' + (ok ? 'ok' : 'err'); }
+  function post(path, body, msgId, okText){
+    msg(msgId, 'Saving…', true);
+    fetch(W + path, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
+      .then(function(r){ return r.json(); })
+      .then(function(j){ j.ok ? msg(msgId, okText, true) : msg(msgId, j.error || 'That didn\'t work. Reply to any list email instead.', false); })
+      .catch(function(){ msg(msgId, 'Couldn\'t reach PanelReady. Try again, or reply to any list email.', false); });
+  }
+  var SAVED = 'Saved. It\'s applied within the hour, and you\'ll get an email confirming it.';
+  $('linkForm').addEventListener('submit', function(e){
+    e.preventDefault();
+    var em = $('lkEmail').value.trim();
+    if (!/^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i.test(em)) { msg('linkMsg', 'Please enter the email address your lists go to.', false); return; }
+    post('/link', { email: em, website: $('lkHp').value }, 'linkMsg', 'If that address has an account, the link is on its way (within the hour).');
+  });
+  if (!t) { $('planline').textContent = ''; show('needLink', true); return; }
+  fetch(W + '/acct?t=' + encodeURIComponent(t), { cache: 'no-store' })
+    .then(function(r){ return r.json(); })
+    .then(function(a){
+      if (!a || a.ok === false || !a.email) { $('planline').textContent = (a && a.error) || 'No account found for this link.'; show('needLink', true); return; }
+      render(a);
+    })
+    .catch(function(){ $('planline').textContent = 'Couldn\'t load your account just now. Try again in a minute.'; });
+
+  function render(a){
+    show('acctBody', true);
+    var first = (a.name || '').split(' ')[0];
+    $('hello').textContent = first ? 'Hi ' + first + '.' : 'Your PanelReady account';
+    var where = a.area ? a.area_label : (a.states.map(function(s){ return NAMES[s] || s; }).join(', ') || 'no state picked yet');
+    var cats = a.area ? 'every category' : (a.categories.indexOf('all') >= 0 ? 'every category' : a.categories.map(function(c){ return NICE[c] || c; }).join(', '));
+    var plan = a.status === 'paid' ? '<span class="badge">' + esc(a.plan_label) + (a.price ? ' · $' + a.price + '/mo' : '') + '</span>'
+      : '<span class="badge">' + esc(a.plan_label) + '</span>';
+    $('planline').innerHTML = plan + ' Lists go to <b>' + esc(a.email) + '</b>: ' + esc(where) + (cats ? ', ' + esc(cats) : '') + '.';
+    if (a.status !== 'paid') {
+      show('upsell', true);
+      var p = a.plans || {};
+      $('upsellText').textContent = (a.status === 'free' ? 'You\'re on the free weekly digest (the best new practices by name). ' : 'You\'re on the free trial. ')
+        + 'Plans: $' + (p.local||{}).price + '/mo for a local area, $' + (p.cat||{}).price + ' for one state and category, $' + (p.all||{}).price
+        + ' for every category in a state, $' + (p.multi||{}).price + ' for three states. Yearly billing gets 2 months free.';
+    }
+    // downloads
+    var rows = (a.deliveries || []).map(function(d){
+      return '<tr><td>' + esc(d.week) + '</td><td class="muted">' + esc((d.files || []).join(', ')) + '</td><td class="r"><a href="' + W + '/dl?t=' + encodeURIComponent(t) + '&f=' + encodeURIComponent(d.file) + '">Download' + (d.bytes ? ' (' + Math.max(1, Math.round(d.bytes / 1024)) + ' KB)' : '') + '</a></td></tr>';
+    });
+    $('dlRows').innerHTML = rows.join('') || '<tr><td colspan="3" class="muted">Your first list appears here after it\'s emailed.</td></tr>';
+    // territory
+    var local = a.plan === 'local' || !!a.area;
+    show('areaBox', local); show('stateBox', !local);
+    if (local) {
+      var parts = (a.area || '').split(':');
+      $('zip').value = parts[0] || ''; $('radius').value = parts[1] || 25;
+      $('terrHelp').textContent = 'Every new practice within your radius of one ZIP code, every category (5 to 100 miles).';
+    } else {
+      var n = Math.max(1, a.max_states || 1), html = '';
+      for (var i = 0; i < n; i++) {
+        html += '<div><label for="st' + i + '">State' + (n > 1 ? ' ' + (i + 1) : '') + '</label><div class="sel"><select id="st' + i + '"><option value="">' + (i ? '(none)' : 'Pick a state') + '</option>'
+          + a.states_all.map(function(s){ return '<option value="' + s + '"' + (a.states[i] === s ? ' selected' : '') + '>' + esc(NAMES[s] || s) + '</option>'; }).join('') + '</select></div></div>';
+      }
+      $('stateSels').innerHTML = html;
+      var cs = (a.one_category ? [] : [['all', 'Every category']]).concat(a.categories_all.map(function(c){ return [c, NICE[c] || c]; }));
+      if (a.one_category && a.status !== 'paid') cs = [['all', 'Every category']].concat(cs);
+      $('cat').innerHTML = cs.map(function(c){ return '<option value="' + c[0] + '"' + (a.categories[0] === c[0] ? ' selected' : '') + '>' + esc(c[1]) + '</option>'; }).join('');
+      show('catBox', !(a.status === 'paid' && !a.one_category));
+      $('terrHelp').textContent = a.status === 'paid'
+        ? 'Your plan covers ' + n + ' state' + (n > 1 ? 's' : '') + (a.one_category ? ' and one category.' : ', every category.')
+        : 'The free plan covers one state.';
+    }
+    // team
+    var room = Math.max(0, (a.seats || 1) - 1);
+    $('team').value = (a.team || []).join('\n');
+    $('teamHelp').textContent = room ? 'Your plan includes ' + room + ' teammate' + (room > 1 ? 's' : '') + ': each gets a copy of every list email.'
+      : 'Teammates come with the paid plans (2 to 10 people on one subscription).';
+    $('team').disabled = !room;
+    // roster
+    $('roster').value = (a.roster || []).join('\n');
+    $('rosterLimit').textContent = a.roster_limit ? 'Your plan watches up to ' + a.roster_limit.toLocaleString() + ' providers.' : 'Roster Watch comes with the paid plans.';
+    $('roster').disabled = !a.roster_limit;
+    var rep = a.roster_report || [];
+    if (rep.length) {
+      show('rosterReport', true);
+      $('rosterChecked').textContent = a.roster_checked ? '(checked ' + a.roster_checked + ')' : '';
+      $('rosterRows').innerHTML = rep.map(function(r){ return '<tr><td>' + esc(r.npi) + '</td><td>' + esc(r.name) + '</td><td>' + esc(r.notes.join('; ')) + '</td></tr>'; }).join('');
+    }
+    // webhook
+    $('hook').value = a.webhook || '';
+    $('hook').disabled = a.status !== 'paid';
+    if (a.status !== 'paid') $('hookCard').querySelector('.help').insertAdjacentText('beforeend', ' Comes with the paid plans.');
+    $('updated').textContent = a.updated ? 'Page updated ' + a.updated.replace('T', ' ') + '.' : '';
+  }
+
+  $('terrForm').addEventListener('submit', function(e){
+    e.preventDefault();
+    if (!$('areaBox').classList.contains('hide')) {
+      var z = $('zip').value.replace(/\D/g, '');
+      if (z.length !== 5) { msg('terrMsg', 'Please enter a 5-digit ZIP code.', false); return; }
+      post('/change?t=' + encodeURIComponent(t), { change: { area: z + ':' + (parseInt($('radius').value, 10) || 25) } }, 'terrMsg', SAVED);
+      return;
+    }
+    var states = [].slice.call(document.querySelectorAll('#stateSels select')).map(function(s){ return s.value; }).filter(Boolean);
+    if (!states.length) { msg('terrMsg', 'Please pick a state.', false); return; }
+    var cat = $('catBox').classList.contains('hide') ? 'all' : $('cat').value;
+    post('/change?t=' + encodeURIComponent(t), { change: { states: states, categories: [cat] } }, 'terrMsg', SAVED);
+  });
+  $('teamForm').addEventListener('submit', function(e){
+    e.preventDefault();
+    var list = $('team').value.split(/[\s,;]+/).filter(function(x){ return x.indexOf('@') > 0; });
+    post('/change?t=' + encodeURIComponent(t), { change: { team: list } }, 'teamMsg', SAVED);
+  });
+  $('rosterForm').addEventListener('submit', function(e){
+    e.preventDefault();
+    var npis = ($('roster').value.match(/\d{10}/g) || []);
+    msg('rosterMsg', '', true);
+    post('/change?t=' + encodeURIComponent(t), { change: { roster: npis } }, 'rosterMsg', SAVED.replace('Saved.', 'Saved ' + npis.length + ' NPI' + (npis.length === 1 ? '' : 's') + '.'));
+  });
+  $('hookForm').addEventListener('submit', function(e){
+    e.preventDefault();
+    var u = $('hook').value.trim();
+    if (u && u.indexOf('https://') !== 0) { msg('hookMsg', 'The address must start with https://', false); return; }
+    post('/change?t=' + encodeURIComponent(t), { change: { webhook: u } }, 'hookMsg', SAVED);
+  });
+})();
+</script>
+
+<footer><div class="flinks"><a href="../states/">New practices by state</a><a href="../about/">About</a><a href="../contact/">Contact</a><a href="../privacy/">Privacy</a><a href="../terms/">Terms</a><a href="../sample/panelready-sample.csv">Sample spreadsheet</a></div>
+PanelReady · <a href="mailto:matt@panelready.co">matt@panelready.co</a> · an Avery Data Co. product, New York<br>
+Source: NPPES weekly dissemination files published by CMS. Public data, provided as-is; not affiliated with CMS or any payer. Practice names are from the public registry; phone numbers are masked on this page and complete in the subscriber spreadsheet.</footer>
+</div>
+</body>
+</html>
