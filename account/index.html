@@ -215,7 +215,7 @@ footer{color:var(--dim);font-size:13px;padding:30px 0 40px;border-top:1px solid 
       var n = Math.max(1, a.max_states || 1), html = '';
       for (var i = 0; i < n; i++) {
         html += '<div><label for="st' + i + '">State' + (n > 1 ? ' ' + (i + 1) : '') + '</label><div class="sel"><select id="st' + i + '"><option value="">' + (i ? '(none)' : 'Pick a state') + '</option>'
-          + a.states_all.map(function(s){ return '<option value="' + s + '"' + (a.states[i] === s ? ' selected' : '') + '>' + esc(NAMES[s] || s) + '</option>'; }).join('') + '</select></div></div>';
+          + a.states_all.slice().sort(function(x, y){ return (NAMES[x] || x) < (NAMES[y] || y) ? -1 : 1; }).map(function(s){ return '<option value="' + s + '"' + (a.states[i] === s ? ' selected' : '') + '>' + esc(NAMES[s] || s) + '</option>'; }).join('') + '</select></div></div>';
       }
       $('stateSels').innerHTML = html;
       var cs = (a.one_category ? [] : [['all', 'Every category']]).concat(a.categories_all.map(function(c){ return [c, NICE[c] || c]; }));
