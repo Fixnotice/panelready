@@ -34,7 +34,7 @@ for cand in (ROOT, HERE):                            # pr/npi.py lives in the pr
 from pr import npi as N                              # noqa: E402
 
 SITE = "https://panelready.co"                       # the site's address, no trailing slash (the old github.io address redirects here)
-BUILD_VERSION = 10                                    # bump when the page layout changes, so the next run rewrites every page
+BUILD_VERSION = 11                                    # bump when the page layout changes, so the next run rewrites every page
 COMPANY = "Avery Data Co."
 PAYPAL_CLIENT_ID = "BAAQ4G4Hizw2wHo9EZQsTxcW_oBtYKOFEIoI41YQZJvC8ufp2vM9Z_lIU4ASqIUZvXAUrin0KLaYIpr8Js"   # the "PanelReady site" app on developer.paypal.com (Live); one-time orders
 PAYPAL_ME = ""                                       # optional plan B: a PayPal.me handle (e.g. "averydataco"); shown as a second way to pay $39
@@ -47,6 +47,12 @@ TREND_WEEKS = 12
 CATS = N.CATEGORIES
 CAT_TITLE = {"behavioral": "Behavioral health", "medical": "Medical practices & clinics", "dental": "Dental",
              "therapy": "Therapy & rehab", "home_senior": "Home care & senior living", "dme_transport": "DME, pharmacy & transport"}
+CAT_NOUN = {"behavioral": "behavioral health practices", "medical": "medical practices & clinics", "dental": "dental practices",
+            "therapy": "therapy & rehab practices", "home_senior": "home care & senior living providers",
+            "dme_transport": "DME, pharmacy & transport providers"}
+CAT_LEAD = {"behavioral": "Behavioral Health", "medical": "Medical Practice", "dental": "Dental Practice",
+            "therapy": "Therapy & Rehab", "home_senior": "Home Care", "dme_transport": "DME & Pharmacy"}   # "{x} Leads" in titles
+BUYERS = "credentialing & billing companies"          # who the pages are for (titles, headlines, descriptions)
 CAT_SLUG = {"behavioral": "behavioral-health", "medical": "medical-practices", "dental": "dental", "therapy": "therapy-rehab",
             "home_senior": "home-care-senior-living", "dme_transport": "dme-pharmacy-transport"}
 CAT_WHO = {"behavioral": "counselors, social workers, psychologists, psychiatry and psychiatric NPs, ABA providers and substance-use programs",
@@ -588,8 +594,8 @@ def state_page(data: dict, st: str) -> str:
 
     body = f"""
 <div class="crumbs"><a href="{root}">{BRAND}</a> › <a href="../">All states</a> › {esc(name)}</div>
-<span class="kicker">New healthcare practices · {esc(name)}</span>
-<h1><em>{fmt(total)}</em> new healthcare practices registered in {esc(name)} last week</h1>
+<span class="kicker">New practice leads for {esc(BUYERS)} · {esc(name)}</span>
+<h1><em>{fmt(total)}</em> new healthcare practices registered in {esc(name)} last week: leads for credentialing &amp; billing companies</h1>
 <p class="lead">{p1}</p>
 <div class="stats">
   <div class="stat"><b>{fmt(total)}</b><span>new practices &amp; sole proprietors, week ending {esc(short_date(latest))}</span></div>
@@ -632,9 +638,9 @@ def state_page(data: dict, st: str) -> str:
 
 <section><h2>Nearby states</h2>{links_row([(STATES[n], f"../{SLUG[n]}/") for n in NEIGHBORS.get(st, "").split() if n in STATES and n in data["counts"][latest]] + [("All states", "../")])}</section>
 """
-    title = f"New healthcare practices in {name} this week ({fmt(total)} registered) — {BRAND}"
-    desc = (f"{fmt(total)} healthcare practices and sole proprietors registered for an NPI in {name} in the week ending {long_date(latest)}: "
-            f"{', '.join(f'{fmt(n)} {CAT_TITLE[c].lower()}' for c, n in top[:3])}. Names, specialties, cities and a weekly trend from the federal NPPES file, updated every week.")
+    title = f"{name} New Practice Leads for Credentialing & Billing | {BRAND}"
+    desc = (f"{fmt(total)} new healthcare practices registered in {name} the week ending {short_date(latest)}: weekly leads for credentialing "
+            f"and medical billing companies, with name, specialty, city, phone and address.")
     ld = {"@context": "https://schema.org", "@type": "Dataset", "name": f"New healthcare practices registered in {name}, by week",
           "description": desc, "url": f"{SITE}/states/{slug}/", "creator": {"@type": "Organization", "name": "Avery Data Co.", "url": SITE + "/"},
           "isBasedOn": "https://download.cms.gov/nppes/NPI_Files.html", "temporalCoverage": f"{data['weeks'][0]}/{latest}",
@@ -686,8 +692,8 @@ def cat_page(data: dict, st: str, cat: str) -> str:
          f"At this pace {name} adds about {fmt(n * 52 / 12)} new {ct.lower()} practices a month, each of which will need payer credentialing and a billing setup before it can collect on a claim."
     body = f"""
 <div class="crumbs"><a href="{root}">{BRAND}</a> › <a href="../../">All states</a> › <a href="../">{esc(name)}</a> › {esc(ct)}</div>
-<span class="kicker">{esc(ct)} · {esc(name)}</span>
-<h1><em>{fmt(n)}</em> new {esc(ct.lower())} practices registered in {esc(name)} last week</h1>
+<span class="kicker">{esc(CAT_LEAD[cat])} leads for {esc(BUYERS)} · {esc(name)}</span>
+<h1><em>{fmt(n)}</em> new {esc(CAT_NOUN[cat])} registered in {esc(name)} last week: leads for credentialing &amp; billing companies</h1>
 <p class="lead">{p1}</p>
 <div class="stats">
   <div class="stat"><b>{fmt(n)}</b><span>{esc(ct.lower())} registrations, week ending {esc(short_date(latest))}</span></div>
@@ -706,9 +712,9 @@ def cat_page(data: dict, st: str, cat: str) -> str:
 <section><h2>Other {esc(name)} categories</h2>{links_row([(CAT_TITLE[c], f"../{CAT_SLUG[c]}/") for c in CATS if c != cat and v[CATS.index(c)] >= CAT_PAGE_MIN] + [(f"All of {name}", "../")])}</section>
 <section><h2>{esc(ct)} in nearby states</h2>{links_row([(STATES[k], f"../../{SLUG[k]}/{CAT_SLUG[cat]}/") for k in NEIGHBORS.get(st, "").split() if k in STATES and data["counts"][latest].get(k, [0] * 6)[ci] >= CAT_PAGE_MIN] + [("All states", "../../")])}</section>
 """
-    title = f"New {ct.lower()} practices in {name} this week ({fmt(n)} registered) — {BRAND}"
-    desc = (f"{fmt(n)} {ct.lower()} practices and sole proprietors registered for an NPI in {name} in the week ending {long_date(latest)}"
-            + (f", led by {specs[0][0].lower()}" if specs else "") + ". Names, specialties and cities from the federal NPPES file, updated weekly.")
+    title = f"{name} {CAT_LEAD[cat]} Leads for Credentialing & Billing | {BRAND}"
+    desc = (f"{fmt(n)} new {CAT_NOUN[cat]} registered in {name} the week ending {short_date(latest)}: weekly leads for credentialing "
+            f"and medical billing companies, with name, specialty, city, phone and address.")
     ld = {"@context": "https://schema.org", "@type": "Dataset", "name": f"New {ct.lower()} practices registered in {name}, by week", "description": desc,
           "url": f"{SITE}/states/{slug}/{CAT_SLUG[cat]}/", "creator": {"@type": "Organization", "name": "Avery Data Co.", "url": SITE + "/"},
           "isBasedOn": "https://download.cms.gov/nppes/NPI_Files.html", "temporalCoverage": f"{data['weeks'][0]}/{latest}", "dateModified": latest,
@@ -725,8 +731,8 @@ def hub_page(data: dict) -> str:
                    f'<td class="r">{fmt(data["orgs"].get(k, 0))}</td><td>{esc(CAT_TITLE[CATS[max(range(len(CATS)), key=lambda i: week[k][i])]])}</td></tr>' for k in order if k in STATES)
     body = f"""
 <div class="crumbs"><a href="../">{BRAND}</a> › All states</div>
-<span class="kicker">New healthcare practices by state</span>
-<h1><em>{fmt(nat['total'])}</em> new healthcare practices registered across the U.S. last week</h1>
+<span class="kicker">New practice leads by state for {esc(BUYERS)}</span>
+<h1><em>{fmt(nat['total'])}</em> new healthcare practices registered across the U.S. last week: leads for credentialing &amp; billing companies</h1>
 <p class="lead">Every practice, clinic, agency and sole proprietor that registered for an NPI in the week ending {long_date(latest)}, from the federal NPPES file, sorted by state. {fmt(nat['orgs'])} were brand-new organizations. Pick a state for its weekly count, trend, busiest cities, top specialties and a sample of the list.</p>
 <div class="stats">
   <div class="stat"><b>{fmt(nat['total'])}</b><span>new practices &amp; sole proprietors, week ending {esc(short_date(latest))}</span></div>
@@ -740,8 +746,9 @@ def hub_page(data: dict) -> str:
 {offer("", "", None, "../")}
 <section><h2>All states and territories</h2><div class="all">{''.join(f'<a href="{SLUG[k]}/">{esc(STATES[k])}<small>{fmt(sum(week.get(k, [0])))}</small></a>' for k in sorted(STATES, key=lambda k: STATES[k]))}</div></section>
 """
-    title = f"New healthcare practices by state this week ({fmt(nat['total'])} registered) — {BRAND}"
-    desc = f"{fmt(nat['total'])} healthcare practices and sole proprietors registered for an NPI in the week ending {long_date(latest)}. Weekly counts, trends, cities and specialties for every U.S. state from the federal NPPES registry."
+    title = f"New Healthcare Practice Leads by State for Credentialing & Billing | {BRAND}"
+    desc = (f"{fmt(nat['total'])} new healthcare practices registered across the U.S. the week ending {short_date(latest)}: weekly leads by state "
+            f"for credentialing and medical billing companies, with counts, trends, cities and specialties.")
     ld = {"@context": "https://schema.org", "@type": "Dataset", "name": "New healthcare practices registered in the U.S., by state and week", "description": desc,
           "url": f"{SITE}/states/", "creator": {"@type": "Organization", "name": "Avery Data Co.", "url": SITE + "/"}, "isBasedOn": "https://download.cms.gov/nppes/NPI_Files.html",
           "temporalCoverage": f"{data['weeks'][0]}/{latest}", "dateModified": latest, "spatialCoverage": {"@type": "Place", "name": "United States"},
