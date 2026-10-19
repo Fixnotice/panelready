@@ -34,7 +34,7 @@ for cand in (ROOT, HERE):                            # pr/npi.py lives in the pr
 from pr import npi as N                              # noqa: E402
 
 SITE = "https://panelready.co"                       # the site's address, no trailing slash (the old github.io address redirects here)
-BUILD_VERSION = 11                                    # bump when the page layout changes, so the next run rewrites every page
+BUILD_VERSION = 12                                    # bump when the page layout changes, so the next run rewrites every page
 COMPANY = "Avery Data Co."
 PAYPAL_CLIENT_ID = "BAAQ4G4Hizw2wHo9EZQsTxcW_oBtYKOFEIoI41YQZJvC8ufp2vM9Z_lIU4ASqIUZvXAUrin0KLaYIpr8Js"   # the "PanelReady site" app on developer.paypal.com (Live); one-time orders
 PAYPAL_ME = ""                                       # optional plan B: a PayPal.me handle (e.g. "averydataco"); shown as a second way to pay $39
@@ -453,7 +453,7 @@ def offer(state_name: str, st: str, cat: str | None, root: str, latest: str = ""
     where = f"in {esc(state_name)}" if st else "in your state"
     week = week_box(state_name, st, latest, total) if st and latest and total else ""
     return (f'<section class="offer"><h2>Get every new {esc(what)} {where}, the week they register.</h2>'
-            f'<p>This page shows a sample. Subscribers get the complete {esc(state_name) if st else "state"} list as a spreadsheet, {sub}: practice name, specialty, city, street address, phone, NPI and registration date, organizations first. '
+            f'<p>This page shows a sample. Subscribers get the complete {esc(state_name) if st else "state"} list as a spreadsheet, {sub}, sorted best-first: the top 25 marked, a score and a ready-to-say opener for every practice, phone, address and NPI, websites and emails for organizations where we can find them, an OIG exclusion check, and once a month the practices that look stuck in credentialing. Backed by a 90-day guarantee. '
             f'{plan} per state through PayPal (the charge shows as {COMPANY}, {BRAND}\'s parent company); cancel any time. Try the next two lists free first, no card needed.</p>'
             f'<div class="btns"><a class="cta" href="{root}{q}#free">Get two free {esc(state_name) if st else ""} lists</a><a class="cta ghost" href="{root}{q}#pricing">Subscribe · {plan}</a></div>{week}</section>')
 
@@ -833,7 +833,9 @@ def info_pages(data: dict) -> list[str]:
 <div class="prose">
 <p class="lead">These terms apply to the {BRAND} lists and website, provided by {COMPANY} ("we"). By requesting lists or subscribing you agree to them. Last updated {long_date(latest)}.</p>
 <h2>The service</h2>
-<p>{BRAND} sends you a spreadsheet of healthcare practices and sole proprietors that registered for an NPI in the previous week, for the state(s) and category(ies) on your plan, on the morning CMS posts the weekly file (normally once a week; CMS occasionally skips or delays a week). The data comes from the public NPPES registry exactly as published. We sort and deliver it; we don't verify or add to it.</p>
+<p>{BRAND} sends you a spreadsheet of healthcare practices and sole proprietors that registered for an NPI in the previous week, for the state(s) and category(ies) on your plan, on the morning CMS posts the weekly file (normally once a week; CMS occasionally skips or delays a week). The data comes from the public NPPES registry exactly as published. We sort it, score each practice and suggest an opener; for organizations we also look up websites, emails and Google ratings from public sources (Google and the practice's own website), and we check every name against the federal OIG exclusion list. Once a month subscribers also get a list of practices that registered 2-12 months earlier and don't appear on Medicare's public enrollment list. Scores, openers and lookups are our best suggestions, not verified facts.</p>
+<h2>The 90-day guarantee</h2>
+<p>If you don't sign at least one new client from your {BRAND} lists during your first 90 days as a paying subscriber, tell us by email within 30 days after that and your next three months are free: we pause your PayPal subscription for three months, then it resumes at your normal price. One guarantee per company; no proof required.</p>
 <h2>Free lists</h2>
 <p>New companies can receive two weekly lists free, no payment details required. After the second list nothing further is sent unless you subscribe. We may decline or limit free lists at our discretion, for example to one per company.</p>
 <h2>Plans and payment</h2>
@@ -845,7 +847,7 @@ def info_pages(data: dict) -> list[str]:
 <h2>What you may do with the lists</h2>
 <p>Use them inside your own business to find and contact practices. You may not resell, republish or redistribute the lists, or use them to build a competing product. The lists are not exclusive: other subscribers to the same state and category receive the same data. You are responsible for your own outreach and for complying with the laws that apply to it, including telephone and email marketing rules.</p>
 <h2>No warranty</h2>
-<p>The data is public information provided as-is. We don't warrant that it is complete, current or accurate, that a given practice is still operating or wants to be contacted, or that using it will produce any result. Our total liability for any claim connected with the service is limited to the amount you paid us in the three months before the claim arose. We're not affiliated with CMS or any payer.</p>
+<p>The data is public information provided as-is. We don't warrant that it is complete, current or accurate, that a given practice is still operating or wants to be contacted, that a looked-up website or email belongs to the practice, that a practice missing from Medicare's quarterly enrollment list isn't credentialed elsewhere, or that using it will produce any result (beyond the guarantee above). Our total liability for any claim connected with the service is limited to the amount you paid us in the three months before the claim arose. We're not affiliated with CMS or any payer.</p>
 <h2>Changes and law</h2>
 <p>We may update these terms; the date at the top changes when we do, and material changes are announced by email to subscribers. These terms are governed by the laws of the State of New York. Questions: <a href="mailto:{MAIL}">{MAIL}</a>.</p>
 </div>
