@@ -34,11 +34,12 @@ for cand in (ROOT, HERE):                            # pr/npi.py lives in the pr
 from pr import npi as N                              # noqa: E402
 
 SITE = "https://panelready.co"                       # the site's address, no trailing slash (the old github.io address redirects here)
-BUILD_VERSION = 14                                    # bump when the page layout changes, so the next run rewrites every page
+BUILD_VERSION = 15                                    # bump when the page layout changes, so the next run rewrites every page
 COMPANY = "Avery Data Co."
 PAYPAL_CLIENT_ID = "BAAQ4G4Hizw2wHo9EZQsTxcW_oBtYKOFEIoI41YQZJvC8ufp2vM9Z_lIU4ASqIUZvXAUrin0KLaYIpr8Js"   # the "PanelReady site" app on developer.paypal.com (Live); one-time orders
 PAYPAL_ME = ""                                       # optional plan B: a PayPal.me handle (e.g. "averydataco"); shown as a second way to pay $39
 WEEK_PRICE = 39                                      # one-time: this week's list for one state, every category
+LOCAL_PRICE, CAT_PRICE, ALL_PRICE, MULTI_PRICE = 49, 89, 149, 199   # monthly plans (yearly = 10 months); see pr/plans.py
 SAMPLE_STATES = ["VT", "DE", "RI", "AK", "WY", "ND", "SD", "MT", "ME", "NH"]   # the free sample: the first of these with 8-25 rows this week
 BRAND, MAIL = "PanelReady", "matt@panelready.co"
 WEEKS = HERE / "data" / "weeks.json"
@@ -446,15 +447,15 @@ def week_box(state_name: str, st: str, latest: str, total: int) -> str:
 def offer(state_name: str, st: str, cat: str | None, root: str, latest: str = "", total: int = 0) -> str:
     """The subscribe block. st="" makes the generic version for the hub."""
     what = f"{CAT_TITLE[cat].lower()} practice" if cat else "practice"
-    plan = "$89/month" if cat else "$199/month"
+    plan = f"${CAT_PRICE}/month" if cat else f"${ALL_PRICE}/month"
     sub = "one spreadsheet every Monday" if cat else "every category, one spreadsheet every Monday"
     which = f"the {CAT_TITLE[cat].lower()} category" if cat else "all categories"
     q = f"?state={st}&cat={cat or 'all'}" if st else ""
     where = f"in {esc(state_name)}" if st else "in your state"
     week = week_box(state_name, st, latest, total) if st and latest and total else ""
     return (f'<section class="offer"><h2>Get every new {esc(what)} {where}, the week they register.</h2>'
-            f'<p>This page shows a sample. Subscribers get the complete {esc(state_name) if st else "state"} list as a spreadsheet, {sub}, sorted best-first: the top 25 marked, a score and a ready-to-say opener for every practice, the owner\'s direct line where the registry lists it, phone, address and NPI, websites, emails and practice software for organizations where we can find them, an OIG exclusion check, and the practices that moved that week. Once a month: practices due for Medicare revalidation and practices that look stuck in credentialing. Backed by a 90-day guarantee. '
-            f'{plan} per state through PayPal (the charge shows as {COMPANY}, {BRAND}\'s parent company); cancel any time. Try the next two lists free first, no card needed.</p>'
+            f'<p>This page shows a sample. Subscribers get the complete {esc(state_name) if st else "state"} list as a spreadsheet, {sub}, sorted best-first: the top 25 marked, a score and a ready-to-say opener for every practice, the owner\'s direct line where the registry lists it, phone, address and NPI, websites, emails and practice software for organizations where we can find them, an OIG exclusion check, and the practices that moved or added a specialty that week. Once a month: practices due for Medicare revalidation and practices that look stuck in credentialing. Your first list includes the last 90 days, teammates get copies, Roster Watch checks your own clients every week, and a webhook sends each list to your CRM. Backed by a 90-day guarantee. '
+            f'{plan} per state through PayPal (or ${LOCAL_PRICE}/month for just your local area, ${MULTI_PRICE}/month for three states, 2 months free yearly; the charge shows as {COMPANY}, {BRAND}\'s parent company); cancel any time. Try the next two lists free first, no card needed.</p>'
             f'<div class="btns"><a class="cta" href="{root}{q}#free">Get two free {esc(state_name) if st else ""} lists</a><a class="cta ghost" href="{root}{q}#pricing">Subscribe · {plan}</a></div>{week}</section>')
 
 
@@ -624,7 +625,7 @@ def state_page(data: dict, st: str) -> str:
 {offer(name, st, None, root, latest, total)}
 
 <section><h2>{esc(name)} by category</h2>
-<p class="lead" style="font-size:16px">One state, one category is $89/month; every category is $199/month. {('Weekly pages for: ' + ', '.join(f'<a href="{cat_pages[c]}">{esc(CAT_TITLE[c])}</a>' for c in CATS if c in cat_pages) + '.') if cat_pages else 'Category pages appear once a category has ' + str(CAT_PAGE_MIN) + '+ new practices in a week.'}</p>
+<p class="lead" style="font-size:16px">One state, one category is ${CAT_PRICE}/month; every category is ${ALL_PRICE}/month; three states are ${MULTI_PRICE}/month; just your local area (a ZIP code and a radius) is ${LOCAL_PRICE}/month. {('Weekly pages for: ' + ', '.join(f'<a href="{cat_pages[c]}">{esc(CAT_TITLE[c])}</a>' for c in CATS if c in cat_pages) + '.') if cat_pages else 'Category pages appear once a category has ' + str(CAT_PAGE_MIN) + '+ new practices in a week.'}</p>
 <div class="tscroll"><table><thead><tr><th>Category</th><th>Who is in it</th><th class="r">This week</th><th class="r">4-wk avg</th></tr></thead><tbody>
 {''.join(cat_row(data, st, c, v, cat_pages) for c in CATS)}
 </tbody></table></div></section>
@@ -811,11 +812,12 @@ def info_pages(data: dict) -> list[str]:
 <h2>What we collect</h2>
 <ul>
 <li><b>When you ask for lists or subscribe:</b> your email address, company name, the state and category you chose, and, for paid plans, the PayPal subscription ID. PayPal handles the payment itself; we never see your card or bank details.</li>
+<li><b>If you use your account page or reply with settings:</b> the teammates' email addresses you add (they receive copies of your lists), the provider NPIs you add to Roster Watch, and a webhook address if you set one. Your account page's contents (your settings and recent lists) are stored with Cloudflare so the page can show them; files are deleted after about 8 weeks.</li>
 <li><b>When you email us:</b> the email and anything you put in it.</li>
 <li><b>When you visit the site:</b> nothing we keep. The site has no analytics, no advertising pixels and sets no cookies of its own. It is hosted on GitHub Pages, whose servers keep standard access logs (IP address, pages requested) under <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement">GitHub's privacy statement</a>. Fonts load from Google Fonts, which sees your IP address when it serves them.</li>
 </ul>
 <h2>What we do with it</h2>
-<p>We use your details to send you the lists you asked for, confirmations, and replies to your messages. We don't sell, rent or share them with anyone except the services that make the product work: PayPal for payments, our email provider for sending, and Cloudflare, which receives form submissions before we collect them. We don't use your data for advertising.</p>
+<p>We use your details to send you the lists you asked for, confirmations, and replies to your messages. We don't sell, rent or share them with anyone except the services that make the product work: PayPal for payments, our email provider for sending, and Cloudflare, which receives form submissions before we collect them and hosts your account page's data. If you set a webhook, each list is also sent to the address you gave. We don't use your data for advertising.</p>
 <h2>Email</h2>
 <p>Every email we send carries our postal address and a way to stop. Reply STOP to any message and you'll receive nothing further; the address goes on a do-not-contact list we keep for that purpose. We also send a small number of introductory emails to credentialing and billing companies found through public sources; the same STOP applies.</p>
 <h2>The data in the lists</h2>
@@ -837,11 +839,12 @@ def info_pages(data: dict) -> list[str]:
 <h2>The 90-day guarantee</h2>
 <p>If you don't sign at least one new client from your {BRAND} lists during your first 90 days as a paying subscriber, tell us by email within 30 days after that and your next three months are free: we pause your PayPal subscription for three months, then it resumes at your normal price. One guarantee per company; no proof required.</p>
 <h2>Free lists</h2>
-<p>New companies can receive two weekly lists free, no payment details required. After the second list nothing further is sent unless you subscribe. We may decline or limit free lists at our discretion, for example to one per company.</p>
+<p>New companies can receive two weekly lists free, no payment details required. After the second list, unless you subscribe, you receive a short free weekly digest (the best new practices by name, without contact details) until you reply STOP. We may decline or limit free lists at our discretion, for example to one per company.</p>
 <h2>Plans and payment</h2>
 <ul>
-<li><b>One state, one category:</b> $89 per month. <b>One state, every category:</b> $199 per month. Additional states are additional plans or a bundle by email.</li>
-<li>Payment is by PayPal subscription, billed monthly in advance. Charges appear as <b>{COMPANY}</b>. Prices may change with at least 30 days' notice by email; your current month is never affected.</li>
+<li><b>Local area</b> (every new practice within 5 to 100 miles of one ZIP code, every category): ${LOCAL_PRICE} per month. <b>One state, one category:</b> ${CAT_PRICE} per month. <b>One state, every category:</b> ${ALL_PRICE} per month. <b>Three states, every category:</b> ${MULTI_PRICE} per month. Each plan can be billed yearly for the price of ten months. Subscriptions started at an earlier price keep that price.</li>
+<li>Plans include teammates who receive copies of each list (2, 3, 5 or 10 people in all, by plan), Roster Watch for your own providers (100, 100, 500 or 2,000 NPIs) and an optional webhook. Teammates must work at your company. Your account page is reached through a private link in your emails; keep it private, as anyone with it can see your lists and change your settings.</li>
+<li>Payment is by PayPal subscription, billed monthly or yearly in advance. Charges appear as <b>{COMPANY}</b>. Prices may change with at least 30 days' notice by email; your current month is never affected.</li>
 <li>You can cancel at any time from your PayPal account or by replying STOP to any email. Lists continue to the end of the month already paid for, and no further charges are made. Partial months are not refunded, except that if your first paid list never arrives we'll refund the month in full.</li>
 </ul>
 <h2>What you may do with the lists</h2>
@@ -859,6 +862,235 @@ def info_pages(data: dict) -> list[str]:
         (d / "index.html").write_text(shell(f"{title} — {BRAND}", desc, f"{slug}/", body), encoding="utf-8")
         out.append(f"{slug}/")
     return out
+
+
+# ------------------------------------------------------------------ the subscriber account page (panelready.co/account/#t=TOKEN)
+
+WORKER = "https://panelready-signup.matt-fixnotice.workers.dev"
+
+ACCOUNT_CSS = """
+.acct{max-width:860px}.acct h1{margin-top:6px}
+.acct .card{margin:16px 0}.acct .card h2{font-size:22px;margin:0 0 6px}.acct .card p.help{color:var(--muted);font-size:14px;margin:0 0 12px}
+.acct label{display:block;font-size:13px;color:var(--muted);font-weight:600;margin:10px 0 6px}
+.acct input,.acct select,.acct textarea{width:100%;background:#fff;color:var(--ink);border:1.5px solid var(--line2);border-radius:10px;padding:11px 13px;font:500 15px Inter,sans-serif}
+.acct textarea{min-height:110px;font:13px ui-monospace,Menlo,Consolas,monospace}
+.acct input:focus,.acct select:focus,.acct textarea:focus{outline:none;border-color:var(--teal);box-shadow:0 0 0 4px rgba(14,124,123,.14)}
+.acct button.cta{border:0;cursor:pointer;margin-top:12px}
+.acct .row3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.acct .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:640px){.acct .row3,.acct .row2{grid-template-columns:1fr}}
+.acct .msg{min-height:1.2em;font-size:14px;margin-top:8px}.acct .msg.ok{color:var(--green)}.acct .msg.err{color:#be123c}
+.acct .badge{display:inline-block;font-size:12px;font-weight:700;padding:4px 10px;border-radius:999px;background:rgba(14,124,123,.1);color:var(--teal);margin-right:6px}
+.acct .dl a{font-weight:600}.acct .dl td{white-space:normal}.acct .muted{color:var(--muted)}
+.acct .up{background:linear-gradient(135deg,rgba(14,124,123,.08),rgba(37,99,235,.04));border-color:rgba(14,124,123,.35)}
+.acct .hide{display:none}
+"""
+
+ACCOUNT_BODY = """
+<div class="crumbs"><a href="../">PanelReady</a> › Your account</div>
+<div class="acct">
+<span class="kicker">Your account</span>
+<h1 id="hello">Your PanelReady account</h1>
+<p class="lead" id="planline">Loading your account…</p>
+
+<div class="card hide" id="needLink">
+  <h2>Get your account link</h2>
+  <p class="help">Your account page opens from the private link in any PanelReady email. Enter the address your lists go to and we'll email the link (within the hour).</p>
+  <form id="linkForm" novalidate><label for="lkEmail">Email</label><input type="email" id="lkEmail" placeholder="you@company.com" required>
+  <input type="text" name="website" id="lkHp" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px" aria-hidden="true">
+  <button class="cta" type="submit">Email me my link</button><div class="msg" id="linkMsg"></div></form>
+</div>
+
+<div id="acctBody" class="hide">
+<div class="card up hide" id="upsell"><h2>Keep the full lists coming</h2><p class="help" id="upsellText"></p><a class="cta" href="../#pricing">See plans</a></div>
+
+<div class="card"><h2>Your lists</h2>
+  <p class="help">Every weekly email, as one zip per week (kept about 8 weeks). The first one includes the last 90 days of new practices in your territory.</p>
+  <div class="tscroll"><table class="dl"><thead><tr><th>Week ending</th><th>Files</th><th class="r">Download</th></tr></thead><tbody id="dlRows"></tbody></table></div>
+</div>
+
+<div class="card"><h2>Territory</h2>
+  <p class="help" id="terrHelp"></p>
+  <form id="terrForm" novalidate>
+    <div id="areaBox" class="row2 hide"><div><label for="zip">ZIP code</label><input id="zip" inputmode="numeric" maxlength="5" placeholder="12207"></div>
+      <div><label for="radius">Radius (miles)</label><input id="radius" type="number" min="5" max="100" value="25"></div></div>
+    <div id="stateBox" class="hide"><div class="row3" id="stateSels"></div>
+      <div id="catBox"><label for="cat">Category</label><div class="sel"><select id="cat"></select></div></div></div>
+    <button class="cta" type="submit">Save territory</button><div class="msg" id="terrMsg"></div>
+  </form>
+</div>
+
+<div class="card" id="teamCard"><h2>Teammates</h2>
+  <p class="help" id="teamHelp"></p>
+  <form id="teamForm" novalidate><label for="team">Teammates' emails, one per line</label><textarea id="team" style="min-height:80px;font:500 15px Inter,sans-serif"></textarea>
+  <button class="cta" type="submit">Save teammates</button><div class="msg" id="teamMsg"></div></form>
+</div>
+
+<div class="card" id="rosterCard"><h2>Roster Watch</h2>
+  <p class="help">Paste the NPIs of your own providers (your current clients). Every week we check each one against the OIG exclusion list, Medicare opt-outs, NPI deactivations, Medicare revalidation due dates, Medicare enrollment and pending applications, and its registered address, and your weekly email tells you only what changed. <span id="rosterLimit"></span></p>
+  <form id="rosterForm" novalidate><label for="roster">NPIs (any format: one per line, commas, or pasted from a spreadsheet)</label><textarea id="roster" placeholder="1234567893"></textarea>
+  <button class="cta" type="submit">Save roster</button><div class="msg" id="rosterMsg"></div></form>
+  <div id="rosterReport" class="hide"><h3 style="margin-top:18px;font-size:17px">Worth a look <span class="muted" id="rosterChecked" style="font:500 13px Inter,sans-serif"></span></h3>
+  <div class="tscroll"><table><thead><tr><th>NPI</th><th>Provider</th><th>Notes</th></tr></thead><tbody id="rosterRows"></tbody></table></div></div>
+</div>
+
+<div class="card" id="hookCard"><h2>Send each list to your CRM (webhook)</h2>
+  <p class="help">Paste a "catch hook" address from Zapier (Webhooks by Zapier → Catch Hook) or Make (Custom webhook), or your own HTTPS endpoint. Every week, right after the email, we POST the rows as JSON, 500 per request: <code>{"source","week","part","parts","rows":[{"Company","First Name","Phone","Email","NPI",…}]}</code>, the same columns as the CRM import file.</p>
+  <form id="hookForm" novalidate><label for="hook">Webhook address (https://…)</label><input id="hook" type="url" placeholder="https://hooks.zapier.com/hooks/catch/…">
+  <button class="cta" type="submit">Save webhook</button><div class="msg" id="hookMsg"></div></form>
+</div>
+
+<div class="card"><h2>Billing</h2>
+  <p class="help">Payments go through PayPal and show as Avery Data Co. To change plans, pick the new one on the <a href="../#pricing">pricing section</a> with the same email, then cancel the old one. To cancel: PayPal → Settings → Payments → Manage automatic payments, or reply STOP to any email. Questions: reply to any list email.</p>
+</div>
+<p class="note">Keep this page's link private: anyone with it can see your lists and change your settings. Changes are applied within the hour and confirmed by email. <span id="updated"></span></p>
+</div>
+</div>
+<script>
+(function(){
+  var W = '__WORKER__';
+  var NICE = __NICE__, NAMES = __NAMES__;
+  var t = (location.hash.match(/[#&]t=([A-Za-z0-9_-]{20,64})/) || [])[1] || '';
+  var $ = function(id){ return document.getElementById(id); };
+  var show = function(id, on){ $(id).classList.toggle('hide', !on); };
+  function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+  function msg(id, text, ok){ var m = $(id); m.textContent = text; m.className = 'msg ' + (ok ? 'ok' : 'err'); }
+  function post(path, body, msgId, okText){
+    msg(msgId, 'Saving…', true);
+    fetch(W + path, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
+      .then(function(r){ return r.json(); })
+      .then(function(j){ j.ok ? msg(msgId, okText, true) : msg(msgId, j.error || 'That didn\\'t work. Reply to any list email instead.', false); })
+      .catch(function(){ msg(msgId, 'Couldn\\'t reach PanelReady. Try again, or reply to any list email.', false); });
+  }
+  var SAVED = 'Saved. It\\'s applied within the hour, and you\\'ll get an email confirming it.';
+  $('linkForm').addEventListener('submit', function(e){
+    e.preventDefault();
+    var em = $('lkEmail').value.trim();
+    if (!/^[^\\s@]+@[^\\s@]+\\.[a-z]{2,}$/i.test(em)) { msg('linkMsg', 'Please enter the email address your lists go to.', false); return; }
+    post('/link', { email: em, website: $('lkHp').value }, 'linkMsg', 'If that address has an account, the link is on its way (within the hour).');
+  });
+  if (!t) { $('planline').textContent = ''; show('needLink', true); return; }
+  fetch(W + '/acct?t=' + encodeURIComponent(t), { cache: 'no-store' })
+    .then(function(r){ return r.json(); })
+    .then(function(a){
+      if (!a || a.ok === false || !a.email) { $('planline').textContent = (a && a.error) || 'No account found for this link.'; show('needLink', true); return; }
+      render(a);
+    })
+    .catch(function(){ $('planline').textContent = 'Couldn\\'t load your account just now. Try again in a minute.'; });
+
+  function render(a){
+    show('acctBody', true);
+    var first = (a.name || '').split(' ')[0];
+    $('hello').textContent = first ? 'Hi ' + first + '.' : 'Your PanelReady account';
+    var where = a.area ? a.area_label : (a.states.map(function(s){ return NAMES[s] || s; }).join(', ') || 'no state picked yet');
+    var cats = a.area ? 'every category' : (a.categories.indexOf('all') >= 0 ? 'every category' : a.categories.map(function(c){ return NICE[c] || c; }).join(', '));
+    var plan = a.status === 'paid' ? '<span class="badge">' + esc(a.plan_label) + (a.price ? ' · $' + a.price + '/mo' : '') + '</span>'
+      : '<span class="badge">' + esc(a.plan_label) + '</span>';
+    $('planline').innerHTML = plan + ' Lists go to <b>' + esc(a.email) + '</b>: ' + esc(where) + (cats ? ', ' + esc(cats) : '') + '.';
+    if (a.status !== 'paid') {
+      show('upsell', true);
+      var p = a.plans || {};
+      $('upsellText').textContent = (a.status === 'free' ? 'You\\'re on the free weekly digest (the best new practices by name). ' : 'You\\'re on the free trial. ')
+        + 'Plans: $' + (p.local||{}).price + '/mo for a local area, $' + (p.cat||{}).price + ' for one state and category, $' + (p.all||{}).price
+        + ' for every category in a state, $' + (p.multi||{}).price + ' for three states. Yearly billing gets 2 months free.';
+    }
+    // downloads
+    var rows = (a.deliveries || []).map(function(d){
+      return '<tr><td>' + esc(d.week) + '</td><td class="muted">' + esc((d.files || []).join(', ')) + '</td><td class="r"><a href="' + W + '/dl?t=' + encodeURIComponent(t) + '&f=' + encodeURIComponent(d.file) + '">Download' + (d.bytes ? ' (' + Math.max(1, Math.round(d.bytes / 1024)) + ' KB)' : '') + '</a></td></tr>';
+    });
+    $('dlRows').innerHTML = rows.join('') || '<tr><td colspan="3" class="muted">Your first list appears here after it\\'s emailed.</td></tr>';
+    // territory
+    var local = a.plan === 'local' || !!a.area;
+    show('areaBox', local); show('stateBox', !local);
+    if (local) {
+      var parts = (a.area || '').split(':');
+      $('zip').value = parts[0] || ''; $('radius').value = parts[1] || 25;
+      $('terrHelp').textContent = 'Every new practice within your radius of one ZIP code, every category (5 to 100 miles).';
+    } else {
+      var n = Math.max(1, a.max_states || 1), html = '';
+      for (var i = 0; i < n; i++) {
+        html += '<div><label for="st' + i + '">State' + (n > 1 ? ' ' + (i + 1) : '') + '</label><div class="sel"><select id="st' + i + '"><option value="">' + (i ? '(none)' : 'Pick a state') + '</option>'
+          + a.states_all.map(function(s){ return '<option value="' + s + '"' + (a.states[i] === s ? ' selected' : '') + '>' + esc(NAMES[s] || s) + '</option>'; }).join('') + '</select></div></div>';
+      }
+      $('stateSels').innerHTML = html;
+      var cs = (a.one_category ? [] : [['all', 'Every category']]).concat(a.categories_all.map(function(c){ return [c, NICE[c] || c]; }));
+      if (a.one_category && a.status !== 'paid') cs = [['all', 'Every category']].concat(cs);
+      $('cat').innerHTML = cs.map(function(c){ return '<option value="' + c[0] + '"' + (a.categories[0] === c[0] ? ' selected' : '') + '>' + esc(c[1]) + '</option>'; }).join('');
+      show('catBox', !(a.status === 'paid' && !a.one_category));
+      $('terrHelp').textContent = a.status === 'paid'
+        ? 'Your plan covers ' + n + ' state' + (n > 1 ? 's' : '') + (a.one_category ? ' and one category.' : ', every category.')
+        : 'The free plan covers one state.';
+    }
+    // team
+    var room = Math.max(0, (a.seats || 1) - 1);
+    $('team').value = (a.team || []).join('\\n');
+    $('teamHelp').textContent = room ? 'Your plan includes ' + room + ' teammate' + (room > 1 ? 's' : '') + ': each gets a copy of every list email.'
+      : 'Teammates come with the paid plans (2 to 10 people on one subscription).';
+    $('team').disabled = !room;
+    // roster
+    $('roster').value = (a.roster || []).join('\\n');
+    $('rosterLimit').textContent = a.roster_limit ? 'Your plan watches up to ' + a.roster_limit.toLocaleString() + ' providers.' : 'Roster Watch comes with the paid plans.';
+    $('roster').disabled = !a.roster_limit;
+    var rep = a.roster_report || [];
+    if (rep.length) {
+      show('rosterReport', true);
+      $('rosterChecked').textContent = a.roster_checked ? '(checked ' + a.roster_checked + ')' : '';
+      $('rosterRows').innerHTML = rep.map(function(r){ return '<tr><td>' + esc(r.npi) + '</td><td>' + esc(r.name) + '</td><td>' + esc(r.notes.join('; ')) + '</td></tr>'; }).join('');
+    }
+    // webhook
+    $('hook').value = a.webhook || '';
+    $('hook').disabled = a.status !== 'paid';
+    if (a.status !== 'paid') $('hookCard').querySelector('.help').insertAdjacentText('beforeend', ' Comes with the paid plans.');
+    $('updated').textContent = a.updated ? 'Page updated ' + a.updated.replace('T', ' ') + '.' : '';
+  }
+
+  $('terrForm').addEventListener('submit', function(e){
+    e.preventDefault();
+    if (!$('areaBox').classList.contains('hide')) {
+      var z = $('zip').value.replace(/\\D/g, '');
+      if (z.length !== 5) { msg('terrMsg', 'Please enter a 5-digit ZIP code.', false); return; }
+      post('/change?t=' + encodeURIComponent(t), { change: { area: z + ':' + (parseInt($('radius').value, 10) || 25) } }, 'terrMsg', SAVED);
+      return;
+    }
+    var states = [].slice.call(document.querySelectorAll('#stateSels select')).map(function(s){ return s.value; }).filter(Boolean);
+    if (!states.length) { msg('terrMsg', 'Please pick a state.', false); return; }
+    var cat = $('catBox').classList.contains('hide') ? 'all' : $('cat').value;
+    post('/change?t=' + encodeURIComponent(t), { change: { states: states, categories: [cat] } }, 'terrMsg', SAVED);
+  });
+  $('teamForm').addEventListener('submit', function(e){
+    e.preventDefault();
+    var list = $('team').value.split(/[\\s,;]+/).filter(function(x){ return x.indexOf('@') > 0; });
+    post('/change?t=' + encodeURIComponent(t), { change: { team: list } }, 'teamMsg', SAVED);
+  });
+  $('rosterForm').addEventListener('submit', function(e){
+    e.preventDefault();
+    var npis = ($('roster').value.match(/\\d{10}/g) || []);
+    msg('rosterMsg', '', true);
+    post('/change?t=' + encodeURIComponent(t), { change: { roster: npis } }, 'rosterMsg', SAVED.replace('Saved.', 'Saved ' + npis.length + ' NPI' + (npis.length === 1 ? '' : 's') + '.'));
+  });
+  $('hookForm').addEventListener('submit', function(e){
+    e.preventDefault();
+    var u = $('hook').value.trim();
+    if (u && u.indexOf('https://') !== 0) { msg('hookMsg', 'The address must start with https://', false); return; }
+    post('/change?t=' + encodeURIComponent(t), { change: { webhook: u } }, 'hookMsg', SAVED);
+  });
+})();
+</script>
+"""
+
+
+def account_page() -> str:
+    body = (ACCOUNT_BODY.replace("__WORKER__", WORKER)
+            .replace("__NICE__", json.dumps(CAT_TITLE))
+            .replace("__NAMES__", json.dumps(STATES)))
+    page = shell(f"Your account — {BRAND}", f"Your {BRAND} subscription: past lists, territory, teammates and Roster Watch.",
+                 "account/", body)
+    return page.replace("<style>", '<meta name="robots" content="noindex, nofollow">\n<style>' + ACCOUNT_CSS, 1)
+
+
+def write_account():
+    d = HERE / "account"
+    d.mkdir(exist_ok=True)
+    (d / "index.html").write_text(account_page(), encoding="utf-8")
 
 
 def write_sample(data: dict) -> str | None:
@@ -958,13 +1190,14 @@ def build(data: dict) -> list[str]:
             elif cd.exists():
                 shutil.rmtree(cd)                        # a category page that no longer has enough rows goes away (sitemap drops it)
     info = info_pages(data)
+    write_account()                                   # not in the sitemap: private, opened from the link in each email
     write_sample(data)
     urls = [f"  <url><loc>{SITE}/</loc><lastmod>{latest}</lastmod><changefreq>weekly</changefreq><priority>1.0</priority></url>"]
     urls += [f"  <url><loc>{SITE}/{p}</loc><lastmod>{latest}</lastmod><changefreq>weekly</changefreq><priority>{'0.8' if p.count('/') < 3 else '0.6'}</priority></url>" for p in paths]
     urls += [f"  <url><loc>{SITE}/{p}</loc><lastmod>{latest}</lastmod><changefreq>monthly</changefreq><priority>0.4</priority></url>" for p in info]
     paths = paths + info
     (HERE / "sitemap.xml").write_text('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + "\n".join(urls) + "\n</urlset>\n", encoding="utf-8")
-    (HERE / "robots.txt").write_text(f"User-agent: *\nAllow: /\nSitemap: {SITE}/sitemap.xml\n", encoding="utf-8")
+    (HERE / "robots.txt").write_text(f"User-agent: *\nAllow: /\nDisallow: /account/\nSitemap: {SITE}/sitemap.xml\n", encoding="utf-8")
     return paths
 
 
