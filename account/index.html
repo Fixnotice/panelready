@@ -88,7 +88,7 @@ footer{color:var(--dim);font-size:13px;padding:30px 0 40px;border-top:1px solid 
 <body>
 <div class="nav"><div class="wrap">
   <a class="logo" href="../"><svg viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="15" fill="#0f2340"/><rect x="18" y="17" width="28" height="32" rx="4" fill="none" stroke="#ffffff" stroke-width="4.5" stroke-linejoin="round"/><rect x="25" y="13" width="14" height="8" rx="2.5" fill="#ffffff"/><path d="M25 34l5.5 5.5L40 29" fill="none" stroke="#2dd4bf" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg>PanelReady</a>
-  <nav><a href="../states/">All states</a><a href="../#how">How it works</a><a href="../#pricing">Pricing</a><a class="mini" href="../#free">Get 2 lists free</a></nav>
+  <nav><a href="../search/">Live search</a><a href="../states/">All states</a><a href="../#how">How it works</a><a href="../#pricing">Pricing</a><a class="mini" href="../#free">Get 2 lists free</a></nav>
 </div></div>
 <div class="wrap">
 
@@ -111,6 +111,7 @@ footer{color:var(--dim);font-size:13px;padding:30px 0 40px;border-top:1px solid 
 
 <div class="card"><h2>Your lists</h2>
   <p class="help">Every weekly email, as one zip per week (kept about 8 weeks). The first one includes the last 90 days of new practices in your territory.</p>
+  <p class="help"><a id="searchLink" href="../search/"><b>Search &amp; export</b></a>: filter everything in your territory (the last 13 weeks, plus this month's stuck-in-credentialing and revalidation lists) by county, city, distance from a ZIP, specialty or practice type, and download just the rows you want.</p>
   <div class="tscroll"><table class="dl"><thead><tr><th>Week ending</th><th>Files</th><th class="r">Download</th></tr></thead><tbody id="dlRows"></tbody></table></div>
 </div>
 
@@ -158,6 +159,7 @@ footer{color:var(--dim);font-size:13px;padding:30px 0 40px;border-top:1px solid 
   var t = (location.hash.match(/[#&]t=([A-Za-z0-9_-]{20,64})/) || [])[1] || '';
   var $ = function(id){ return document.getElementById(id); };
   var show = function(id, on){ $(id).classList.toggle('hide', !on); };
+  if (t) $('searchLink').href = '../search/#t=' + t;
   function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
   function msg(id, text, ok){ var m = $(id); m.textContent = text; m.className = 'msg ' + (ok ? 'ok' : 'err'); }
   function post(path, body, msgId, okText){
@@ -282,7 +284,7 @@ footer{color:var(--dim);font-size:13px;padding:30px 0 40px;border-top:1px solid 
 })();
 </script>
 
-<footer><div class="flinks"><a href="../states/">New practices by state</a><a href="../about/">About</a><a href="../contact/">Contact</a><a href="../privacy/">Privacy</a><a href="../terms/">Terms</a><a href="../sample/panelready-sample.csv">Sample spreadsheet</a></div>
+<footer><div class="flinks"><a href="../search/">Live search</a><a href="../states/">New practices by state</a><a href="../about/">About</a><a href="../contact/">Contact</a><a href="../privacy/">Privacy</a><a href="../terms/">Terms</a><a href="../sample/panelready-sample.csv">Sample spreadsheet</a></div>
 PanelReady · <a href="mailto:matt@panelready.co">matt@panelready.co</a> · an Avery Data Co. product, New York<br>
 Source: NPPES weekly dissemination files published by CMS. Public data, provided as-is; not affiliated with CMS or any payer. Practice names are from the public registry; phone numbers are masked on this page and complete in the subscriber spreadsheet.</footer>
 </div>
