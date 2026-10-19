@@ -34,7 +34,7 @@ for cand in (ROOT, HERE):                            # pr/npi.py lives in the pr
 from pr import npi as N                              # noqa: E402
 
 SITE = "https://panelready.co"                       # the site's address, no trailing slash (the old github.io address redirects here)
-BUILD_VERSION = 15                                    # bump when the page layout changes, so the next run rewrites every page
+BUILD_VERSION = 16                                    # bump when the page layout changes, so the next run rewrites every page
 COMPANY = "Avery Data Co."
 PAYPAL_CLIENT_ID = "BAAQ4G4Hizw2wHo9EZQsTxcW_oBtYKOFEIoI41YQZJvC8ufp2vM9Z_lIU4ASqIUZvXAUrin0KLaYIpr8Js"   # the "PanelReady site" app on developer.paypal.com (Live); one-time orders
 PAYPAL_ME = ""                                       # optional plan B: a PayPal.me handle (e.g. "averydataco"); shown as a second way to pay $39
