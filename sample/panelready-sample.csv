@@ -1,11 +1,14 @@
 registered,category,specialty,name,entity,credential,phone,address,city,state,zip,npi,taxonomy,sole_proprietor,authorized_official
-2026-10-10,behavioral,Clinical social worker,Birch Root Psychotherapy Pllc,practice/organization,,(802) 456-0557,34 High St,Plainfield,VT,05667,1295630259,1041C0700X,,Diana Brooks
-2026-10-08,behavioral,Mental health counselor,Green Light Counseling,practice/organization,,(802) 540-0222,110 Main St Ste 3A,Burlington,VT,05401,1114821444,101YM0800X,,Benjamin Houchen
-2026-10-06,behavioral,Mental health clinic,Jordan Imhoff Llc,practice/organization,,(802) 585-9350,832 Barnes Rd,Hyde Park,VT,05655,1952205650,261QM0801X,,Jordan Imhoff
-2026-10-07,behavioral,Psychiatric nurse practitioner,Missisquoi Mental Health Pllc,practice/organization,,(802) 309-2044,73 Main St,Enosburg Falls,VT,05450,1447154869,363LP0808X,,John-Paul Cloutier
-2026-10-05,behavioral,Mental health counselor,Hollis Easter,sole proprietor,,(802) 448-2258,34 Cherry Ln,Burlington,VT,05401,1568366417,101YM0800X,yes,
-2026-10-07,dme_transport,DME supplier,Porter Hospital Inc,practice/organization,,(802) 388-1200,23 Pond Ln,Middlebury,VT,05753,1831093319,332B00000X,,Kathryn Kelly
-2026-10-06,medical,261QR0800X,The Turning Point Of Windham County,practice/organization,,(802) 257-5600,39 Elm St,Brattleboro,VT,05301,1093619850,261QR0800X,,Elias Burgess
-2026-10-08,therapy,224Z00000X,Jennifer Hafner,sole proprietor,COTA/L,(845) 216-0560,113 Pettis Rd,West Haven,VT,05743,1104721463,224Z00000X,yes,
-2026-10-08,therapy,225700000X,Julie Bacher,sole proprietor,,(802) 223-0954,200 Elm St,Montpelier,VT,05602,1003710393,225700000X,yes,
-2026-10-07,therapy,Chiropractor,Seth Gorman,sole proprietor,DC,(802) 497-2938,4 Market St Ste 2,South Burlington,VT,05403,1437053808,111N00000X,yes,
+2026-10-16,behavioral,"Clinic/Center, Mental Health (Including Community Mental Health Center)",Allminds Medical Group Midwest Pa,practice/organization,,(415) 570-2350,1000 N West St Ste 1200,Wilmington,DE,19801,1346146222,261QM0801X,,Shree Shah
+2026-10-12,behavioral,"Clinic/Center, Mental Health (Including Community Mental Health Center)",Delaware Psychotherapy,practice/organization,,(540) 974-4308,1803 Shallcross Ave,Wilmington,DE,19806,1073418844,261QM0801X,,Elizabeth Brown
+2026-10-13,behavioral,Behavior Analyst,Precious Care De Llc,practice/organization,,(888) 815-9287,511 N Boardwalk,Rehoboth Beach,DE,19971,1366347841,103K00000X,,Rochelle Zwick
+2026-10-16,behavioral,"Social Worker, Clinical",Chandler Fitzgerald,sole proprietor,LMSW,(302) 312-4217,100 Commerce Dr,Newark,DE,19713,1811893761,1041C0700X,yes,
+2026-10-13,behavioral,Social Worker,Christina Hernandez,sole proprietor,,(857) 557-6146,16192 Coastal Hwy,Lewes,DE,19958,1235034737,104100000X,yes,
+2026-10-12,behavioral,"Nurse Practitioner, Psychiatric/Mental Health",Diana Holness,sole proprietor,PMHNP,(862) 252-3517,349 Belfry Dr,Felton,DE,19943,1881599678,363LP0808X,yes,
+2026-10-13,behavioral,Behavior Technician,Yaw Asante,sole proprietor,,(302) 390-2266,146 Abbigail Xing,Townsend,DE,19734,1518862028,106S00000X,yes,
+2026-10-15,home_senior,Early Intervention Provider Agency,Flowmind Llc,practice/organization,,(347) 986-8678,300 Jessica Dr,Middletown,DE,19709,1114823341,252Y00000X,,Ni Dai
+2026-10-15,medical,"Internal Medicine, Rheumatology",Infusion Center Of Delaware,practice/organization,,(302) 678-7438,260 Beiser Blvd Ste 201,Dover,DE,19904,1942106075,207RR0500X,,Maged Hosny
+2026-10-15,medical,Nurse Practitioner,Karie Swanner Pmhnp-Bc Llc,practice/organization,,(443) 871-1247,18 Sw Front St Unit 111,Milford,DE,19963,1023914314,363L00000X,,Karie Swanner
+2026-10-14,medical,"Clinic/Center, Primary Care","Virgo Integrated Health, Llc",practice/organization,,(302) 313-1964,1632 Savannah Rd,Lewes,DE,19958,1477459865,261QP2300X,,Danielle Giddins
+2026-10-12,therapy,Speech-Language Pathologist,Align Speech Llc,practice/organization,,(302) 757-6537,31186 Dogwood Acres Rd,Dagsboro,DE,19939,1255236964,235Z00000X,,Shannon Yacucci
+2026-10-12,therapy,"Physical Therapist, Orthopedic",Hassan Kaleem,sole proprietor,DPT,(302) 747-5995,285 Beiser Blvd,Dover,DE,19904,1982509733,2251X0800X,yes,
