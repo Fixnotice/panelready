@@ -180,7 +180,17 @@
   .cat .ct{display:block;margin-top:14px;font-size:12px;font-weight:700;font-style:normal;color:var(--dim)}
 
   /* pricing */
-  .plans{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}
+  .plans{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+  @media (max-width:1180px){.plans{grid-template-columns:repeat(2,1fr)}}
+  .bill{display:inline-flex;background:var(--card);border:1px solid var(--line2);border-radius:999px;padding:4px;margin:0 0 26px;gap:4px}
+  .bill button{border:0;background:transparent;color:var(--muted);font:600 14px Inter,sans-serif;padding:9px 16px;border-radius:999px;cursor:pointer}
+  .bill button.on{background:var(--ink);color:#fff}
+  .bill button small{color:var(--green);font-weight:700;margin-left:4px}.bill button.on small{color:#5eead4}
+  .plan .per{font-size:13px;color:var(--muted);margin-top:6px;min-height:1.3em}
+  .plan .price{font-size:46px}
+  .plans .plan{padding:28px 22px}
+  .f3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:14px}
+  .orzip{font-size:13px;color:var(--muted);margin:-4px 0 12px}.orzip a{cursor:pointer}
   .plan{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:30px;position:relative;box-shadow:var(--shadow)}
   .plan.best{border-color:rgba(14,124,123,.6);box-shadow:0 30px 60px -24px rgba(14,124,123,.35),0 1px 2px rgba(15,35,64,.06)}
   .badge{position:absolute;top:-13px;left:26px;background:var(--teal);color:#fff;font-size:12px;font-weight:700;padding:5px 12px;border-radius:999px;letter-spacing:.02em}
@@ -256,7 +266,7 @@
     .hero{grid-template-columns:1fr;gap:34px;padding:48px 0 40px}
     .stats{grid-template-columns:repeat(2,1fr)}
     .picker,.math{grid-template-columns:1fr}
-    .cats,.plans{grid-template-columns:1fr}
+    .cats,.plans,.f3{grid-template-columns:1fr}
     .bar{grid-template-columns:132px 1fr 40px}
     section{padding-top:64px}
     .feed{height:330px}
@@ -375,10 +385,12 @@ The TOP 25 are marked; the outreach kit (call script + email template) is attach
       <div class="cat rv"><b>A ready-to-say opener</b><span>A first line for every practice (name, city, date, specialty), a call script and email template, and a file that imports straight into HubSpot or Salesforce.</span></div>
       <div class="cat rv"><b>The owner's direct line</b><span>The practice's owner or authorized official by name and title, with their own phone number when the registry lists one. Skip the front desk.</span></div>
       <div class="cat rv"><b>Websites, emails &amp; software</b><span>For organizations, the practice's website, email and Google rating where we can find them, and the practice software its website runs (SimplePractice, athenahealth, Tebra...).</span></div>
-      <div class="cat rv"><b>Practices that moved</b><span>Every week: practices whose registered location changed. Medicare and every insurance plan need the new address on file, which is paid work for you.</span></div>
+      <div class="cat rv"><b>Practices that moved or changed</b><span>Every week: practices whose registered location changed, NPIs that were reactivated, and practices that added a new specialty. Each one needs updated or new enrollments with Medicare and the insurance plans: paid work for you.</span></div>
       <div class="cat rv"><b>Revalidation due</b><span>Once a month: practices due, or overdue, for Medicare revalidation, soonest first. Established practices that already bill, with a deadline.</span></div>
       <div class="cat rv"><b>Stuck in credentialing</b><span>Once a month: practices that registered 2-12 months ago, in specialties that commonly enroll with Medicare, and still aren't on Medicare's enrollment list.</span></div>
-      <div class="cat rv"><b>OIG &amp; Medicare checks</b><span>Every name checked against the federal OIG exclusion list, and flagged when its first Medicare application is waiting on CMS: mid-credentialing.</span></div>
+      <div class="cat rv"><b>OIG &amp; Medicare checks</b><span>Every name checked against the federal OIG exclusion list, flagged when its first Medicare application is waiting on CMS (mid-credentialing) or it has opted out of Medicare, with its fax, state license and every specialty it lists.</span></div>
+      <div class="cat rv"><b>Roster Watch</b><span>Give us your current clients' NPIs. Every week we check each one for exclusions, Medicare opt-outs, deactivations, revalidation deadlines and enrollment changes, and tell you only what changed.</span></div>
+      <div class="cat rv"><b>Your account &amp; your team</b><span>Your first list includes the last 90 days. A private account page holds past weeks, your territory and your teammates, who get copies of every list; a webhook sends each list to Zapier, Make or your CRM.</span></div>
       <div class="cat rv"><b>The 90-day guarantee</b><span>Sign at least one new client from your lists in your first 90 days as a subscriber, or tell us, and your next 3 months are free.</span></div>
     </div>
   </section>
@@ -395,8 +407,8 @@ The TOP 25 are marked; the outreach kit (call script + email template) is attach
         <label for="worth">A new client is worth, year one <output id="worthOut">$3,000</output></label>
         <input type="range" id="worth" min="500" max="10000" step="250" value="3000">
         <div class="res">
-          <div><b id="m89">34 mo</b><span>of the $89 plan, covered by one client</span></div>
-          <div><b id="m199">15 mo</b><span>of the $199 plan, covered by one client</span></div>
+          <div><b id="m89">61 mo</b><span>of the $49 local plan, covered by one client</span></div>
+          <div><b id="m199">20 mo</b><span>of the $149 whole-state plan, covered by one client</span></div>
         </div>
         <p>Your number, your math. And if that first win doesn't come in your first 90 days, your next 3 months are free.</p>
       </div>
@@ -420,7 +432,7 @@ The TOP 25 are marked; the outreach kit (call script + email template) is attach
   <section id="free">
     <div class="eyebrow rv">Two free lists, no card</div>
     <h2 class="rv">Tell us the state. The next two weekly lists are on us.</h2>
-    <p class="sub rv">Pick the state and category you sell to. Your first spreadsheet goes out with the next weekly federal file, the second one the week after. No call, no card; if it isn't useful, that's the end of it.</p>
+    <p class="sub rv">Pick the state and category you sell to. Your first spreadsheet goes out with the next weekly federal file, the second one the week after. No call, no card. Or use a ZIP code and a radius to get just the practices near you.</p>
     <form class="signup rv" id="signup" novalidate>
       <div class="f2">
         <div><label for="suEmail">Work email</label><input type="email" id="suEmail" name="email" placeholder="you@yourbillingco.com" autocomplete="email" required></div>
@@ -430,12 +442,17 @@ The TOP 25 are marked; the outreach kit (call script + email template) is attach
         <div><label for="suState">State</label><div class="sel"><select id="suState" name="state"></select></div></div>
         <div><label for="suCat">Category</label><div class="sel"><select id="suCat" name="category"></select></div></div>
       </div>
+      <p class="orzip">Only want practices near you? <a id="suZipT">Use a ZIP code and a radius instead of the whole state</a>.</p>
+      <div class="f2" id="suZipBox" style="display:none">
+        <div><label for="suZip">ZIP code</label><input type="text" id="suZip" name="zip" inputmode="numeric" maxlength="5" placeholder="12207"></div>
+        <div><label for="suRadius">Radius in miles (5-100)</label><input type="text" id="suRadius" name="radius" inputmode="numeric" maxlength="3" value="25"></div>
+      </div>
       <div class="hp" aria-hidden="true"><label>Website<input type="text" name="website" tabindex="-1" autocomplete="off"></label></div>
       <div class="row2"><button class="cta" type="submit" id="suBtn">Send me the next two lists free</button><p class="fine">You'll get a confirmation by email within a day, then the lists on the next two federal files. Reply STOP to any email to end it.</p></div>
       <div class="msg" id="suMsg" role="status"></div>
       <div class="after">
         <div><b>1 · Next weekly file</b>Your first spreadsheet: every new practice in your state and category, sorted best-first, with phone, address and an opener for each.</div>
-        <div><b>2 · The week after</b>Your second list, with a link to keep them coming at $89 or $199 a month. Or do nothing, and that's that.</div>
+        <div><b>2 · The week after</b>Your second list, with the plans to keep them coming (from $49 a month). Or do nothing: you'll get a short free weekly digest until you say stop.</div>
       </div>
     </form>
   </section>
@@ -443,24 +460,45 @@ The TOP 25 are marked; the outreach kit (call script + email template) is attach
   <section id="pricing">
     <div class="eyebrow rv">Pricing</div>
     <h2 class="rv">Try it on us first.</h2>
-    <p class="sub rv">Want to try first? <a href="#free">Two weekly lists are free</a>, no card. When you're ready, it's a flat monthly price per state; cancel from your PayPal account any time.</p>
+    <p class="sub rv">Want to try first? <a href="#free">Two weekly lists are free</a>, no card. When you're ready, pick the territory you sell into; cancel from your PayPal account any time. Every plan includes the full list, the monthly lists, Roster Watch, teammates and the 90-day guarantee.</p>
+    <div class="bill rv" role="group" aria-label="Billing"><button type="button" class="on" data-b="m">Monthly</button><button type="button" data-b="y">Yearly <small>2 months free</small></button></div>
     <div class="plans">
       <div class="plan rv">
-        <div class="name">One state, one category</div>
-        <div class="price">$89<small>/month</small></div>
+        <div class="name">Your local area</div>
+        <div class="price" data-m="49" data-y="490">$49<small>/month</small></div>
+        <div class="per" data-y="$490 a year: 2 months free"></div>
         <div class="free"><a href="#free" style="color:inherit;text-decoration:none">Two free lists first? Start above ↑</a></div>
-        <ul><li>Weekly spreadsheet, your state and category, top 25 marked</li><li>Score, opener and the owner's direct line</li><li>Websites, emails and practice software</li><li>Practices that moved, every week</li><li>Monthly revalidation-due and stuck-in-credentialing lists</li><li>OIG check, Medicare-pending flag, CRM-ready file</li><li>90-day guarantee; change state or category by replying</li></ul>
+        <ul><li>Every new practice within 5-100 miles of your ZIP code</li><li>Every category</li><li>Score, opener and the owner's direct line</li><li>Moved and changed practices weekly; revalidation and stuck lists monthly</li><li>Your last 90 days on day one</li><li>You + 1 teammate; Roster Watch for 100 providers</li></ul>
+        <div class="paybox" id="paypal-local"></div>
+        <p class="fallback" id="fb-local"></p>
+      </div>
+      <div class="plan rv">
+        <div class="name">One state, one category</div>
+        <div class="price" data-m="89" data-y="890">$89<small>/month</small></div>
+        <div class="per" data-y="$890 a year: 2 months free"></div>
+        <div class="free"><a href="#free" style="color:inherit;text-decoration:none">Two free lists first? Start above ↑</a></div>
+        <ul><li>Weekly spreadsheet for your state and category, top 25 marked</li><li>Websites, emails and practice software</li><li>Moved and changed practices weekly; revalidation and stuck lists monthly</li><li>OIG, Medicare opt-out and pending flags; CRM-ready file and webhook</li><li>Your last 90 days on day one</li><li>You + 2 teammates; Roster Watch for 100 providers</li></ul>
         <div class="paybox" id="paypal-cat"></div>
         <p class="fallback" id="fb-cat"></p>
       </div>
       <div class="plan best rv">
         <span class="badge">Most billing companies</span>
-        <div class="name">One state, every category</div>
-        <div class="price">$199<small>/month</small></div>
+        <div class="name">One whole state</div>
+        <div class="price" data-m="149" data-y="1,490">$149<small>/month</small></div>
+        <div class="per" data-y="$1,490 a year: 2 months free"></div>
         <div class="free"><a href="#free" style="color:inherit;text-decoration:none">Two free lists first? Start above ↑</a></div>
-        <ul><li>All six categories for your state, every week</li><li>Everything in the single-category plan</li><li>Priority email support</li><li>Need several states? Email for a bundle</li></ul>
+        <ul><li>Every new practice in your state, all six categories, every week</li><li>Everything in the single-category plan</li><li>You + 4 teammates</li><li>Roster Watch for 500 providers</li><li>Priority email support</li></ul>
         <div class="paybox" id="paypal-all"></div>
         <p class="fallback" id="fb-all"></p>
+      </div>
+      <div class="plan rv">
+        <div class="name">Three whole states</div>
+        <div class="price" data-m="199" data-y="1,990">$199<small>/month</small></div>
+        <div class="per" data-y="$1,990 a year: 2 months free"></div>
+        <div class="free"><a href="#free" style="color:inherit;text-decoration:none">Two free lists first? Start above ↑</a></div>
+        <ul><li>Three states, all six categories, every week</li><li>Everything in the whole-state plan</li><li>You + 9 teammates</li><li>Roster Watch for 2,000 providers</li><li>More than three states? Email us</li></ul>
+        <div class="paybox" id="paypal-multi"></div>
+        <p class="fallback" id="fb-multi"></p>
       </div>
     </div>
     <p class="paynote rv"><b>Not ready for monthly?</b> Buy just this week's list for one state, every category, for $39 one time: open <a href="/states/">your state's page</a> and use the "Just this week" button. It's emailed to your PayPal address within the hour.</p>
@@ -468,9 +506,11 @@ The TOP 25 are marked; the outreach kit (call script + email template) is attach
     <div class="ok" id="thanks"><strong>You're in.</strong> One more thing so the right list goes out with the next weekly file: which state, and where to send it?
       <form id="paidForm" novalidate style="margin-top:14px">
         <div class="f2"><div><label for="pdEmail">Send the lists to</label><input type="email" id="pdEmail" name="email" placeholder="you@company.com" required></div><div><label for="pdCompany">Company</label><input type="text" id="pdCompany" name="company" placeholder="Your company"></div></div>
-        <div class="f2"><div><label for="pdState">State</label><div class="sel"><select id="pdState" name="state"></select></div></div><div><label for="pdCat">Category</label><div class="sel"><select id="pdCat" name="category"></select></div></div></div>
+        <div class="f2" id="pdOne"><div><label for="pdState">State</label><div class="sel"><select id="pdState" name="state"></select></div></div><div id="pdCatBox"><label for="pdCat">Category</label><div class="sel"><select id="pdCat" name="category"></select></div></div></div>
+        <div class="f3" id="pdMore" style="display:none"><div><label for="pdState2">Second state</label><div class="sel"><select id="pdState2"></select></div></div><div><label for="pdState3">Third state</label><div class="sel"><select id="pdState3"></select></div></div><div></div></div>
+        <div class="f2" id="pdZipBox" style="display:none"><div><label for="pdZip">ZIP code</label><input type="text" id="pdZip" name="zip" inputmode="numeric" maxlength="5" placeholder="12207"></div><div><label for="pdRadius">Radius in miles (5-100)</label><input type="text" id="pdRadius" name="radius" inputmode="numeric" maxlength="3" value="25"></div></div>
         <input type="hidden" id="pdSub" name="sub" value="">
-        <div class="row2"><button class="cta" type="submit">Save</button><p class="fine">Or reply to the welcome email with your state and category.</p></div>
+        <div class="row2"><button class="cta" type="submit">Save</button><p class="fine">Or reply to the welcome email. Your account page (link in every email) lets you change it later and add teammates.</p></div>
         <div class="msg" id="paidMsg"></div>
       </form>
     </div>
@@ -487,9 +527,12 @@ The TOP 25 are marked; the outreach kit (call script + email template) is attach
     <details class="rv"><summary>What are the revalidation and practice-moved lists?</summary><p>Every Medicare provider has to revalidate its enrollment every few years or Medicare can deactivate its billing, and CMS publishes the due dates. Once a month you get the practices in your state that are due in the next six months or already overdue, soonest first, with phone and owner. Every week you also get the practices whose registered location changed: each one has to update its address with Medicare and every insurance plan. Both are established practices that already bill, not start-ups.</p></details>
     <details class="rv"><summary>How does the guarantee work?</summary><p>If you don't sign at least one new client from your PanelReady lists during your first 90 days as a paying subscriber, reply to any of our emails and tell us. Your next 3 months are free: we pause your PayPal subscription for three months. One per company; no forms, no proof required.</p></details>
     <details class="rv"><summary>Is my list exclusive to me?</summary><p>No. PanelReady is a data subscription, not an exclusive-lead service: the Texas behavioral-health list is the same list for every company that subscribes to Texas behavioral health, and a new one arrives every week. In practice a state produces far more new practices each week than any one firm can call, and what you're paying for is being weeks ahead of everyone who isn't on the list. If you need a state and category reserved for your company alone, email us; that's a separate arrangement at a different price.</p></details>
-    <details class="rv"><summary>Can I get more than one state?</summary><p>Yes: each state is its own plan, or email us for a bundle if you cover several.</p></details>
+    <details class="rv"><summary>Can I get more than one state, or just my local area?</summary><p>Both. The three-state plan covers three states, every category, for $199 a month (more than three: email us). The local plan covers every new practice within 5 to 100 miles of your ZIP code, every category, for $49 a month. Every plan can be paid yearly for the price of ten months.</p></details>
+    <details class="rv"><summary>Can my team get the lists?</summary><p>Yes. Add teammates on your account page and each one gets a copy of every list email: 1 on the local plan, 2 on the single-category plan, 4 on the whole-state plan and 9 on the three-state plan. Each email also carries a private link to your account page, where you can download past weeks, change your territory and manage teammates.</p></details>
+    <details class="rv"><summary>What's Roster Watch?</summary><p>Give us the NPIs of the providers you already work for. Every week we check each one against the OIG exclusion list, Medicare opt-outs, NPI deactivations, Medicare revalidation due dates, Medicare enrollment and pending applications, and its registered address, and your weekly email tells you what changed, so a lapsed revalidation or an exclusion never surprises you. Up to 100, 500 or 2,000 providers depending on the plan.</p></details>
+    <details class="rv"><summary>Does it work with my CRM?</summary><p>Every email has a file that imports straight into HubSpot or Salesforce. Or paste a webhook address (Zapier, Make or your own) on your account page, and every list is sent to it as JSON the moment it goes out.</p></details>
     <details class="rv"><summary>Who is Avery Data Co.?</summary><p>PanelReady's parent company. Avery Data Co. is the New York business that builds subscription services from public data; PanelReady is one of its products. It's the name PayPal shows at checkout and on your statement, so a charge from Avery Data Co. is your PanelReady subscription.</p></details>
-    <details class="rv"><summary>How do I cancel?</summary><p>In your PayPal account under Subscriptions, any time, or reply STOP to any email. No calls, no forms.</p></details>
+    <details class="rv"><summary>How do I cancel?</summary><p>In your PayPal account under Subscriptions, any time, or reply STOP to any email. No calls, no forms. Subscriptions started at an earlier price keep that price.</p></details>
   </section>
 
   <div class="final rv">
@@ -627,7 +670,7 @@ The TOP 25 are marked; the outreach kit (call script + email template) is attach
   var worth = $('worth');
   function calc(){
     var w = +worth.value; $('worthOut').textContent = '$' + fmt(w);
-    $('m89').textContent = Math.floor(w / 89) + ' mo'; $('m199').textContent = Math.floor(w / 199) + ' mo';
+    $('m89').textContent = Math.floor(w / 49) + ' mo'; $('m199').textContent = Math.floor(w / 149) + ' mo';
   }
   worth.oninput = calc; calc();
 
@@ -644,42 +687,72 @@ The TOP 25 are marked; the outreach kit (call script + email template) is attach
   var pre = (qs.state || '').toUpperCase(), preCat = (qs.cat || qs.category || '').toLowerCase();
   fillSelects($('suState'), $('suCat'), pre || fromQuery, preCat);
   fillSelects($('pdState'), $('pdCat'), pre || fromQuery, preCat);
+  ['pdState2', 'pdState3'].forEach(function(id){ var s = $(id), o = document.createElement('option'); o.value = ''; o.textContent = '(none)'; s.appendChild(o);
+    Object.keys(NAMES).sort(function(a,b){ return NAMES[a] < NAMES[b] ? -1 : 1; }).forEach(function(k){ var o = document.createElement('option'); o.value = k; o.textContent = NAMES[k]; s.appendChild(o); }); });
+  $('suZipT').onclick = function(){ var b = $('suZipBox'), on = b.style.display === 'none'; b.style.display = on ? '' : 'none';
+    this.textContent = on ? 'Use the whole state instead' : 'Use a ZIP code and a radius instead of the whole state'; if (!on) $('suZip').value = ''; };
   $('stCta').onclick = function(){ $('suState').value = cur; };
   function post(form, msgEl, btn, extra){
     var f = new FormData(form), body = {}; f.forEach(function(v, k){ body[k] = v; }); Object.keys(extra || {}).forEach(function(k){ body[k] = extra[k]; });
     body.src = location.pathname + location.search;
     if (!/^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i.test(body.email || '')) { msgEl.className = 'msg bad'; msgEl.textContent = 'Please enter a work email address.'; return; }
     if (btn) { btn.disabled = true; btn.setAttribute('data-label', btn.textContent); btn.textContent = 'Sending\u2026'; } msgEl.className = 'msg'; msgEl.textContent = '';
-    var mail = MAILTO + '&body=' + encodeURIComponent('Please send me the next two lists.\nState: ' + NAMES[body.state] + '\nCategory: ' + (body.category === 'all' ? 'all categories' : NICE[body.category]) + '\nCompany: ' + (body.company || '') + '\nEmail: ' + body.email);
+    if (body.zip && !/^\d{5}$/.test(body.zip)) { msgEl.className = 'msg bad'; msgEl.textContent = 'Please enter a 5-digit ZIP code.'; return; }
+    var where = body.zip ? 'within ' + (parseInt(body.radius, 10) || 25) + ' miles of ' + body.zip : String(body.state || '').split(',').map(function(s){ return NAMES[s] || s; }).join(', ');
+    var mail = MAILTO + '&body=' + encodeURIComponent('Please send me the next two lists.\nWhere: ' + where + '\nCategory: ' + (body.zip || body.category === 'all' ? 'all categories' : NICE[body.category]) + '\nCompany: ' + (body.company || '') + '\nEmail: ' + body.email);
     var undo = function(){ if (btn) { btn.disabled = false; btn.textContent = btn.getAttribute('data-label') || btn.textContent; } };
     var fail = function(){ undo(); msgEl.className = 'msg bad'; msgEl.innerHTML = 'That didn\'t go through. <a href="' + mail + '">Send it by email instead</a> and we\'ll set it up by hand.'; };
     var ctrl = window.AbortController ? new AbortController() : null, timer = ctrl && setTimeout(function(){ ctrl.abort(); }, 12000);
     fetch(SIGNUP + '/signup', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body), signal: ctrl && ctrl.signal })
       .then(function(r){ return r.json(); })
       .then(function(j){ clearTimeout(timer); if (!j || !j.ok) { undo(); msgEl.className = 'msg bad'; msgEl.textContent = (j && j.error) || 'Something was missing.'; return; }
-        msgEl.className = 'msg good'; msgEl.innerHTML = '<strong>Done.</strong> ' + (extra && extra.sub ? 'Your ' + NAMES[body.state] + ' list goes out with the next weekly file.' : 'Your first free ' + NAMES[body.state] + ' list goes out with the next weekly federal file, usually Monday or Tuesday morning, from matt@panelready.co. Add it to your contacts so it doesn\'t land in spam.');
+        msgEl.className = 'msg good'; msgEl.innerHTML = '<strong>Done.</strong> ' + (extra && extra.sub ? 'Your list (' + where + ') goes out with the next weekly file, with the last 90 days attached.' : 'Your first free list (' + where + ') goes out with the next weekly federal file, usually Monday or Tuesday morning, from matt@panelready.co. Add it to your contacts so it doesn\'t land in spam.');
         form.querySelectorAll('input,select,button').forEach(function(el){ if (el.type !== 'hidden') el.disabled = true; });
         if (btn) { btn.textContent = extra && extra.sub ? 'All set' : 'You\'re on the list'; btn.classList.add('done'); } })
       .catch(function(){ clearTimeout(timer); fail(); });
   }
   $('signup').onsubmit = function(e){ e.preventDefault(); post(this, $('suMsg'), $('suBtn')); };
-  $('paidForm').onsubmit = function(e){ e.preventDefault(); post(this, $('paidMsg'), this.querySelector('button'), { sub: $('pdSub').value }); };
+  $('paidForm').onsubmit = function(e){ e.preventDefault();
+    var states = [$('pdState').value, $('pdState2').value, $('pdState3').value].filter(function(s, i, a){ return s && a.indexOf(s) === i; });
+    var extra = { sub: $('pdSub').value, state: bought === 'multi' ? states.join(',') : $('pdState').value };
+    if (bought !== 'local') extra.zip = '';
+    if (bought === 'all' || bought === 'multi') extra.category = 'all';
+    post(this, $('paidMsg'), this.querySelector('button'), extra); };
   if (qs.state && $('free')) setTimeout(function(){ $('free').scrollIntoView({behavior: reduce ? 'auto' : 'smooth'}); }, 300);
 
   // ---- PayPal
-  var PLANS = { cat: 'P-3LM945184V097602ENLGJTCY', all: 'P-2L8264840K988433PNLGJUEA' };
+  // PayPal plan ids, monthly (m) and yearly (y). A missing id shows the email fallback instead of a button.
+  var PLANS = {"local": {"m": "P-167553502R680420TNLLBXAQ", "y": "P-1WK68279M99169438NLLBXRI"}, "cat": {"m": "P-3LM945184V097602ENLGJTCY", "y": "P-5L986763S8747390VNLLBWEY"}, "all": {"m": "P-89S96425784666029NLLBVBI", "y": "P-01G78206SN901843UNLLBVTQ"}, "multi": {"m": "P-14P32363S82796315NLLBYJA", "y": "P-4UH914937S789304WNLLBY4A"}};
   var MAIL = 'Want the free lists first, no card? <a href="#free">Use the form above</a>.';
-  function sub(id, planId){
-    var fb = $('fb-' + id);
-    if (!planId || planId.indexOf('PASTE') === 0 || !window.paypal) { fb.innerHTML = MAIL; return; }
+  var bought = '', billing = 'm';
+  function afterPay(id, subId){
+    bought = id; $('pdSub').value = subId || '';
+    $('pdOne').style.display = id === 'local' ? 'none' : ''; $('pdZipBox').style.display = id === 'local' ? '' : 'none';
+    $('pdMore').style.display = id === 'multi' ? '' : 'none'; $('pdCatBox').style.display = id === 'cat' ? '' : 'none';
+    if (id !== 'cat') $('pdCat').value = 'all';
+    var t = $('thanks'); t.style.display = 'block'; t.scrollIntoView({behavior:'smooth'});
+  }
+  function sub(id){
+    var fb = $('fb-' + id), box = $('paypal-' + id), planId = (PLANS[id] || {})[billing];
+    box.innerHTML = '';
+    if (!planId || !window.paypal) { fb.innerHTML = planId || !(PLANS[id] || {}).m ? MAIL : 'Yearly billing for this plan: email <a href="mailto:matt@panelready.co">matt@panelready.co</a>. ' + MAIL; return; }
     paypal.Buttons({
       style: { shape: 'pill', color: 'gold', layout: 'vertical', label: 'subscribe' },
       createSubscription: function(data, actions){ return actions.subscription.create({ plan_id: planId }); },
-      onApprove: function(data){ $('pdSub').value = (data && data.subscriptionID) || ''; if (id === 'all') $('pdCat').value = 'all'; var t = $('thanks'); t.style.display = 'block'; t.scrollIntoView({behavior:'smooth'}); }
+      onApprove: function(data){ afterPay(id, data && data.subscriptionID); }
     }).render('#paypal-' + id);
     fb.innerHTML = MAIL;
   }
-  sub('cat', PLANS.cat); sub('all', PLANS.all);
+  function renderAll(){
+    document.querySelectorAll('.plan .price').forEach(function(p){ var y = billing === 'y'; p.innerHTML = '$' + (y ? p.getAttribute('data-y') : p.getAttribute('data-m')) + '<small>/' + (y ? 'year' : 'month') + '</small>'; });
+    document.querySelectorAll('.plan .per').forEach(function(p){ p.textContent = billing === 'y' ? p.getAttribute('data-y') : ''; });
+    ['local', 'cat', 'all', 'multi'].forEach(sub);
+  }
+  document.querySelectorAll('.bill button').forEach(function(b){ b.onclick = function(){
+    billing = b.getAttribute('data-b');
+    document.querySelectorAll('.bill button').forEach(function(x){ x.classList.toggle('on', x === b); });
+    renderAll(); }; });
+  renderAll();
 })();
 </script>
 </body>
