@@ -34,7 +34,7 @@ for cand in (ROOT, HERE):                            # pr/npi.py lives in the pr
 from pr import npi as N                              # noqa: E402
 
 SITE = "https://panelready.co"                       # the site's address, no trailing slash (the old github.io address redirects here)
-BUILD_VERSION = 16                                    # bump when the page layout changes, so the next run rewrites every page
+BUILD_VERSION = 17                                    # bump when the page layout changes, so the next run rewrites every page
 COMPANY = "Avery Data Co."
 PAYPAL_CLIENT_ID = "BAAQ4G4Hizw2wHo9EZQsTxcW_oBtYKOFEIoI41YQZJvC8ufp2vM9Z_lIU4ASqIUZvXAUrin0KLaYIpr8Js"   # the "PanelReady site" app on developer.paypal.com (Live); one-time orders
 PAYPAL_ME = ""                                       # optional plan B: a PayPal.me handle (e.g. "averydataco"); shown as a second way to pay $39
@@ -359,11 +359,11 @@ def shell(title: str, desc: str, path: str, body: str, jsonld: dict | None = Non
 <body>
 <div class="nav"><div class="wrap">
   <a class="logo" href="{root}"><svg viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="15" fill="#0f2340"/><rect x="18" y="17" width="28" height="32" rx="4" fill="none" stroke="#ffffff" stroke-width="4.5" stroke-linejoin="round"/><rect x="25" y="13" width="14" height="8" rx="2.5" fill="#ffffff"/><path d="M25 34l5.5 5.5L40 29" fill="none" stroke="#2dd4bf" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg>{BRAND}</a>
-  <nav><a href="{root}states/">All states</a><a href="{root}#how">How it works</a><a href="{root}#pricing">Pricing</a><a class="mini" href="{root}#free">Get 2 lists free</a></nav>
+  <nav><a href="{root}search/">Live search</a><a href="{root}states/">All states</a><a href="{root}#how">How it works</a><a href="{root}#pricing">Pricing</a><a class="mini" href="{root}#free">Get 2 lists free</a></nav>
 </div></div>
 <div class="wrap">
 {body}
-<footer><div class="flinks"><a href="{root}states/">New practices by state</a><a href="{root}about/">About</a><a href="{root}contact/">Contact</a><a href="{root}privacy/">Privacy</a><a href="{root}terms/">Terms</a><a href="{root}sample/panelready-sample.csv">Sample spreadsheet</a></div>
+<footer><div class="flinks"><a href="{root}search/">Live search</a><a href="{root}states/">New practices by state</a><a href="{root}about/">About</a><a href="{root}contact/">Contact</a><a href="{root}privacy/">Privacy</a><a href="{root}terms/">Terms</a><a href="{root}sample/panelready-sample.csv">Sample spreadsheet</a></div>
 {BRAND} · <a href="mailto:{MAIL}">{MAIL}</a> · an {COMPANY} product, New York<br>
 Source: NPPES weekly dissemination files published by CMS. Public data, provided as-is; not affiliated with CMS or any payer. Practice names are from the public registry; phone numbers are masked on this page and complete in the subscriber spreadsheet.</footer>
 </div>
@@ -905,6 +905,7 @@ ACCOUNT_BODY = """
 
 <div class="card"><h2>Your lists</h2>
   <p class="help">Every weekly email, as one zip per week (kept about 8 weeks). The first one includes the last 90 days of new practices in your territory.</p>
+  <p class="help"><a id="searchLink" href="../search/"><b>Search &amp; export</b></a>: filter everything in your territory (the last 13 weeks, plus this month's stuck-in-credentialing and revalidation lists) by county, city, distance from a ZIP, specialty or practice type, and download just the rows you want.</p>
   <div class="tscroll"><table class="dl"><thead><tr><th>Week ending</th><th>Files</th><th class="r">Download</th></tr></thead><tbody id="dlRows"></tbody></table></div>
 </div>
 
@@ -952,6 +953,7 @@ ACCOUNT_BODY = """
   var t = (location.hash.match(/[#&]t=([A-Za-z0-9_-]{20,64})/) || [])[1] || '';
   var $ = function(id){ return document.getElementById(id); };
   var show = function(id, on){ $(id).classList.toggle('hide', !on); };
+  if (t) $('searchLink').href = '../search/#t=' + t;
   function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
   function msg(id, text, ok){ var m = $(id); m.textContent = text; m.className = 'msg ' + (ok ? 'ok' : 'err'); }
   function post(path, body, msgId, okText){
@@ -1078,6 +1080,463 @@ ACCOUNT_BODY = """
 """
 
 
+SEARCH_CSS = """
+.srch .tabs{display:flex;gap:8px;flex-wrap:wrap;margin:22px 0 14px}
+.srch .tabs button{border:1.5px solid var(--line2);background:#fff;color:var(--ink);border-radius:999px;padding:9px 15px;font:600 14px Inter,sans-serif;cursor:pointer}
+.srch .tabs button:hover{border-color:var(--teal)}
+.srch .tabs button[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:#fff}
+.srch .sighelp{color:var(--muted);font-size:14px;margin:0 0 14px;max-width:780px}
+.srch .filters{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px 14px}
+@media(max-width:860px){.srch .filters{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:520px){.srch .filters{grid-template-columns:1fr}}
+.srch label{display:block;font-size:12.5px;color:var(--muted);font-weight:600;margin:0 0 6px}
+.srch select,.srch input{width:100%;min-width:0;background:#fff;color:var(--ink);border:1.5px solid var(--line2);border-radius:10px;padding:10px 12px;font:500 15px Inter,sans-serif}
+.srch select:focus,.srch input:focus,.srch .tabs button:focus-visible,.srch .trend div:focus-visible{outline:none;border-color:var(--teal);box-shadow:0 0 0 4px rgba(14,124,123,.16)}
+.srch .zipbox{display:grid;grid-template-columns:1fr 92px;gap:8px}
+.srch .hide{display:none!important}
+.srch .result{margin-top:18px}
+.srch .hero{display:flex;align-items:baseline;gap:6px 16px;flex-wrap:wrap}
+.srch .hero b{font-family:"Source Serif 4",Georgia,serif;font-weight:600;font-size:clamp(44px,7vw,64px);line-height:1;color:var(--ink);font-variant-numeric:tabular-nums}
+.srch .hero span{color:var(--muted);font-size:16px;max-width:620px}
+.srch .sub{color:var(--muted);font-size:14px;margin:8px 0 0}
+.srch .sub b{color:var(--ink)}
+.srch .trend div{cursor:default;border-radius:6px}
+.srch .trend i.off{opacity:.3}
+.srch .trend b{min-height:15px}
+.srch .bar{grid-template-columns:minmax(0,190px) 1fr 52px}
+.srch .bar span.l{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--ink)}
+.srch .bar button.l{all:unset;cursor:pointer;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--ink)}
+.srch .bar button.l:hover,.srch .bar button.l:focus-visible{color:var(--teal);text-decoration:underline}
+.srch .fill{background:linear-gradient(90deg,#14b8a6,var(--teal))}
+.srch .tip{position:fixed;z-index:20;pointer-events:none;background:var(--ink);color:#fff;font-size:13px;line-height:1.35;padding:7px 10px;border-radius:8px;box-shadow:var(--shadow);max-width:260px}
+.srch .state{padding:28px;text-align:center;color:var(--muted)}
+.srch .mine{background:linear-gradient(135deg,rgba(14,124,123,.09),rgba(37,99,235,.04));border:1px solid rgba(14,124,123,.35)}
+.srch .mine .cta{border:0;cursor:pointer}
+.srch .empty{color:var(--dim);font-size:14px;padding:6px 0}
+.srch details table td,.srch details table th{padding:6px 10px}
+@media(max-width:480px){.srch .bar{grid-template-columns:minmax(0,120px) 1fr 44px}}
+@media(max-width:600px){.srch .trend div:not(:nth-child(3n+1)) span{visibility:hidden}.srch .trend span{overflow:visible}}
+"""
+
+SEARCH_BODY = """
+<div class="crumbs"><a href="../">PanelReady</a> › Live search</div>
+<div class="srch">
+<span class="kicker">Live search · free</span>
+<h1>How many new practices are in <em>your</em> territory?</h1>
+<p class="lead">Filter every new healthcare practice registered in the last 13 weeks, plus this month's <b>stuck in credentialing</b> and <b>Medicare revalidation</b> lists, by state, county, metro area, city, distance from a ZIP code, specialty and practice type. The counts change the moment you change a filter. <span id="asof"></span></p>
+
+<div class="card mine hide" id="mineBox"><h2 style="margin:0 0 6px;font-size:21px">Your territory · export</h2>
+  <p class="help" id="mineText" style="color:var(--muted);margin:0 0 4px">Loading your rows…</p>
+  <button class="cta hide" type="button" id="exportBtn">Download these rows (CSV)</button>
+</div>
+
+<div class="tabs" role="group" aria-label="Which list" id="tabs"></div>
+<p class="sighelp" id="sigHelp"></p>
+
+<div class="card">
+  <div class="filters">
+    <div><label for="fSt">State</label><div class="sel"><select id="fSt"></select></div></div>
+    <div><label for="fArea">Area</label><div class="sel"><select id="fArea"></select></div></div>
+    <div id="boxCounty" class="hide"><label for="fCounty">County</label><div class="sel"><select id="fCounty"></select></div></div>
+    <div id="boxMetro" class="hide"><label for="fMetro">Metro area</label><div class="sel"><select id="fMetro"></select></div></div>
+    <div id="boxCity" class="hide"><label for="fCity">City</label><input id="fCity" list="cityList" placeholder="Start typing a city" autocomplete="off"><datalist id="cityList"></datalist></div>
+    <div id="boxZip" class="hide"><label for="fZip">Within this distance of a ZIP</label><div class="zipbox"><input id="fZip" inputmode="numeric" maxlength="5" placeholder="ZIP code" autocomplete="postal-code"><div class="sel"><select id="fMiles" aria-label="Miles"></select></div></div></div>
+    <div><label for="fCat">Category</label><div class="sel"><select id="fCat"></select></div></div>
+    <div><label for="fSpec">Specialty</label><div class="sel"><select id="fSpec"></select></div></div>
+    <div><label for="fEnt">Practice type</label><div class="sel"><select id="fEnt"><option value="">Organizations and sole proprietors</option><option value="0">Organizations (group practices, clinics, agencies)</option><option value="1">Sole proprietors</option></select></div></div>
+    <div id="boxWeeks"><label for="fWeeks">Registered</label><div class="sel"><select id="fWeeks"><option value="13">In the last 13 weeks</option><option value="8">In the last 8 weeks</option><option value="4">In the last 4 weeks</option><option value="1">In the newest week</option></select></div></div>
+  </div>
+</div>
+
+<div class="result" id="result" aria-live="polite">
+  <div class="card state" id="loading">Loading the counts…</div>
+  <div id="out" class="hide">
+    <div class="card">
+      <div class="hero"><b id="total">0</b><span id="totalText"></span></div>
+      <p class="sub" id="totalSub"></p>
+      <div class="btns" id="ctaRow"><a class="cta" id="cta" href="../#free">Get these as a free weekly list</a><a class="cta ghost" href="../#pricing">See plans</a></div>
+    </div>
+    <div class="card" id="weekCard" style="margin-top:16px"><h2 style="font-size:20px;margin:0">Week by week</h2>
+      <div class="trend" id="weekBars" role="img"></div>
+      <details><summary>The numbers</summary><div class="tscroll"><table><thead><tr><th>Week ending</th><th class="r">Count</th></tr></thead><tbody id="weekRows"></tbody></table></div></details>
+    </div>
+    <div class="grid2" style="margin-top:16px">
+      <div class="card"><h2 style="font-size:20px" id="whereTitle">Where</h2><div id="whereBars"></div></div>
+      <div class="card"><h2 style="font-size:20px">Top specialties</h2><div id="specBars"></div></div>
+    </div>
+  </div>
+</div>
+
+<section class="prose" style="margin-top:34px">
+<h2>Where the numbers come from</h2>
+<p>New practices come from the federal NPPES registry's weekly files (organizations and sole proprietors; employees and students who get an NPI only to work somewhere else are left out). <b>Moved</b> is a practice whose registered address changed to a new location. <b>Stuck in credentialing</b> is a practice that registered 2 to 12 months ago in a specialty that normally bills Medicare and still isn't on Medicare's public enrollment list. <b>Revalidation due</b> is Medicare's own list of enrollments due from 90 days ago through the next six months. Counts are rebuilt every week; the two monthly lists, every month.</p>
+<p>This page shows counts only. The lists themselves come with the practice phone, the owner's name and own phone, the address, the specialty, a score and an opener for every row: <a href="../#free">two weekly lists are free</a>.</p>
+</section>
+<div class="tip hide" id="tip" role="tooltip"></div>
+</div>
+<script>
+(function(){
+  var W = '__WORKER__';
+  var NICE = __NICE__, NAMES = __NAMES__, NEAR = __NEAR__;
+  var CATS = ['behavioral', 'medical', 'dental', 'therapy', 'home_senior', 'dme_transport'];
+  var SIG = {
+    'new': { label: 'New practices', noun: 'new practices', weekly: true,
+      help: 'Organizations and sole proprietors that registered an NPI, counted by the week they registered.' },
+    'moved': { label: 'Moved', noun: 'practices that moved', weekly: true,
+      help: 'Practices whose registered address changed to a new location, by the week the change was published.' },
+    'stuck': { label: 'Stuck in credentialing', noun: 'practices stuck in credentialing', weekly: false,
+      help: 'Registered 2 to 12 months ago and still not on Medicare\\u2019s public enrollment list: usually credentialing hasn\\u2019t started or has stalled. This month\\u2019s list.' },
+    'reval': { label: 'Revalidation due', noun: 'Medicare revalidations due', weekly: false,
+      help: 'Medicare enrollments due for revalidation, from 90 days overdue to six months out. This month\\u2019s list.' }
+  };
+  var ORDER = ['new', 'moved', 'stuck', 'reval'];
+  var MILES = [5, 10, 15, 25, 50, 75, 100];
+  var $ = function(id){ return document.getElementById(id); };
+  var fmt = function(n){ return Math.round(n).toLocaleString('en-US'); };
+  function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+  var MON = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  function shortDate(iso){ var p = iso.split('-'); return MON[+p[1] - 1] + ' ' + (+p[2]); }
+  function longDate(iso){ var p = iso.split('-'); return MON[+p[1] - 1] + ' ' + (+p[2]) + ', ' + p[0]; }
+  var token = (location.hash.match(/[#&]t=([A-Za-z0-9_-]{20,64})/) || [])[1] || '';
+
+  // ---- filter state, kept in the address so a search can be shared or bookmarked
+  var S = { sig: 'new', st: '', area: 'state', county: '', metro: '', city: '', zip: '', miles: 25, cat: '', spec: '', ent: '', weeks: 13 };
+  (function readHash(){
+    location.hash.replace(/^#/, '').split('&').forEach(function(kv){
+      var i = kv.indexOf('='); if (i < 1) return; var k = kv.slice(0, i), v = decodeURIComponent(kv.slice(i + 1));
+      if (k in S && k !== 't') S[k] = (k === 'miles' || k === 'weeks') ? (+v || S[k]) : v;
+    });
+    if (ORDER.indexOf(S.sig) < 0) S.sig = 'new';
+  })();
+  function writeHash(){
+    var parts = token ? ['t=' + token] : [];
+    var def = { sig: 'new', st: '', area: 'state', county: '', metro: '', city: '', zip: '', miles: 25, cat: '', spec: '', ent: '', weeks: 13 };
+    Object.keys(S).forEach(function(k){ if (S[k] !== def[k] && S[k] !== '') parts.push(k + '=' + encodeURIComponent(S[k])); });
+    try { history.replaceState(null, '', location.pathname + location.search + (parts.length ? '#' + parts.join('&') : '')); } catch (e) {}
+  }
+
+  // ---- data
+  var INDEX = null, FILES = {}, MINE = null, MINE_ROWS = null, PENDING = {};
+  function getJSON(url){ return fetch(url).then(function(r){ if (!r.ok) throw new Error(r.status); return r.json(); }); }
+  function loadState(st){
+    if (FILES[st]) return Promise.resolve(FILES[st]);
+    if (PENDING[st]) return PENDING[st];
+    PENDING[st] = getJSON(W + '/search?f=' + st).then(function(f){ prep(f); FILES[st] = f; return f; })
+      .catch(function(){ FILES[st] = null; return null; });
+    return PENDING[st];
+  }
+  function prep(f){                       // turn the compact arrays into rows the filters can read
+    f.zmap = {}; f.zips.forEach(function(z, i){ f.zmap[z] = i; });
+    f.cmap = {}; (f.zc || []).forEach(function(c){ f.cmap[c[0]] = [c[1], c[2]]; });
+    f.rows = f.r.map(function(x){
+      var g = f.zg[x[2]] || [null, null, -1, -1], c = g[2] >= 0 ? f.counties[g[2]] : null, sp = f.specs[x[3]];
+      return { s: x[0], w: x[1], n: x[5], e: x[4], spec: sp[0], cat: sp[1], st: f.st, zip: f.zips[x[2]], lat: g[0], lon: g[1],
+               county: c ? c[0] : '', countyName: c ? c[1] : '', metro: c && c[2] >= 0 ? f.metros[c[2]] : '', city: g[3] >= 0 ? f.cities[g[3]] : '' };
+    });
+  }
+  function centre(zip){                   // [lat, lon] of a ZIP, from any loaded state file
+    for (var st in FILES) { var f = FILES[st]; if (!f) continue;
+      if (zip in f.zmap) { var g = f.zg[f.zmap[zip]]; if (g[0] != null) return [g[0], g[1]]; }
+      if (f.cmap[zip]) return f.cmap[zip]; }
+    return null;
+  }
+  function miles(a, b){
+    var r = Math.PI / 180, dLat = (b[0] - a[0]) * r, dLon = (b[1] - a[1]) * r;
+    var h = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos(a[0] * r) * Math.cos(b[0] * r) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    return 3958.8 * 2 * Math.asin(Math.sqrt(h));
+  }
+  function zipState(zip){ return INDEX && INDEX.z3 ? INDEX.z3[zip.slice(0, 3)] || '' : ''; }
+
+  // ---- the subscriber's own rows (from the account link): gzipped JSON with every column
+  function loadMine(){
+    $('mineBox').classList.remove('hide');
+    if (!window.DecompressionStream) { $('mineText').textContent = 'This browser can\\u2019t open the export file. Try a current Chrome, Edge, Firefox or Safari.'; return Promise.resolve(); }
+    return fetch(W + '/dl?t=' + token + '&f=search').then(function(r){
+      if (!r.ok) throw new Error(r.status);
+      return new Response(r.body.pipeThrough(new DecompressionStream('gzip'))).json();
+    }).then(function(m){
+      MINE = m; MINE_ROWS = [];
+      ORDER.forEach(function(sig, s){
+        var L = m.lists[sig]; if (!L) return;
+        var h = {}; L.header.forEach(function(k, i){ h[k] = i; });
+        L.rows.forEach(function(v, i){
+          var cat = CATS.indexOf(v[h.category]);
+          if (cat < 0) return;
+          MINE_ROWS.push({ s: s, w: L.w[i], n: 1, e: v[h.entity] === 'practice/organization' ? 0 : 1, spec: v[h.specialty] || 'Other specialty',
+                           cat: cat, st: v[h.state], zip: String(v[h.zip] || '').slice(0, 5), raw: v, sig: sig });
+        });
+      });
+      var states = {}; MINE_ROWS.forEach(function(r){ states[r.st] = 1; });
+      return Promise.all(Object.keys(states).slice(0, 12).map(loadState)).then(function(){
+        MINE_ROWS.forEach(function(r){
+          var f = FILES[r.st]; if (!f || !(r.zip in f.zmap)) return;
+          var g = f.zg[f.zmap[r.zip]], c = g[2] >= 0 ? f.counties[g[2]] : null;
+          r.lat = g[0]; r.lon = g[1]; r.county = c ? c[0] : ''; r.countyName = c ? c[1] : '';
+          r.metro = c && c[2] >= 0 ? f.metros[c[2]] : ''; r.city = g[3] >= 0 ? f.cities[g[3]] : '';
+        });
+        $('exportBtn').classList.remove('hide');
+      });
+    }).catch(function(){
+      MINE = null; MINE_ROWS = null;
+      $('mineText').textContent = 'Your export file isn\\u2019t ready yet: it\\u2019s built with each weekly list, so it appears after your next one. Until then this page shows public counts.';
+    });
+  }
+
+  // ---- which rows answer the current filters
+  function source(){
+    if (MINE_ROWS) return { rows: MINE_ROWS, geo: true, mine: true };
+    if (S.area === 'radius' && /^\\d{5}$/.test(S.zip)) {
+      var home = zipState(S.zip) || S.st;
+      var sts = [home].concat((NEAR[home] || '').split(' ')).filter(Boolean);
+      var rows = []; sts.forEach(function(st){ if (FILES[st]) rows = rows.concat(FILES[st].rows); });
+      return { rows: rows, geo: true, need: sts.filter(function(st){ return !(st in FILES); }) };
+    }
+    if (S.st) {
+      if (!(S.st in FILES)) return { rows: [], need: [S.st] };
+      if (FILES[S.st]) return { rows: FILES[S.st].rows, geo: true };
+    }
+    return { rows: INDEX ? INDEX.rows : [], geo: false };
+  }
+  function matcher(src){
+    var s = ORDER.indexOf(S.sig), weekly = SIG[S.sig].weekly, w0 = (INDEX ? INDEX.weeks.length : 13) - S.weeks;
+    var cat = S.cat ? CATS.indexOf(S.cat) : -1, ent = S.ent === '' ? -1 : +S.ent;
+    var c = S.area === 'radius' && /^\\d{5}$/.test(S.zip) ? centre(S.zip) : null;
+    return function(r, ignoreWeeks){
+      if (r.s !== s) return false;
+      if (weekly && !ignoreWeeks && r.w < w0) return false;
+      if (cat >= 0 && r.cat !== cat) return false;
+      if (S.spec && r.spec !== S.spec) return false;
+      if (ent >= 0 && r.e !== ent) return false;
+      if (S.area === 'radius') {
+        if (!/^\\d{5}$/.test(S.zip)) return S.st ? r.st === S.st : true;
+        if (!c || r.lat == null) return false;
+        return miles(c, [r.lat, r.lon]) <= S.miles;
+      }
+      if (S.st && r.st !== S.st) return false;
+      if (!src.geo) return true;
+      if (S.area === 'county' && S.county) return r.county === S.county;
+      if (S.area === 'metro' && S.metro) return r.metro === S.metro;
+      if (S.area === 'city' && S.city) return r.city && r.city.toLowerCase() === S.city.toLowerCase();
+      return true;
+    };
+  }
+
+  // ---- controls
+  function opt(sel, items, value){             // items: [[value, label]]
+    sel.innerHTML = items.map(function(it){ return '<option value="' + esc(it[0]) + '">' + esc(it[1]) + '</option>'; }).join('');
+    sel.value = value; if (sel.value !== String(value) && items.length) { sel.value = items[0][0]; }
+    return sel.value;
+  }
+  function byName(a, b){ return a[1] < b[1] ? -1 : a[1] > b[1] ? 1 : 0; }
+  function paintTabs(){
+    $('tabs').innerHTML = ORDER.map(function(k){ return '<button type="button" data-k="' + k + '" aria-pressed="' + (S.sig === k) + '">' + SIG[k].label + '</button>'; }).join('');
+    $('sigHelp').textContent = SIG[S.sig].help + (S.sig === 'moved' && INDEX ? movedNote() : '');
+  }
+  function movedNote(){
+    var first = null; INDEX.rows.forEach(function(r){ if (r.s === 1 && (first === null || r.w < first)) first = r.w; });
+    return first === null ? '' : ' Tracked from the week ending ' + longDate(INDEX.weeks[first]) + '.';
+  }
+  function paintControls(){
+    var missing = (INDEX && INDEX.geo_missing) || [];
+    var states = (MINE_ROWS ? Object.keys(MINE_ROWS.reduce(function(a, r){ a[r.st] = 1; return a; }, {})) : (INDEX ? INDEX.states : []))
+      .filter(function(st){ return NAMES[st]; }).map(function(st){ return [st, NAMES[st]]; }).sort(byName);
+    S.st = opt($('fSt'), [['', MINE_ROWS ? 'All of my territory' : 'All states']].concat(states), S.st);
+    var areas = S.st ? [['state', 'The whole state']] : [['state', MINE_ROWS ? 'All of it' : 'Everywhere']];
+    var f = S.st ? FILES[S.st] : null;
+    if (S.st && missing.indexOf('counties') < 0) areas.push(['county', 'One county']);
+    if (S.st && missing.indexOf('metro areas') < 0 && missing.indexOf('counties') < 0) areas.push(['metro', 'One metro area']);
+    if (S.st) areas.push(['city', 'One city']);
+    if (missing.indexOf('zip centres') < 0) areas.push(['radius', 'Within a distance of a ZIP']);
+    S.area = opt($('fArea'), areas, S.area);
+    $('boxCounty').classList.toggle('hide', S.area !== 'county');
+    $('boxMetro').classList.toggle('hide', S.area !== 'metro');
+    $('boxCity').classList.toggle('hide', S.area !== 'city');
+    $('boxZip').classList.toggle('hide', S.area !== 'radius');
+    if (f && S.area === 'county') S.county = opt($('fCounty'), [['', 'Pick a county']].concat(f.counties.map(function(c){ return [c[0], c[1]]; }).sort(byName)), S.county);
+    if (f && S.area === 'metro') {
+      var ms = {}; f.counties.forEach(function(c){ if (c[2] >= 0) ms[f.metros[c[2]]] = 1; });
+      S.metro = opt($('fMetro'), [['', 'Pick a metro area']].concat(Object.keys(ms).sort().map(function(m){ return [m, m]; })), S.metro);
+    }
+    if (f && S.area === 'city') { $('cityList').innerHTML = f.cities.slice().sort().map(function(c){ return '<option value="' + esc(c) + '">'; }).join(''); $('fCity').value = S.city; }
+    if (S.area === 'radius') { $('fZip').value = S.zip; S.miles = +opt($('fMiles'), MILES.map(function(m){ return [m, m + ' miles']; }), S.miles); }
+    S.cat = opt($('fCat'), [['', 'All six categories']].concat(CATS.map(function(c){ return [c, NICE[c]]; })), S.cat);
+    var src = source(), counts = {}, s = ORDER.indexOf(S.sig), cat = S.cat ? CATS.indexOf(S.cat) : -1;
+    src.rows.forEach(function(r){ if (r.s === s && (cat < 0 || r.cat === cat)) counts[r.spec] = (counts[r.spec] || 0) + r.n; });
+    var specs = Object.keys(counts).sort().map(function(k){ return [k, k]; });
+    if (S.spec && !counts[S.spec]) specs.unshift([S.spec, S.spec]);
+    S.spec = opt($('fSpec'), [['', 'Every specialty']].concat(specs), S.spec);
+    $('fEnt').value = S.ent;
+    $('boxWeeks').classList.toggle('hide', !SIG[S.sig].weekly);
+    $('fWeeks').value = String(S.weeks); if ($('fWeeks').value !== String(S.weeks)) { S.weeks = 13; $('fWeeks').value = '13'; }
+  }
+
+  // ---- results
+  var tip = $('tip');
+  function showTip(el, text){
+    tip.textContent = text; tip.classList.remove('hide');
+    var b = el.getBoundingClientRect(), t = tip.getBoundingClientRect();
+    tip.style.left = Math.max(8, Math.min(window.innerWidth - t.width - 8, b.left + b.width / 2 - t.width / 2)) + 'px';
+    tip.style.top = Math.max(8, b.top - t.height - 8) + 'px';
+  }
+  function hideTip(){ tip.classList.add('hide'); }
+  function barList(el, pairs, unit, onPick){
+    if (!pairs.length) { el.innerHTML = '<div class="empty">Nothing matches.</div>'; return; }
+    var max = Math.max.apply(null, pairs.map(function(p){ return p[1]; })) || 1;
+    el.innerHTML = pairs.map(function(p, i){
+      var label = onPick ? '<button class="l" type="button" data-i="' + i + '" title="' + esc(p[0]) + '">' + esc(p[0]) + '</button>' : '<span class="l" title="' + esc(p[0]) + '">' + esc(p[0]) + '</span>';
+      return '<div class="bar">' + label + '<div class="trk"><div class="fill" style="width:' + Math.max(2, 100 * p[1] / max).toFixed(1) + '%"></div></div><div class="v">' + fmt(p[1]) + '</div></div>';
+    }).join('');
+    if (onPick) [].forEach.call(el.querySelectorAll('button.l'), function(b){ b.onclick = function(){ onPick(pairs[+b.getAttribute('data-i')]); }; });
+  }
+  function top(map, n){
+    var unknown = function(k){ return / not known$/.test(k) ? 1 : 0; };
+    return Object.keys(map).map(function(k){ return [k, map[k]]; })
+      .sort(function(a, b){ return unknown(a[0]) - unknown(b[0]) || b[1] - a[1] || (a[0] < b[0] ? -1 : 1); }).slice(0, n);
+  }
+  function where(){                       // the place, with its preposition: "in Kings County, New York"
+    if (S.area === 'radius' && /^\\d{5}$/.test(S.zip)) return 'within ' + S.miles + ' miles of ZIP ' + S.zip;
+    if (!S.st) return MINE_ROWS ? 'in your territory' : 'in the US';
+    var f = FILES[S.st], name = NAMES[S.st];
+    if (S.area === 'county' && S.county && f) { var c = f.counties.filter(function(x){ return x[0] === S.county; })[0]; return 'in ' + (c ? c[1] : 'the county') + ', ' + name; }
+    if (S.area === 'metro' && S.metro) return 'in the ' + S.metro + ' metro area';
+    if (S.area === 'city' && S.city) return 'in ' + S.city + ', ' + name;
+    return 'in ' + name;
+  }
+  function render(){
+    var src = source();
+    if (src.need && src.need.length) {
+      $('loading').textContent = 'Loading ' + src.need.map(function(st){ return NAMES[st] || st; }).join(', ') + '…';
+      $('loading').classList.remove('hide'); $('out').classList.add('hide');
+      Promise.all(src.need.map(loadState)).then(function(){ paintControls(); render(); });
+      return;
+    }
+    if (S.area === 'radius' && /^\\d{5}$/.test(S.zip) && !centre(S.zip)) {
+      $('loading').textContent = 'We don\\u2019t have a location for ZIP ' + S.zip + ' (it may be a PO-box-only ZIP). Try a nearby one.';
+      $('loading').classList.remove('hide'); $('out').classList.add('hide'); return;
+    }
+    $('loading').classList.add('hide'); $('out').classList.remove('hide');
+    var m = matcher(src), weekly = SIG[S.sig].weekly, weeks = INDEX.weeks, total = 0, orgs = 0, byWeek = weeks.map(function(){ return 0; });
+    var specs = {}, places = {}, mode = !S.st && !(S.area === 'radius' && /^\\d{5}$/.test(S.zip)) ? 'state'
+      : S.area === 'city' && S.city ? 'zip' : S.area === 'state' && src.geo && (INDEX.geo_missing || []).indexOf('counties') < 0 ? 'county' : 'city';
+    var picked = [];
+    src.rows.forEach(function(r){
+      if (weekly && r.w >= 0 && m(r, true)) byWeek[r.w] += r.n;
+      if (!m(r)) return;
+      total += r.n; if (r.e === 0) orgs += r.n;
+      specs[r.spec] = (specs[r.spec] || 0) + r.n;
+      var p = mode === 'state' ? (NAMES[r.st] || r.st) : mode === 'county' ? (r.countyName || 'County not known') : mode === 'zip' ? r.zip : (r.city || 'City not known');
+      places[p] = (places[p] || 0) + r.n;
+      if (src.mine) picked.push(r);
+    });
+    $('total').textContent = fmt(total);
+    var noun = SIG[S.sig].noun;
+    if (S.spec) noun = noun.replace('practices', S.spec.toLowerCase() + ' practices');
+    else if (S.cat) noun = noun.replace('practices', NICE[S.cat].toLowerCase());
+    var span = weekly ? (S.weeks === 1 ? ' in the week ending ' + longDate(weeks[weeks.length - 1]) : ' in the last ' + S.weeks + ' weeks') : '';
+    $('totalText').textContent = noun + ' ' + where() + span + '.';
+    var sub = [];
+    if (total) sub.push('<b>' + Math.round(100 * orgs / total) + '%</b> organizations, ' + Math.round(100 * (total - orgs) / total) + '% sole proprietors');
+    if (weekly && total && S.weeks > 1) sub.push('about <b>' + fmt(total / S.weeks) + '</b> a week');
+    $('totalSub').innerHTML = sub.join(' · ');
+    // call to action: the free list for this state and category (or the subscriber's export)
+    $('ctaRow').classList.toggle('hide', !!src.mine);
+    var q = []; var st = S.st || (S.area === 'radius' ? zipState(S.zip) : '');
+    if (st) q.push('state=' + st); if (S.cat) q.push('cat=' + S.cat);
+    if (S.area === 'radius' && /^\\d{5}$/.test(S.zip)) q.push('zip=' + S.zip, 'radius=' + S.miles);
+    $('cta').href = '../' + (q.length ? '?' + q.join('&') : '') + '#free';
+    $('cta').textContent = 'Get the full list free';
+    // week by week
+    $('weekCard').classList.toggle('hide', !weekly);
+    if (weekly) {
+      var max = Math.max.apply(null, byWeek) || 1, first = weeks.length - S.weeks, maxI = byWeek.indexOf(Math.max.apply(null, byWeek));
+      $('weekBars').setAttribute('aria-label', noun + ' per week, ' + where());
+      var PLOT = 104;                     // px: the bar area, below the value labels and above the dates
+      $('weekBars').innerHTML = byWeek.map(function(n, i){
+        var label = (i === weeks.length - 1 || i === maxI) ? fmt(n) : '';
+        return '<div tabindex="0" data-t="Week ending ' + longDate(weeks[i]) + ': ' + fmt(n) + '"><b>' + label + '</b><i class="' + (i < first ? 'off' : '') + '" style="height:' + Math.max(n ? 3 : 1, PLOT * n / max).toFixed(0) + 'px"></i><span>' + shortDate(weeks[i]) + '</span></div>';
+      }).join('');
+      [].forEach.call($('weekBars').children, function(d){
+        d.onmouseenter = d.onfocus = function(){ showTip(d, d.getAttribute('data-t')); };
+        d.onmouseleave = d.onblur = hideTip;
+      });
+      $('weekRows').innerHTML = byWeek.map(function(n, i){ return '<tr><td>' + longDate(weeks[i]) + '</td><td class="r">' + fmt(n) + '</td></tr>'; }).reverse().join('');
+    }
+    // where and what
+    $('whereTitle').textContent = { state: 'By state', county: 'By county', city: 'By city', zip: 'By ZIP code' }[mode];
+    barList($('whereBars'), top(places, 12), '', mode === 'state' && !src.mine ? function(p){
+      var code = Object.keys(NAMES).filter(function(k){ return NAMES[k] === p[0]; })[0]; if (code) { S.st = code; S.area = 'state'; update(); }
+    } : mode === 'county' && FILES[S.st] ? function(p){
+      var c = FILES[S.st].counties.filter(function(x){ return x[1] === p[0]; })[0]; if (c) { S.area = 'county'; S.county = c[0]; update(); }
+    } : null);
+    barList($('specBars'), top(specs, 10), '', function(p){ S.spec = p[0]; update(); });
+    // subscriber export
+    if (src.mine) {
+      $('mineText').innerHTML = '<b>' + fmt(picked.length) + '</b> of your rows match these filters, with every column (phones, owners, openers). Updated with each weekly list (as of the week ending ' + longDate(MINE.asof) + ').';
+      $('exportBtn').textContent = 'Download ' + fmt(picked.length) + ' rows (CSV)';
+      $('exportBtn').disabled = !picked.length;
+      $('exportBtn').onclick = function(){ download(picked); };
+    }
+  }
+  function csvCell(v){ v = v == null ? '' : String(v); return /[",\\n\\r]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; }
+  function download(rows){
+    if (!rows.length) return;
+    var L = MINE.lists[rows[0].sig], lines = [L.header.map(csvCell).join(',')];
+    rows.forEach(function(r){ lines.push(r.raw.map(csvCell).join(',')); });
+    var blob = new Blob(['\\ufeff' + lines.join('\\r\\n')], { type: 'text/csv;charset=utf-8' });
+    var a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+    a.download = 'PanelReady_' + S.sig + '_' + where().replace(/[^A-Za-z0-9]+/g, '_').replace(/^_|_$/g, '') + '_' + MINE.asof + '.csv';
+    document.body.appendChild(a); a.click(); setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); }, 500);
+  }
+  function update(){ paintTabs(); paintControls(); writeHash(); render(); }
+
+  // ---- wiring
+  $('tabs').onclick = function(e){ var b = e.target.closest('button'); if (!b) return; S.sig = b.getAttribute('data-k'); S.spec = ''; update(); };
+  $('fSt').onchange = function(){ S.st = this.value; S.county = S.metro = S.city = ''; if (S.area !== 'radius') S.area = 'state'; update(); };
+  $('fArea').onchange = function(){ S.area = this.value; update(); };
+  $('fCounty').onchange = function(){ S.county = this.value; update(); };
+  $('fMetro').onchange = function(){ S.metro = this.value; update(); };
+  $('fCity').onchange = function(){ S.city = this.value.trim(); update(); };
+  $('fZip').oninput = function(){ var z = this.value.replace(/\\D/g, '').slice(0, 5); if (z !== this.value) this.value = z; if (z.length === 5 || !z) { S.zip = z; update(); } };
+  $('fMiles').onchange = function(){ S.miles = +this.value; update(); };
+  $('fCat').onchange = function(){ S.cat = this.value; S.spec = ''; update(); };
+  $('fSpec').onchange = function(){ S.spec = this.value; update(); };
+  $('fEnt').onchange = function(){ S.ent = this.value; update(); };
+  $('fWeeks').onchange = function(){ S.weeks = +this.value; update(); };
+
+  getJSON(W + '/search?f=index').then(function(ix){
+    ix.rows = ix.r.map(function(x){ var sp = ix.specs[x[3]]; return { s: x[0], w: x[1], st: ix.states[x[2]], spec: sp[0], cat: sp[1], e: x[4], n: x[5] }; });
+    INDEX = ix;
+    $('asof').textContent = 'Updated for the week ending ' + longDate(ix.asof) + '.';
+    return token ? loadMine() : null;
+  }).then(function(){
+    if (MINE_ROWS && MINE) INDEX.weeks = MINE.weeks;
+    update();
+  }).catch(function(){
+    $('loading').textContent = 'The counts are being refreshed. Please try again in a few minutes.';
+  });
+})();
+</script>
+"""
+
+
+def search_page() -> str:
+    body = (SEARCH_BODY.replace("__WORKER__", WORKER)
+            .replace("__NICE__", json.dumps(CAT_TITLE))
+            .replace("__NAMES__", json.dumps(STATES))
+            .replace("__NEAR__", json.dumps(NEIGHBORS)))
+    page = shell(f"Live search: new healthcare practices by county, metro and specialty | {BRAND}",
+                 "Free live counts of new healthcare practices, practices stuck in credentialing and Medicare revalidations "
+                 "due, by state, county, metro area, city, ZIP radius, specialty and practice type. For credentialing and "
+                 "billing companies.", "search/", body)
+    return page.replace("<style>", "<style>" + SEARCH_CSS, 1)
+
+
+def write_search():
+    d = HERE / "search"
+    d.mkdir(exist_ok=True)
+    (d / "index.html").write_text(search_page(), encoding="utf-8")
+
+
 def account_page() -> str:
     body = (ACCOUNT_BODY.replace("__WORKER__", WORKER)
             .replace("__NICE__", json.dumps(CAT_TITLE))
@@ -1191,11 +1650,13 @@ def build(data: dict) -> list[str]:
                 shutil.rmtree(cd)                        # a category page that no longer has enough rows goes away (sitemap drops it)
     info = info_pages(data)
     write_account()                                   # not in the sitemap: private, opened from the link in each email
+    write_search()
     write_sample(data)
     urls = [f"  <url><loc>{SITE}/</loc><lastmod>{latest}</lastmod><changefreq>weekly</changefreq><priority>1.0</priority></url>"]
+    urls += [f"  <url><loc>{SITE}/search/</loc><lastmod>{latest}</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>"]
     urls += [f"  <url><loc>{SITE}/{p}</loc><lastmod>{latest}</lastmod><changefreq>weekly</changefreq><priority>{'0.8' if p.count('/') < 3 else '0.6'}</priority></url>" for p in paths]
     urls += [f"  <url><loc>{SITE}/{p}</loc><lastmod>{latest}</lastmod><changefreq>monthly</changefreq><priority>0.4</priority></url>" for p in info]
-    paths = paths + info
+    paths = paths + info + ["search/"]
     (HERE / "sitemap.xml").write_text('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + "\n".join(urls) + "\n</urlset>\n", encoding="utf-8")
     (HERE / "robots.txt").write_text(f"User-agent: *\nAllow: /\nDisallow: /account/\nSitemap: {SITE}/sitemap.xml\n", encoding="utf-8")
     return paths
