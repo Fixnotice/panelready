@@ -34,7 +34,7 @@ for cand in (ROOT, HERE):                            # pr/npi.py lives in the pr
 from pr import npi as N                              # noqa: E402
 
 SITE = "https://panelready.co"                       # the site's address, no trailing slash (the old github.io address redirects here)
-BUILD_VERSION = 19                                    # bump when the page layout changes, so the next run rewrites every page
+BUILD_VERSION = 20                                    # bump when the page layout changes, so the next run rewrites every page
 COMPANY = "Avery Data Co."
 PAYPAL_CLIENT_ID = "BAAQ4G4Hizw2wHo9EZQsTxcW_oBtYKOFEIoI41YQZJvC8ufp2vM9Z_lIU4ASqIUZvXAUrin0KLaYIpr8Js"   # the "PanelReady site" app on developer.paypal.com (Live); one-time orders
 PAYPAL_ME = ""                                       # optional plan B: a PayPal.me handle (e.g. "averydataco"); shown as a second way to pay $39
@@ -471,8 +471,8 @@ def offer(state_name: str, st: str, cat: str | None, root: str, latest: str = ""
     where = f"in {esc(state_name)}" if st else "in your state"
     week = week_box(state_name, st, latest, total, avg) if st and latest and (total or avg) else ""
     return (f'<section class="offer"><h2>Get every new {esc(what)} {where}, the week they register.</h2>'
-            f'<p>This page shows a sample. Subscribers get the complete {esc(state_name) if st else "state"} list as a spreadsheet, {sub}, sorted best-first: the top 25 marked, a score and a ready-to-say opener for every practice, the owner\'s direct line where the registry lists it, phone, address and NPI, websites, emails and practice software for organizations where we can find them, an OIG exclusion check, and the practices that moved or added a specialty that week. Once a month: practices due for Medicare revalidation and practices that look stuck in credentialing. Your first list includes the last 90 days, teammates get copies, Roster Watch checks your own clients every week, and a webhook sends each list to your CRM. Backed by a 90-day guarantee. '
-            f'{plan} per state through PayPal (or ${LOCAL_PRICE}/month for just your local area, ${MULTI_PRICE}/month for three states, 2 months free yearly; the charge shows as {COMPANY}, {BRAND}\'s parent company); cancel any time. Try the next two lists free first, no card needed.</p>'
+            f'<p>This page shows a sample. Subscribers get the complete {esc(state_name) if st else "state"} list as a spreadsheet, {sub}, sorted best-first: the top 25 marked, a score and a ready-to-say opener for every practice, the owner\'s direct line where the registry lists it, phone, address and NPI, websites, emails and practice software for organizations where we can find them, an OIG exclusion check, and the practices that moved or added a specialty that week. Once a month: practices due for Medicare revalidation and practices that look stuck in credentialing. Your first paid list includes the last 90 days, teammates get copies, Roster Watch checks your own clients every week, and a webhook sends each list to your CRM. Backed by a 90-day guarantee. '
+            f'{plan} per state through PayPal (or ${LOCAL_PRICE}/month for just your local area, ${MULTI_PRICE}/month for three states, 2 months free yearly; the charge shows as {COMPANY}, {BRAND}\'s parent company); cancel any time. Try two lists free first, no card needed: the first arrives by the next morning.</p>'
             f'<div class="btns"><a class="cta" href="{root}{q}#free">Get two free {esc(state_name) if st else ""} lists</a><a class="cta ghost" href="{root}{q}#pricing">Subscribe · {plan}</a></div>{week}</section>')
 
 
@@ -813,7 +813,8 @@ def info_pages(data: dict) -> list[str]:
 <li><b>Free lists:</b> the quickest way is <a href="{root}#free">the form</a>, but an email with your company, state and category works just as well.</li>
 <li><b>Changing your list:</b> subscribers can reply to any {BRAND} email with the new state or category ("switch to dental", "add New Jersey") and the next list reflects it.</li>
 <li><b>Several states or an exclusive arrangement:</b> say which states and categories and we'll quote a bundle.</li>
-<li><b>Cancelling:</b> from your PayPal account under Subscriptions, or reply STOP to any email. No forms.</li>
+<li><b>Your account page:</b> subscribers can open it from <a href="{root}account/">Account</a> at the top of any page: enter your email and we send a sign-in link within the hour.</li>
+<li><b>Cancelling:</b> from your PayPal account under Subscriptions (your lists continue to the end of the period you've paid for), or reply STOP to any email (our emails stop right away and we cancel the PayPal subscription for you). No forms.</li>
 <li><b>Billing questions:</b> charges appear as {COMPANY}, {BRAND}'s parent company. Include the PayPal subscription ID (starts with I-) if you have it.</li>
 </ul>
 <h2>Mailing address</h2>
@@ -852,17 +853,17 @@ def info_pages(data: dict) -> list[str]:
 <div class="prose">
 <p class="lead">These terms apply to the {BRAND} lists and website, provided by {COMPANY} ("we"). By requesting lists or subscribing you agree to them. Last updated {long_date(latest)}.</p>
 <h2>The service</h2>
-<p>{BRAND} sends you a spreadsheet of healthcare practices and sole proprietors that registered for an NPI in the previous week, for the state(s) and category(ies) on your plan, on the morning CMS posts the weekly file (normally once a week; CMS occasionally skips or delays a week). The data comes from the public NPPES registry exactly as published. We sort it, score each practice and suggest an opener; for organizations we also look up websites, emails, Google ratings and the practice software their websites use, from public sources (Google and the practice's own website), and we check every name against the federal OIG exclusion list. Each week subscribers also get the practices whose registered location changed in the registry that week, and once a month two more lists: practices due (or overdue) for Medicare revalidation according to CMS's public Revalidation Due Date List, and practices that registered 2-12 months earlier and don't appear on Medicare's public enrollment list. A "Medicare pending" flag means the provider appears on CMS's public list of pending first-time applications. Scores, openers, practice-size counts and lookups are our best suggestions, not verified facts; dates and statuses are as CMS publishes them.</p>
+<p>{BRAND} sends you a spreadsheet of healthcare practices and sole proprietors that registered for an NPI in the previous week, for the state(s) and category(ies) on your plan, on the morning CMS posts the weekly file (normally once a week; CMS occasionally skips or delays a week). Your first list goes out the morning after you sign up or tell us your territory, from the latest weekly file; a subscription's first paid list also includes every new practice in your territory from the previous 90 days. The data comes from the public NPPES registry exactly as published. We sort it, score each practice and suggest an opener; for organizations we also look up websites, emails, Google ratings and the practice software their websites use, from public sources (Google and the practice's own website), and we check every name against the federal OIG exclusion list. Each week subscribers also get the practices whose registered location changed in the registry that week, and once a month two more lists: practices due (or overdue) for Medicare revalidation according to CMS's public Revalidation Due Date List, and practices that registered 2-12 months earlier and don't appear on Medicare's public enrollment list. A "Medicare pending" flag means the provider appears on CMS's public list of pending first-time applications. Scores, openers, practice-size counts and lookups are our best suggestions, not verified facts; dates and statuses are as CMS publishes them.</p>
 <h2>The 90-day guarantee</h2>
 <p>If you don't sign at least one new client from your {BRAND} lists during your first 90 days as a paying subscriber, tell us by email within 30 days after that and your next three months are free: we pause your PayPal subscription for three months, then it resumes at your normal price. One guarantee per company; no proof required.</p>
 <h2>Free lists</h2>
-<p>New companies can receive two weekly lists free, no payment details required. After the second list, unless you subscribe, you receive a short free weekly digest (the best new practices by name, without contact details) until you reply STOP. We may decline or limit free lists at our discretion, for example to one per company.</p>
+<p>New companies can receive two weekly lists free, no payment details required. Free lists contain the weekly spreadsheet (with website and email lookups for its top 25 practices), the practices that moved or changed that week, a CRM import file and the outreach kit; the 90-day history, the monthly lists, the account page and Search &amp; export come with a subscription. After the second list, unless you subscribe, you receive a short free weekly digest (the best new practices by name, without contact details) until you reply STOP. We may decline or limit free lists at our discretion, for example to one per company.</p>
 <h2>Plans and payment</h2>
 <ul>
 <li><b>Local area</b> (every new practice within 5 to 100 miles of one ZIP code, every category): ${LOCAL_PRICE} per month. <b>One state, one category:</b> ${CAT_PRICE} per month. <b>One state, every category:</b> ${ALL_PRICE} per month. <b>Three states, every category:</b> ${MULTI_PRICE} per month. Each plan can be billed yearly for the price of ten months. Subscriptions started at an earlier price keep that price.</li>
 <li>Plans include teammates who receive copies of each list (2, 3, 5 or 10 people in all, by plan), Roster Watch for your own providers (100, 100, 500 or 2,000 NPIs) and an optional webhook. Teammates must work at your company. Your account page is for active subscribers. It opens from the private link in your list emails, or from a sign-in link we email you when you enter your address on the account page; keep these links private, as anyone with one can see your lists and change your settings. When a subscription ends, the account page closes; subscribing again with the same email reopens it.</li>
 <li>Payment is by PayPal subscription, billed monthly or yearly in advance. Charges appear as <b>{COMPANY}</b>. Prices may change with at least 30 days' notice by email; your current month is never affected.</li>
-<li>You can cancel at any time from your PayPal account or by replying STOP to any email. Lists continue to the end of the month already paid for, and no further charges are made. Partial months are not refunded, except that if your first paid list never arrives we'll refund the month in full.</li>
+<li>You can cancel at any time from your PayPal account: your lists and account page continue to the end of the period already paid for (the month, or the year on yearly billing), and no further charges are made. Replying STOP to any email also cancels: our emails stop right away and we cancel your PayPal subscription so no further charges are made. Partial periods are not refunded, except that if your first paid list never arrives we'll refund the month in full.</li>
 </ul>
 <h2>What you may do with the lists</h2>
 <p>Use them inside your own business to find and contact practices. You may not resell, republish or redistribute the lists, or use them to build a competing product. The lists are not exclusive: other subscribers to the same state and category receive the same data. You are responsible for your own outreach and for complying with the laws that apply to it, including telephone and email marketing rules.</p>
@@ -924,7 +925,7 @@ ACCOUNT_BODY = """
 <div class="card up hide" id="upsell"><h2>Keep the full lists coming</h2><p class="help" id="upsellText"></p><a class="cta" href="../#pricing">See plans</a></div>
 
 <div class="card"><h2>Your lists</h2>
-  <p class="help">Every weekly email, as one zip per week (kept about 8 weeks). The first one includes the last 90 days of new practices in your territory.</p>
+  <p class="help">Every weekly email, as one zip per week (kept about 8 weeks). Your first paid list includes the last 90 days of new practices in your territory.</p>
   <p class="help"><a id="searchLink" href="../search/"><b>Search &amp; export</b></a>: filter everything in your territory (the last 13 weeks, plus this month's stuck-in-credentialing and revalidation lists) by county, city, distance from a ZIP, specialty or practice type, and download just the rows you want.</p>
   <div class="tscroll"><table class="dl"><thead><tr><th>Week ending</th><th>Files</th><th class="r">Download</th></tr></thead><tbody id="dlRows"></tbody></table></div>
 </div>
@@ -961,7 +962,7 @@ ACCOUNT_BODY = """
 </div>
 
 <div class="card"><h2>Billing</h2>
-  <p class="help">Payments go through PayPal and show as Avery Data Co. To change plans, pick the new one on the <a href="../#pricing">pricing section</a> with the same email, then cancel the old one. To cancel: PayPal → Settings → Payments → Manage automatic payments, or reply STOP to any email. Questions: reply to any list email.</p>
+  <p class="help">Payments go through PayPal and show as Avery Data Co. To change plans, pick the new one on the <a href="../#pricing">pricing section</a> with the same email, then cancel the old one. To cancel: PayPal → Settings → Payments → Manage automatic payments; your lists and this page continue to the end of the period you've paid for. Replying STOP to any email also cancels, and our emails stop right away. Questions: reply to any list email.</p>
 </div>
 <p class="note">Keep this page's link private: anyone with it can see your lists and change your settings. Changes are applied within the hour and confirmed by email. <span id="updated"></span></p>
 </div>
@@ -995,7 +996,7 @@ ACCOUNT_BODY = """
     .then(function(r){ return r.json(); })
     .then(function(a){
       if (a && a.locked) { locked(a); return; }
-      if (!a || a.ok === false || !a.email) { $('planline').textContent = (a && a.error) || 'No account found for this link.'; show('needLink', true); return; }
+      if (!a || a.ok === false || !a.email) { $('planline').textContent = 'This link doesn\\'t open an account. Account pages are for active subscribers: if you just subscribed, your page appears within the hour. Or get a new sign-in link below.'; show('needLink', true); return; }
       render(a);
     })
     .catch(function(){ $('planline').textContent = 'Couldn\\'t load your account just now. Try again in a minute.'; });
@@ -1619,6 +1620,43 @@ def write_sample(data: dict) -> str | None:
 
 # ------------------------------------------------------------------ landing page refresh
 
+LANDING_WORDING = [
+    ("Your first spreadsheet goes out with the next weekly federal file, the second one the week after. No call, no card.",
+     "Your first spreadsheet arrives by the next morning, the second with the following week's federal file. No call, no card."),
+    ("Or use a ZIP code and a radius to get just the practices near you.</p>",
+     "Or use a ZIP code and a radius to get just the practices near you. Free lists have the weekly spreadsheet, the practices "
+     "that moved or changed, the CRM file and the outreach kit; the 90-day history, monthly lists and account page come with a "
+     "subscription.</p>"),
+    ("You'll get a confirmation by email within a day, then the lists on the next two federal files.",
+     "You'll get a confirmation by email within the hour and your first list by the next morning; the second follows a week later."),
+    ("<b>1 · Next weekly file</b>Your first spreadsheet: every new practice in your state and category, sorted best-first",
+     "<b>1 · By the next morning</b>Your first spreadsheet: every new practice in your state and category from the latest federal file, sorted best-first"),
+    ("Every plan includes the full list, the monthly lists, Roster Watch, teammates and the 90-day guarantee.",
+     "Every plan includes the full list, the last 90 days on day one, the monthly lists, Roster Watch, teammates, your account page and the 90-day guarantee."),
+    ("Cancel from your PayPal account any time; the lists stop at the end of the paid month.",
+     "Cancel from your PayPal account any time; your lists continue to the end of the period you've paid for."),
+    ("One more thing so the right list goes out with the next weekly file: which state, and where to send it?",
+     "One more thing so your first list (with the last 90 days) goes out tomorrow morning: which state, and where to send it?"),
+    ("Your account page (link in every email) lets you change it later and add teammates.",
+     "Your account page (the link in every list email, or Account at the top of this page) lets you change it later and add teammates."),
+    ("Each email also carries a private link to your account page, where you can",
+     "Each list email also carries a private link to your account page (or sign in from Account at the top of the page), where you can"),
+    ("In your PayPal account under Subscriptions, any time, or reply STOP to any email. No calls, no forms.",
+     "In your PayPal account under Subscriptions, any time: your lists and account page continue to the end of the period you've paid "
+     "for. Or reply STOP to any email: our emails stop right away and we cancel the PayPal subscription for you. No calls, no forms."),
+    ("Or subscribe above and your first list goes out with the next weekly file.",
+     "Or subscribe above and your first list, with the last 90 days, goes out the next morning."),
+    ("Your first list includes the last 90 days. A private account page holds past weeks,",
+     "Your first paid list includes the last 90 days. Subscribers get a private account page with past weeks,"),
+    ("goes out with the next weekly federal file, usually Monday or Tuesday morning, from",
+     "arrives by tomorrow morning (around 7 AM Eastern), from"),
+    ("goes out with the next weekly file, with the last 90 days attached.",
+     "goes out by tomorrow morning, with the last 90 days attached."),
+    ("Do I get email addresses?</summary><p>For organizations, where we can find one.",
+     "Do I get email addresses?</summary><p>For organizations, where we can find one (on the two free lists, for the top 25)."),
+]
+
+
 def refresh_landing(data: dict) -> list[str]:
     """Update the numbers baked into index.html (state picker, stats, dates). Each edit is skipped if its anchor isn't found."""
     p = HERE / "index.html"
@@ -1661,6 +1699,10 @@ def refresh_landing(data: dict) -> list[str]:
             ".nav .mini{padding:8px 11px;font-size:13px}}"
             "\n  @media (max-width:360px){.logo{font-size:16px;gap:6px}.logo svg{width:22px;height:22px}.nav nav a.signin{margin-right:8px;font-size:12px}"
             ".nav .mini{padding:6px 8px;font-size:12px}}" + m.group(1))
+    for old, new in LANDING_WORDING:                     # one-time wording fixes (Oct 20: delivery timing, trial vs paid,
+        if old in s:                                      # account page, cancelling); each is skipped once it's done
+            s = s.replace(old, new, 1)
+            done.append("wording")
     if "fromQuery" not in s:                              # one-time: let ?state=TX preselect the picker
         sub("preselect", r"sel\.value = 'NY'; sel\.onchange = function\(\)\{ setState\(sel\.value\); \}; setState\('NY'\);",
             "var fromQuery = (location.search.match(/[?&]state=([A-Za-z]{2})/) || [])[1]; fromQuery = fromQuery && NAMES[fromQuery.toUpperCase()] ? fromQuery.toUpperCase() : 'NY';\n"
