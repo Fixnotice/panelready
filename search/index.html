@@ -64,7 +64,9 @@ a{color:var(--teal)}p{margin:0 0 14px}
 .logo svg{width:28px;height:28px;border-radius:7px}
 .nav nav{display:flex;gap:18px;align-items:center}.nav nav a{color:var(--muted);text-decoration:none;font-size:14px;font-weight:600}.nav nav a:hover{color:var(--ink)}
 .nav nav a.mini{background:var(--ink);color:#fff;padding:9px 14px;border-radius:8px}
-@media(max-width:700px){.nav nav a:not(.mini){display:none}}
+@media(max-width:700px){.nav nav a:not(.mini):not(.signin){display:none}.nav nav{gap:14px}.nav nav a{white-space:nowrap}}
+@media(max-width:420px){.logo{font-size:18px;gap:7px}.logo svg{width:25px;height:25px}.nav nav{gap:10px}.nav nav a.signin{font-size:13px}.nav nav a.mini{padding:7px 10px;font-size:13px}}
+@media(max-width:360px){.logo{font-size:16px;gap:6px}.logo svg{width:22px;height:22px}.nav nav{gap:8px}.nav nav a.signin{font-size:12px}.nav nav a.mini{padding:6px 8px;font-size:12px}}
 .crumbs{font-size:13px;color:var(--dim);margin:18px 0 6px}.crumbs a{color:var(--muted);text-decoration:none}
 .kicker{display:inline-block;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--teal);margin-bottom:10px}
 .lead{font-size:18px;color:var(--muted);max-width:760px}.lead b{color:var(--ink)}
@@ -108,7 +110,7 @@ footer{color:var(--dim);font-size:13px;padding:30px 0 40px;border-top:1px solid 
 <body>
 <div class="nav"><div class="wrap">
   <a class="logo" href="../"><svg viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="15" fill="#0f2340"/><rect x="18" y="17" width="28" height="32" rx="4" fill="none" stroke="#ffffff" stroke-width="4.5" stroke-linejoin="round"/><rect x="25" y="13" width="14" height="8" rx="2.5" fill="#ffffff"/><path d="M25 34l5.5 5.5L40 29" fill="none" stroke="#2dd4bf" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg>PanelReady</a>
-  <nav><a href="../search/">Live search</a><a href="../states/">All states</a><a href="../#how">How it works</a><a href="../#pricing">Pricing</a><a class="mini" href="../#free">Get 2 lists free</a></nav>
+  <nav><a href="../search/">Live search</a><a href="../states/">All states</a><a href="../#how">How it works</a><a href="../#pricing">Pricing</a><a class="signin" href="../account/">Account</a><a class="mini" href="../#free">Get 2 lists free</a></nav>
 </div></div>
 <div class="wrap">
 
@@ -248,6 +250,7 @@ footer{color:var(--dim);font-size:13px;padding:30px 0 40px;border-top:1px solid 
       if (!r.ok) throw new Error(r.status);
       return new Response(r.body.pipeThrough(new DecompressionStream('gzip'))).json();
     }).then(function(m){
+      if (m && m.locked) throw new Error('locked');
       MINE = m; MINE_ROWS = [];
       ORDER.forEach(function(sig, s){
         var L = m.lists[sig]; if (!L) return;
@@ -269,9 +272,11 @@ footer{color:var(--dim);font-size:13px;padding:30px 0 40px;border-top:1px solid 
         });
         $('exportBtn').classList.remove('hide');
       });
-    }).catch(function(){
+    }).catch(function(e){
       MINE = null; MINE_ROWS = null;
-      $('mineText').textContent = 'Your export file isn\u2019t ready yet: it\u2019s built with each weekly list, so it appears after your next one. Until then this page shows public counts.';
+      $('mineText').textContent = (e && e.message === 'locked')
+        ? 'Exporting your own rows is for active subscribers. If you just subscribed, they appear with your next weekly list. Until then this page shows public counts.'
+        : 'Your export file isn\u2019t ready yet: it\u2019s built with each weekly list, so it appears after your next one. Until then this page shows public counts.';
     });
   }
 

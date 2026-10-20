@@ -47,7 +47,10 @@
   .nav nav a:hover{color:var(--ink)}
   .nav .mini{background:var(--ink);color:#fff;padding:10px 16px;border-radius:8px;font-weight:600;margin-left:24px;text-decoration:none}
   .nav .mini:hover{background:#1a365d;color:#fff}
-  @media (max-width:860px){.nav nav a:not(.mini){display:none}.nav .mini{margin-left:0}}
+  @media (max-width:860px){.nav nav a:not(.mini):not(.signin){display:none}.nav .mini{margin-left:0}}
+  @media (max-width:860px){.nav nav a.signin{margin-left:0;margin-right:14px}.nav nav a{white-space:nowrap}}
+  @media (max-width:420px){.logo{font-size:19px;gap:8px}.logo svg{width:26px;height:26px}.nav nav a.signin{margin-right:10px;font-size:13.5px}.nav .mini{padding:8px 11px;font-size:13px}}
+  @media (max-width:360px){.logo{font-size:16px;gap:6px}.logo svg{width:22px;height:22px}.nav nav a.signin{margin-right:8px;font-size:12px}.nav .mini{padding:6px 8px;font-size:12px}}
 
   /* hero */
   .hero{display:grid;grid-template-columns:1.05fr .95fr;gap:48px;align-items:center;padding:76px 0 56px}
@@ -283,7 +286,7 @@
 <div class="nav">
   <div class="wrap">
     <a class="logo" href="#"><svg viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="15" fill="#0f2340"/><rect x="18" y="17" width="28" height="32" rx="4" fill="none" stroke="#ffffff" stroke-width="4.5" stroke-linejoin="round"/><rect x="25" y="13" width="14" height="8" rx="2.5" fill="#ffffff"/><path d="M25 34l5.5 5.5L40 29" fill="none" stroke="#2dd4bf" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg>PanelReady</a>
-    <nav><a href="search/">Live search</a><a href="states/">By state</a><a href="#how">How it works</a><a href="#sample">Sample</a><a href="#pricing">Pricing</a><a href="#faq">FAQ</a><a class="mini" href="#free">Get 2 lists free</a></nav>
+    <nav><a href="search/">Live search</a><a href="states/">By state</a><a href="#how">How it works</a><a href="#sample">Sample</a><a href="#pricing">Pricing</a><a href="#faq">FAQ</a><a class="signin" href="account/">Account</a><a class="mini" href="#free">Get 2 lists free</a></nav>
   </div>
 </div>
 
