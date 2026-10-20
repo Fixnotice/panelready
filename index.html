@@ -394,7 +394,7 @@ The TOP 25 are marked; the outreach kit (call script + email template) is attach
       <div class="cat rv"><b>Stuck in credentialing</b><span>Once a month: practices that registered 2-12 months ago, in specialties that commonly enroll with Medicare, and still aren't on Medicare's enrollment list.</span></div>
       <div class="cat rv"><b>OIG &amp; Medicare checks</b><span>Every name checked against the federal OIG exclusion list, flagged when its first Medicare application is waiting on CMS (mid-credentialing) or it has opted out of Medicare, with its fax, state license and every specialty it lists.</span></div>
       <div class="cat rv"><b>Roster Watch</b><span>Give us your current clients' NPIs. Every week we check each one for exclusions, Medicare opt-outs, deactivations, revalidation deadlines and enrollment changes, and tell you only what changed.</span></div>
-      <div class="cat rv"><b>Your account &amp; your team</b><span>Your first list includes the last 90 days. A private account page holds past weeks, your territory and your teammates, who get copies of every list; a webhook sends each list to Zapier, Make or your CRM.</span></div>
+      <div class="cat rv"><b>Your account &amp; your team</b><span>Your first paid list includes the last 90 days. Subscribers get a private account page with past weeks, your territory and your teammates, who get copies of every list; a webhook sends each list to Zapier, Make or your CRM.</span></div>
       <div class="cat rv"><b>The 90-day guarantee</b><span>Sign at least one new client from your lists in your first 90 days as a subscriber, or tell us, and your next 3 months are free.</span></div>
     </div>
   </section>
@@ -436,7 +436,7 @@ The TOP 25 are marked; the outreach kit (call script + email template) is attach
   <section id="free">
     <div class="eyebrow rv">Two free lists, no card</div>
     <h2 class="rv">Tell us the state. The next two weekly lists are on us.</h2>
-    <p class="sub rv">Pick the state and category you sell to. Your first spreadsheet goes out with the next weekly federal file, the second one the week after. No call, no card. Or use a ZIP code and a radius to get just the practices near you.</p>
+    <p class="sub rv">Pick the state and category you sell to. Your first spreadsheet arrives by the next morning, the second with the following week's federal file. No call, no card. Or use a ZIP code and a radius to get just the practices near you. Free lists have the weekly spreadsheet, the practices that moved or changed, the CRM file and the outreach kit; the 90-day history, monthly lists and account page come with a subscription.</p>
     <form class="signup rv" id="signup" novalidate>
       <div class="f2">
         <div><label for="suEmail">Work email</label><input type="email" id="suEmail" name="email" placeholder="you@yourbillingco.com" autocomplete="email" required></div>
@@ -452,10 +452,10 @@ The TOP 25 are marked; the outreach kit (call script + email template) is attach
         <div><label for="suRadius">Radius in miles (5-100)</label><input type="text" id="suRadius" name="radius" inputmode="numeric" maxlength="3" value="25"></div>
       </div>
       <div class="hp" aria-hidden="true"><label>Website<input type="text" name="website" tabindex="-1" autocomplete="off"></label></div>
-      <div class="row2"><button class="cta" type="submit" id="suBtn">Send me the next two lists free</button><p class="fine">You'll get a confirmation by email within a day, then the lists on the next two federal files. Reply STOP to any email to end it.</p></div>
+      <div class="row2"><button class="cta" type="submit" id="suBtn">Send me the next two lists free</button><p class="fine">You'll get a confirmation by email within the hour and your first list by the next morning; the second follows a week later. Reply STOP to any email to end it.</p></div>
       <div class="msg" id="suMsg" role="status"></div>
       <div class="after">
-        <div><b>1 · Next weekly file</b>Your first spreadsheet: every new practice in your state and category, sorted best-first, with phone, address and an opener for each.</div>
+        <div><b>1 · By the next morning</b>Your first spreadsheet: every new practice in your state and category from the latest federal file, sorted best-first, with phone, address and an opener for each.</div>
         <div><b>2 · The week after</b>Your second list, with the plans to keep them coming (from $49 a month). Or do nothing: you'll get a short free weekly digest until you say stop.</div>
       </div>
     </form>
@@ -464,7 +464,7 @@ The TOP 25 are marked; the outreach kit (call script + email template) is attach
   <section id="pricing">
     <div class="eyebrow rv">Pricing</div>
     <h2 class="rv">Try it on us first.</h2>
-    <p class="sub rv">Want to try first? <a href="#free">Two weekly lists are free</a>, no card. When you're ready, pick the territory you sell into; cancel from your PayPal account any time. Every plan includes the full list, the monthly lists, Roster Watch, teammates and the 90-day guarantee.</p>
+    <p class="sub rv">Want to try first? <a href="#free">Two weekly lists are free</a>, no card. When you're ready, pick the territory you sell into; cancel from your PayPal account any time. Every plan includes the full list, the last 90 days on day one, the monthly lists, Roster Watch, teammates, your account page and the 90-day guarantee.</p>
     <div class="bill rv" role="group" aria-label="Billing"><button type="button" class="on" data-b="m">Monthly</button><button type="button" data-b="y">Yearly <small>2 months free</small></button></div>
     <div class="plans">
       <div class="plan rv">
@@ -506,15 +506,15 @@ The TOP 25 are marked; the outreach kit (call script + email template) is attach
       </div>
     </div>
     <p class="paynote rv"><b>Not ready for monthly?</b> Buy just this week's list for one state, every category, for $39 one time: open <a href="/states/">your state's page</a> and use the $39 button. Smaller states (under 25 new practices that week) get their last 4 weeks for the same $39. It's emailed to your PayPal address within the hour.</p>
-    <p class="paynote rv">Payments are handled by PayPal and show up as <b>Avery Data Co.</b>, the company behind PanelReady, on your PayPal receipt and card statement. Cancel from your PayPal account any time; the lists stop at the end of the paid month.</p>
-    <div class="ok" id="thanks"><strong>You're in.</strong> One more thing so the right list goes out with the next weekly file: which state, and where to send it?
+    <p class="paynote rv">Payments are handled by PayPal and show up as <b>Avery Data Co.</b>, the company behind PanelReady, on your PayPal receipt and card statement. Cancel from your PayPal account any time; your lists continue to the end of the period you've paid for.</p>
+    <div class="ok" id="thanks"><strong>You're in.</strong> One more thing so your first list (with the last 90 days) goes out tomorrow morning: which state, and where to send it?
       <form id="paidForm" novalidate style="margin-top:14px">
         <div class="f2"><div><label for="pdEmail">Send the lists to</label><input type="email" id="pdEmail" name="email" placeholder="you@company.com" required></div><div><label for="pdCompany">Company</label><input type="text" id="pdCompany" name="company" placeholder="Your company"></div></div>
         <div class="f2" id="pdOne"><div><label for="pdState">State</label><div class="sel"><select id="pdState" name="state"></select></div></div><div id="pdCatBox"><label for="pdCat">Category</label><div class="sel"><select id="pdCat" name="category"></select></div></div></div>
         <div class="f3" id="pdMore" style="display:none"><div><label for="pdState2">Second state</label><div class="sel"><select id="pdState2"></select></div></div><div><label for="pdState3">Third state</label><div class="sel"><select id="pdState3"></select></div></div><div></div></div>
         <div class="f2" id="pdZipBox" style="display:none"><div><label for="pdZip">ZIP code</label><input type="text" id="pdZip" name="zip" inputmode="numeric" maxlength="5" placeholder="12207"></div><div><label for="pdRadius">Radius in miles (5-100)</label><input type="text" id="pdRadius" name="radius" inputmode="numeric" maxlength="3" value="25"></div></div>
         <input type="hidden" id="pdSub" name="sub" value="">
-        <div class="row2"><button class="cta" type="submit">Save</button><p class="fine">Or reply to the welcome email. Your account page (link in every email) lets you change it later and add teammates.</p></div>
+        <div class="row2"><button class="cta" type="submit">Save</button><p class="fine">Or reply to the welcome email. Your account page (the link in every list email, or Account at the top of this page) lets you change it later and add teammates.</p></div>
         <div class="msg" id="paidMsg"></div>
       </form>
     </div>
@@ -526,22 +526,22 @@ The TOP 25 are marked; the outreach kit (call script + email template) is attach
     <details class="rv"><summary>Where does the data come from?</summary><p>The National Plan and Provider Enumeration System (NPPES), run by CMS. Every provider and organization that bills must have an NPI, and CMS publishes the full registry and weekly updates as public files. We read the weekly file; we don't change it or add to it.</p></details>
     <details class="rv"><summary>How fresh is it?</summary><p>CMS posts each week's file about a week after the week ends, and most registrations in it are one to six days old at that point. So a practice is on your list one to two weeks after it registered, which is typically weeks before it has finished credentialing with its first payer.</p></details>
     <details class="rv"><summary>Are these real practices or just anyone with an NPI?</summary><p>We keep organizations (practices, clinics, agencies, suppliers) and individuals who flagged themselves as sole proprietors. Employees registering for a new job, students and deactivated numbers are dropped. Roughly one row in three survives.</p></details>
-    <details class="rv"><summary>Do I get email addresses?</summary><p>For organizations, where we can find one. The federal registry has phone numbers and addresses but no emails, so we look each new organization up on Google and on its own website and add the website, email and Google rating we find; we never guess an address. Sole proprietors rarely have a website yet, so their rows have the phone and address they gave CMS.</p></details>
+    <details class="rv"><summary>Do I get email addresses?</summary><p>For organizations, where we can find one (on the two free lists, for the top 25). The federal registry has phone numbers and addresses but no emails, so we look each new organization up on Google and on its own website and add the website, email and Google rating we find; we never guess an address. Sole proprietors rarely have a website yet, so their rows have the phone and address they gave CMS.</p></details>
     <details class="rv"><summary>What's the "stuck in credentialing" list?</summary><p>Once a month, subscribers also get the practices in their state that registered for an NPI 2 to 12 months ago, in specialties where a good share of new practices enroll with Medicare (nurse practitioners, physical therapists, physicians and the like), and still don't appear on Medicare's public enrollment list. Months in, they can't bill Medicare yet, which usually means credentialing hasn't started or has stalled. Some practices skip Medicare on purpose, so treat it as "likely", not certain.</p></details>
     <details class="rv"><summary>What are the revalidation and practice-moved lists?</summary><p>Every Medicare provider has to revalidate its enrollment every few years or Medicare can deactivate its billing, and CMS publishes the due dates. Once a month you get the practices in your state that are due in the next six months or already overdue, soonest first, with phone and owner. Every week you also get the practices whose registered location changed: each one has to update its address with Medicare and every insurance plan. Both are established practices that already bill, not start-ups.</p></details>
     <details class="rv"><summary>How does the guarantee work?</summary><p>If you don't sign at least one new client from your PanelReady lists during your first 90 days as a paying subscriber, reply to any of our emails and tell us. Your next 3 months are free: we pause your PayPal subscription for three months. One per company; no forms, no proof required.</p></details>
     <details class="rv"><summary>Is my list exclusive to me?</summary><p>No. PanelReady is a data subscription, not an exclusive-lead service: the Texas behavioral-health list is the same list for every company that subscribes to Texas behavioral health, and a new one arrives every week. In practice a state produces far more new practices each week than any one firm can call, and what you're paying for is being weeks ahead of everyone who isn't on the list. If you need a state and category reserved for your company alone, email us; that's a separate arrangement at a different price.</p></details>
     <details class="rv"><summary>Can I get more than one state, or just my local area?</summary><p>Both. The three-state plan covers three states, every category, for $199 a month (more than three: email us). The local plan covers every new practice within 5 to 100 miles of your ZIP code, every category, for $49 a month. Every plan can be paid yearly for the price of ten months.</p></details>
-    <details class="rv"><summary>Can my team get the lists?</summary><p>Yes. Add teammates on your account page and each one gets a copy of every list email: 1 on the local plan, 2 on the single-category plan, 4 on the whole-state plan and 9 on the three-state plan. Each email also carries a private link to your account page, where you can download past weeks, change your territory and manage teammates.</p></details>
+    <details class="rv"><summary>Can my team get the lists?</summary><p>Yes. Add teammates on your account page and each one gets a copy of every list email: 1 on the local plan, 2 on the single-category plan, 4 on the whole-state plan and 9 on the three-state plan. Each list email also carries a private link to your account page (or sign in from Account at the top of the page), where you can download past weeks, change your territory and manage teammates.</p></details>
     <details class="rv"><summary>What's Roster Watch?</summary><p>Give us the NPIs of the providers you already work for. Every week we check each one against the OIG exclusion list, Medicare opt-outs, NPI deactivations, Medicare revalidation due dates, Medicare enrollment and pending applications, and its registered address, and your weekly email tells you what changed, so a lapsed revalidation or an exclusion never surprises you. Up to 100, 500 or 2,000 providers depending on the plan.</p></details>
     <details class="rv"><summary>Does it work with my CRM?</summary><p>Every email has a file that imports straight into HubSpot or Salesforce. Or paste a webhook address (Zapier, Make or your own) on your account page, and every list is sent to it as JSON the moment it goes out.</p></details>
     <details class="rv"><summary>Who is Avery Data Co.?</summary><p>PanelReady's parent company. Avery Data Co. is the New York business that builds subscription services from public data; PanelReady is one of its products. It's the name PayPal shows at checkout and on your statement, so a charge from Avery Data Co. is your PanelReady subscription.</p></details>
-    <details class="rv"><summary>How do I cancel?</summary><p>In your PayPal account under Subscriptions, any time, or reply STOP to any email. No calls, no forms. Subscriptions started at an earlier price keep that price.</p></details>
+    <details class="rv"><summary>How do I cancel?</summary><p>In your PayPal account under Subscriptions, any time: your lists and account page continue to the end of the period you've paid for. Or reply STOP to any email: our emails stop right away and we cancel the PayPal subscription for you. No calls, no forms. Subscriptions started at an earlier price keep that price.</p></details>
   </section>
 
   <div class="final rv">
     <h2>Be the first call a new practice gets.</h2>
-    <p>Two free weekly lists for your state, no card needed. Or subscribe above and your first list goes out with the next weekly file.</p>
+    <p>Two free weekly lists for your state, no card needed. Or subscribe above and your first list, with the last 90 days, goes out the next morning.</p>
     <a class="cta" href="#free">Get two lists free</a>
   </div>
 
@@ -711,7 +711,7 @@ The TOP 25 are marked; the outreach kit (call script + email template) is attach
     fetch(SIGNUP + '/signup', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body), signal: ctrl && ctrl.signal })
       .then(function(r){ return r.json(); })
       .then(function(j){ clearTimeout(timer); if (!j || !j.ok) { undo(); msgEl.className = 'msg bad'; msgEl.textContent = (j && j.error) || 'Something was missing.'; return; }
-        msgEl.className = 'msg good'; msgEl.innerHTML = '<strong>Done.</strong> ' + (extra && extra.sub ? 'Your list (' + where + ') goes out with the next weekly file, with the last 90 days attached.' : 'Your first free list (' + where + ') goes out with the next weekly federal file, usually Monday or Tuesday morning, from matt@panelready.co. Add it to your contacts so it doesn\'t land in spam.');
+        msgEl.className = 'msg good'; msgEl.innerHTML = '<strong>Done.</strong> ' + (extra && extra.sub ? 'Your list (' + where + ') goes out by tomorrow morning, with the last 90 days attached.' : 'Your first free list (' + where + ') arrives by tomorrow morning (around 7 AM Eastern), from matt@panelready.co. Add it to your contacts so it doesn\'t land in spam.');
         form.querySelectorAll('input,select,button').forEach(function(el){ if (el.type !== 'hidden') el.disabled = true; });
         if (btn) { btn.textContent = extra && extra.sub ? 'All set' : 'You\'re on the list'; btn.classList.add('done'); } })
       .catch(function(){ clearTimeout(timer); fail(); });

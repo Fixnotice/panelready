@@ -115,7 +115,7 @@ footer{color:var(--dim);font-size:13px;padding:30px 0 40px;border-top:1px solid 
 <div class="card up hide" id="upsell"><h2>Keep the full lists coming</h2><p class="help" id="upsellText"></p><a class="cta" href="../#pricing">See plans</a></div>
 
 <div class="card"><h2>Your lists</h2>
-  <p class="help">Every weekly email, as one zip per week (kept about 8 weeks). The first one includes the last 90 days of new practices in your territory.</p>
+  <p class="help">Every weekly email, as one zip per week (kept about 8 weeks). Your first paid list includes the last 90 days of new practices in your territory.</p>
   <p class="help"><a id="searchLink" href="../search/"><b>Search &amp; export</b></a>: filter everything in your territory (the last 13 weeks, plus this month's stuck-in-credentialing and revalidation lists) by county, city, distance from a ZIP, specialty or practice type, and download just the rows you want.</p>
   <div class="tscroll"><table class="dl"><thead><tr><th>Week ending</th><th>Files</th><th class="r">Download</th></tr></thead><tbody id="dlRows"></tbody></table></div>
 </div>
@@ -152,7 +152,7 @@ footer{color:var(--dim);font-size:13px;padding:30px 0 40px;border-top:1px solid 
 </div>
 
 <div class="card"><h2>Billing</h2>
-  <p class="help">Payments go through PayPal and show as Avery Data Co. To change plans, pick the new one on the <a href="../#pricing">pricing section</a> with the same email, then cancel the old one. To cancel: PayPal → Settings → Payments → Manage automatic payments, or reply STOP to any email. Questions: reply to any list email.</p>
+  <p class="help">Payments go through PayPal and show as Avery Data Co. To change plans, pick the new one on the <a href="../#pricing">pricing section</a> with the same email, then cancel the old one. To cancel: PayPal → Settings → Payments → Manage automatic payments; your lists and this page continue to the end of the period you've paid for. Replying STOP to any email also cancels, and our emails stop right away. Questions: reply to any list email.</p>
 </div>
 <p class="note">Keep this page's link private: anyone with it can see your lists and change your settings. Changes are applied within the hour and confirmed by email. <span id="updated"></span></p>
 </div>
@@ -186,7 +186,7 @@ footer{color:var(--dim);font-size:13px;padding:30px 0 40px;border-top:1px solid 
     .then(function(r){ return r.json(); })
     .then(function(a){
       if (a && a.locked) { locked(a); return; }
-      if (!a || a.ok === false || !a.email) { $('planline').textContent = (a && a.error) || 'No account found for this link.'; show('needLink', true); return; }
+      if (!a || a.ok === false || !a.email) { $('planline').textContent = 'This link doesn\'t open an account. Account pages are for active subscribers: if you just subscribed, your page appears within the hour. Or get a new sign-in link below.'; show('needLink', true); return; }
       render(a);
     })
     .catch(function(){ $('planline').textContent = 'Couldn\'t load your account just now. Try again in a minute.'; });
