@@ -34,7 +34,7 @@ for cand in (ROOT, HERE):                            # pr/npi.py lives in the pr
 from pr import npi as N                              # noqa: E402
 
 SITE = "https://panelready.co"                       # the site's address, no trailing slash (the old github.io address redirects here)
-BUILD_VERSION = 18                                    # bump when the page layout changes, so the next run rewrites every page
+BUILD_VERSION = 19                                    # bump when the page layout changes, so the next run rewrites every page
 COMPANY = "Avery Data Co."
 PAYPAL_CLIENT_ID = "BAAQ4G4Hizw2wHo9EZQsTxcW_oBtYKOFEIoI41YQZJvC8ufp2vM9Z_lIU4ASqIUZvXAUrin0KLaYIpr8Js"   # the "PanelReady site" app on developer.paypal.com (Live); one-time orders
 PAYPAL_ME = ""                                       # optional plan B: a PayPal.me handle (e.g. "averydataco"); shown as a second way to pay $39
@@ -296,7 +296,9 @@ a{color:var(--teal)}p{margin:0 0 14px}
 .logo svg{width:28px;height:28px;border-radius:7px}
 .nav nav{display:flex;gap:18px;align-items:center}.nav nav a{color:var(--muted);text-decoration:none;font-size:14px;font-weight:600}.nav nav a:hover{color:var(--ink)}
 .nav nav a.mini{background:var(--ink);color:#fff;padding:9px 14px;border-radius:8px}
-@media(max-width:700px){.nav nav a:not(.mini){display:none}}
+@media(max-width:700px){.nav nav a:not(.mini):not(.signin){display:none}.nav nav{gap:14px}.nav nav a{white-space:nowrap}}
+@media(max-width:420px){.logo{font-size:18px;gap:7px}.logo svg{width:25px;height:25px}.nav nav{gap:10px}.nav nav a.signin{font-size:13px}.nav nav a.mini{padding:7px 10px;font-size:13px}}
+@media(max-width:360px){.logo{font-size:16px;gap:6px}.logo svg{width:22px;height:22px}.nav nav{gap:8px}.nav nav a.signin{font-size:12px}.nav nav a.mini{padding:6px 8px;font-size:12px}}
 .crumbs{font-size:13px;color:var(--dim);margin:18px 0 6px}.crumbs a{color:var(--muted);text-decoration:none}
 .kicker{display:inline-block;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--teal);margin-bottom:10px}
 .lead{font-size:18px;color:var(--muted);max-width:760px}.lead b{color:var(--ink)}
@@ -360,7 +362,7 @@ def shell(title: str, desc: str, path: str, body: str, jsonld: dict | None = Non
 <body>
 <div class="nav"><div class="wrap">
   <a class="logo" href="{root}"><svg viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="15" fill="#0f2340"/><rect x="18" y="17" width="28" height="32" rx="4" fill="none" stroke="#ffffff" stroke-width="4.5" stroke-linejoin="round"/><rect x="25" y="13" width="14" height="8" rx="2.5" fill="#ffffff"/><path d="M25 34l5.5 5.5L40 29" fill="none" stroke="#2dd4bf" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg>{BRAND}</a>
-  <nav><a href="{root}search/">Live search</a><a href="{root}states/">All states</a><a href="{root}#how">How it works</a><a href="{root}#pricing">Pricing</a><a class="mini" href="{root}#free">Get 2 lists free</a></nav>
+  <nav><a href="{root}search/">Live search</a><a href="{root}states/">All states</a><a href="{root}#how">How it works</a><a href="{root}#pricing">Pricing</a><a class="signin" href="{root}account/">Account</a><a class="mini" href="{root}#free">Get 2 lists free</a></nav>
 </div></div>
 <div class="wrap">
 {body}
@@ -858,7 +860,7 @@ def info_pages(data: dict) -> list[str]:
 <h2>Plans and payment</h2>
 <ul>
 <li><b>Local area</b> (every new practice within 5 to 100 miles of one ZIP code, every category): ${LOCAL_PRICE} per month. <b>One state, one category:</b> ${CAT_PRICE} per month. <b>One state, every category:</b> ${ALL_PRICE} per month. <b>Three states, every category:</b> ${MULTI_PRICE} per month. Each plan can be billed yearly for the price of ten months. Subscriptions started at an earlier price keep that price.</li>
-<li>Plans include teammates who receive copies of each list (2, 3, 5 or 10 people in all, by plan), Roster Watch for your own providers (100, 100, 500 or 2,000 NPIs) and an optional webhook. Teammates must work at your company. Your account page is reached through a private link in your emails; keep it private, as anyone with it can see your lists and change your settings.</li>
+<li>Plans include teammates who receive copies of each list (2, 3, 5 or 10 people in all, by plan), Roster Watch for your own providers (100, 100, 500 or 2,000 NPIs) and an optional webhook. Teammates must work at your company. Your account page is for active subscribers. It opens from the private link in your list emails, or from a sign-in link we email you when you enter your address on the account page; keep these links private, as anyone with one can see your lists and change your settings. When a subscription ends, the account page closes; subscribing again with the same email reopens it.</li>
 <li>Payment is by PayPal subscription, billed monthly or yearly in advance. Charges appear as <b>{COMPANY}</b>. Prices may change with at least 30 days' notice by email; your current month is never affected.</li>
 <li>You can cancel at any time from your PayPal account or by replying STOP to any email. Lists continue to the end of the month already paid for, and no further charges are made. Partial months are not refunded, except that if your first paid list never arrives we'll refund the month in full.</li>
 </ul>
@@ -908,12 +910,15 @@ ACCOUNT_BODY = """
 <p class="lead" id="planline">Loading your account…</p>
 
 <div class="card hide" id="needLink">
-  <h2>Get your account link</h2>
-  <p class="help">Your account page opens from the private link in any PanelReady email. Enter the address your lists go to and we'll email the link (within the hour).</p>
-  <form id="linkForm" novalidate><label for="lkEmail">Email</label><input type="email" id="lkEmail" placeholder="you@company.com" required>
+  <h2>Sign in</h2>
+  <p class="help">Account pages are for PanelReady subscribers. Enter the email address your lists go to and we'll email you a private sign-in link (within the hour). The account link at the bottom of any weekly list email works too.</p>
+  <form id="linkForm" novalidate><label for="lkEmail">Email</label><input type="email" id="lkEmail" placeholder="you@company.com" autocomplete="email" required>
   <input type="text" name="website" id="lkHp" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px" aria-hidden="true">
-  <button class="cta" type="submit">Email me my link</button><div class="msg" id="linkMsg"></div></form>
+  <button class="cta" type="submit">Email me a sign-in link</button><div class="msg" id="linkMsg"></div></form>
+  <p class="help" style="margin-top:14px">Not a subscriber yet? <a href="../#pricing">See plans</a> or <a href="../#free">get two lists free</a>.</p>
 </div>
+
+<div class="card up hide" id="lockedBox"><h2>For subscribers</h2><p class="help" id="lockedText"></p><a class="cta" href="../#pricing">See plans</a></div>
 
 <div id="acctBody" class="hide">
 <div class="card up hide" id="upsell"><h2>Keep the full lists coming</h2><p class="help" id="upsellText"></p><a class="cta" href="../#pricing">See plans</a></div>
@@ -983,16 +988,29 @@ ACCOUNT_BODY = """
     e.preventDefault();
     var em = $('lkEmail').value.trim();
     if (!/^[^\\s@]+@[^\\s@]+\\.[a-z]{2,}$/i.test(em)) { msg('linkMsg', 'Please enter the email address your lists go to.', false); return; }
-    post('/link', { email: em, website: $('lkHp').value }, 'linkMsg', 'If that address has an account, the link is on its way (within the hour).');
+    post('/link', { email: em, website: $('lkHp').value }, 'linkMsg', 'If that address has an active subscription, a sign-in link is on its way (within the hour).');
   });
-  if (!t) { $('planline').textContent = ''; show('needLink', true); return; }
+  if (!t) { $('hello').textContent = 'Sign in to your account'; $('planline').textContent = ''; show('needLink', true); return; }
   fetch(W + '/acct?t=' + encodeURIComponent(t), { cache: 'no-store' })
     .then(function(r){ return r.json(); })
     .then(function(a){
+      if (a && a.locked) { locked(a); return; }
       if (!a || a.ok === false || !a.email) { $('planline').textContent = (a && a.error) || 'No account found for this link.'; show('needLink', true); return; }
       render(a);
     })
     .catch(function(){ $('planline').textContent = 'Couldn\\'t load your account just now. Try again in a minute.'; });
+
+  function locked(a){
+    // trial, free digest, cancelled, unsubscribed and one-time buyers: no lists or settings here, just the way back in
+    $('planline').textContent = 'Account pages are for active PanelReady subscribers.';
+    var s = a.status || '', why;
+    if (s === 'trial') why = 'You\\'re on the free trial: your two free lists come by email. Subscribe to open your account page, with past lists, Search & export, territory, teammates and Roster Watch.';
+    else if (s === 'free') why = 'Your free trial has ended. Subscribe to open your account page and get the full lists every week.';
+    else if (s === 'week_sent' || s === 'week_pending') why = 'Your one-time list comes by email. Subscribe to open your account page and get the full lists every week.';
+    else why = 'Your subscription has ended. Subscribe again with the same email to reopen your account page: your territory and teammates are kept.';
+    $('lockedText').textContent = why;
+    show('lockedBox', true);
+  }
 
   function render(a){
     show('acctBody', true);
@@ -1003,6 +1021,10 @@ ACCOUNT_BODY = """
     var plan = a.status === 'paid' ? '<span class="badge">' + esc(a.plan_label) + (a.price ? ' · $' + a.price + '/mo' : '') + '</span>'
       : '<span class="badge">' + esc(a.plan_label) + '</span>';
     $('planline').innerHTML = plan + ' Lists go to <b>' + esc(a.email) + '</b>: ' + esc(where) + (cats ? ', ' + esc(cats) : '') + '.';
+    if (a.ends) {
+      var end = new Date(a.ends + 'T12:00:00').toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+      $('planline').innerHTML += ' <b>Cancelled:</b> your lists and this page continue until ' + esc(end) + '. <a href="../#pricing">Subscribe again</a> to keep them coming.';
+    }
     if (a.status !== 'paid') {
       show('upsell', true);
       var p = a.plans || {};
@@ -1270,6 +1292,7 @@ SEARCH_BODY = """
       if (!r.ok) throw new Error(r.status);
       return new Response(r.body.pipeThrough(new DecompressionStream('gzip'))).json();
     }).then(function(m){
+      if (m && m.locked) throw new Error('locked');
       MINE = m; MINE_ROWS = [];
       ORDER.forEach(function(sig, s){
         var L = m.lists[sig]; if (!L) return;
@@ -1291,9 +1314,11 @@ SEARCH_BODY = """
         });
         $('exportBtn').classList.remove('hide');
       });
-    }).catch(function(){
+    }).catch(function(e){
       MINE = null; MINE_ROWS = null;
-      $('mineText').textContent = 'Your export file isn\\u2019t ready yet: it\\u2019s built with each weekly list, so it appears after your next one. Until then this page shows public counts.';
+      $('mineText').textContent = (e && e.message === 'locked')
+        ? 'Exporting your own rows is for active subscribers. If you just subscribed, they appear with your next weekly list. Until then this page shows public counts.'
+        : 'Your export file isn\\u2019t ready yet: it\\u2019s built with each weekly list, so it appears after your next one. Until then this page shows public counts.';
     });
   }
 
@@ -1628,6 +1653,14 @@ def refresh_landing(data: dict) -> list[str]:
         sub("sample link", r'(<a href="sample/panelready-sample\.csv" id="sampleDl">)[^<]*(</a> \()[^)]*\)', lambda m: f'{m.group(1)}Download a full sample spreadsheet{m.group(2)}{STATES[data["sample"]["state"]]}, {fmt(data["sample"]["rows"])} rows, every column, nothing masked)')
     if '<a href="#state">Your state</a>' in s:                # one-time: the nav points at the state pages
         sub("nav", r'<a href="#state">Your state</a>', '<a href="states/">By state</a>')
+    if 'href="account/"' not in s:                        # one-time: an Account link in the header (kept on phones)
+        sub("nav account", r'<a class="mini" href="#free">', '<a class="signin" href="account/">Account</a><a class="mini" href="#free">')
+        sub("nav account css", r"\.nav nav a:not\(\.mini\)\{display:none\}", ".nav nav a:not(.mini):not(.signin){display:none}")
+        sub("nav account phone css", r"(\n\s*/\* hero \*/)", lambda m: "\n  @media (max-width:860px){.nav nav a.signin{margin-left:0;margin-right:14px}.nav nav a{white-space:nowrap}}"
+            "\n  @media (max-width:420px){.logo{font-size:19px;gap:8px}.logo svg{width:26px;height:26px}.nav nav a.signin{margin-right:10px;font-size:13.5px}"
+            ".nav .mini{padding:8px 11px;font-size:13px}}"
+            "\n  @media (max-width:360px){.logo{font-size:16px;gap:6px}.logo svg{width:22px;height:22px}.nav nav a.signin{margin-right:8px;font-size:12px}"
+            ".nav .mini{padding:6px 8px;font-size:12px}}" + m.group(1))
     if "fromQuery" not in s:                              # one-time: let ?state=TX preselect the picker
         sub("preselect", r"sel\.value = 'NY'; sel\.onchange = function\(\)\{ setState\(sel\.value\); \}; setState\('NY'\);",
             "var fromQuery = (location.search.match(/[?&]state=([A-Za-z]{2})/) || [])[1]; fromQuery = fromQuery && NAMES[fromQuery.toUpperCase()] ? fromQuery.toUpperCase() : 'NY';\n"
