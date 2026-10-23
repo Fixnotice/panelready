@@ -34,7 +34,7 @@ for cand in (ROOT, HERE):                            # pr/npi.py lives in the pr
 from pr import npi as N                              # noqa: E402
 
 SITE = "https://panelready.co"                       # the site's address, no trailing slash (the old github.io address redirects here)
-BUILD_VERSION = 21                                    # bump when the page layout changes, so the next run rewrites every page
+BUILD_VERSION = 22                                    # bump when the page layout changes, so the next run rewrites every page
 COMPANY = "Avery Data Co."
 PAYPAL_CLIENT_ID = "BAAQ4G4Hizw2wHo9EZQsTxcW_oBtYKOFEIoI41YQZJvC8ufp2vM9Z_lIU4ASqIUZvXAUrin0KLaYIpr8Js"   # the "PanelReady site" app on developer.paypal.com (Live); one-time orders
 PAYPAL_ME = ""                                       # optional plan B: a PayPal.me handle (e.g. "averydataco"); shown as a second way to pay $39
@@ -339,6 +339,19 @@ footer{color:var(--dim);font-size:13px;padding:30px 0 40px;border-top:1px solid 
 """
 
 
+def can_book() -> bool:
+    """Can this build write the branded sample spreadsheet? (XlsxWriter installed and pr/workbook.py alongside.)"""
+    try:
+        import xlsxwriter  # noqa: F401
+        from pr import boost, workbook  # noqa: F401
+        return True
+    except Exception:                                    # noqa: BLE001
+        return False
+
+
+SAMPLE_FILE = "panelready-sample.csv"                 # becomes panelready-sample.xlsx when the build can write it
+
+
 def shell(title: str, desc: str, path: str, body: str, jsonld: dict | None = None) -> str:
     url = f"{SITE}/{path}" if path else f"{SITE}/"
     root = "../" * path.count("/")
@@ -366,7 +379,7 @@ def shell(title: str, desc: str, path: str, body: str, jsonld: dict | None = Non
 </div></div>
 <div class="wrap">
 {body}
-<footer><div class="flinks"><a href="{root}search/">Live search</a><a href="{root}states/">New practices by state</a><a href="{root}about/">About</a><a href="{root}contact/">Contact</a><a href="{root}privacy/">Privacy</a><a href="{root}terms/">Terms</a><a href="{root}sample/panelready-sample.csv">Sample spreadsheet</a></div>
+<footer><div class="flinks"><a href="{root}search/">Live search</a><a href="{root}states/">New practices by state</a><a href="{root}about/">About</a><a href="{root}contact/">Contact</a><a href="{root}privacy/">Privacy</a><a href="{root}terms/">Terms</a><a href="{root}sample/{SAMPLE_FILE}">Sample spreadsheet</a></div>
 {BRAND} · <a href="mailto:{MAIL}">{MAIL}</a> · an {COMPANY} product, New York<br>
 Source: NPPES weekly dissemination files published by CMS. Public data, provided as-is; not affiliated with CMS or any payer. Practice names are from the public registry; phone numbers are masked on this page and complete in the subscriber spreadsheet.</footer>
 </div>
@@ -901,6 +914,24 @@ ACCOUNT_CSS = """
 .acct .dl a{font-weight:600}.acct .dl td{white-space:normal}.acct .muted{color:var(--muted)}
 .acct .up{background:linear-gradient(135deg,rgba(14,124,123,.08),rgba(37,99,235,.04));border-color:rgba(14,124,123,.35)}
 .acct .hide{display:none}
+.acct .sum{padding-top:18px}
+.acct .sumgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px 18px}
+@media(max-width:760px){.acct .sumgrid{grid-template-columns:1fr 1fr}}
+@media(max-width:420px){.acct .sumgrid{grid-template-columns:1fr}}
+.acct .sumgrid .k{display:block;font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--dim)}
+.acct .sumgrid .v{display:block;color:var(--ink);font-weight:600;font-size:15px;margin-top:4px;overflow-wrap:anywhere}
+.acct .sumgrid .v small{display:block;color:var(--muted);font-weight:500;font-size:13px;margin-top:2px}
+.acct .acts{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px;padding-top:16px;border-top:1px solid var(--line)}
+.acct .acts .cta{margin-top:0}
+.acct a.ghost{display:inline-flex;align-items:center;padding:11px 16px;border-radius:10px;border:1.5px solid var(--line2);background:#fff;color:var(--ink);font-weight:600;font-size:15px;text-decoration:none}
+.acct a.ghost:hover{border-color:var(--teal)}
+.acct .chip{display:inline-block;font-size:12.5px;font-weight:600;line-height:1.4;padding:3px 9px;border-radius:999px;background:var(--card2);border:1px solid var(--line);color:var(--body);margin:2px 5px 2px 0;white-space:nowrap}
+.acct .chip.main{background:rgba(14,124,123,.1);border-color:rgba(14,124,123,.25);color:var(--teal)}
+.acct a.dlbtn{display:inline-block;padding:7px 12px;border-radius:8px;background:var(--ink);color:#fff;text-decoration:none;font-weight:600;font-size:13.5px;white-space:nowrap}
+.acct a.dlbtn span{opacity:.7;font-weight:500}
+.acct .dl td{vertical-align:middle}.acct .dl td.wk{white-space:nowrap;font-weight:600;color:var(--ink)}.acct .dl th{white-space:nowrap}
+@media(max-width:560px){.acct .dl thead{display:none}.acct .dl tr{display:block;padding:12px 0;border-bottom:1px solid var(--line)}
+.acct .dl td{display:block;padding:3px 0;border:0}.acct .dl td.r{text-align:left;padding-top:8px}}
 """
 
 ACCOUNT_BODY = """
@@ -909,6 +940,16 @@ ACCOUNT_BODY = """
 <span class="kicker">Your account</span>
 <h1 id="hello">Your PanelReady account</h1>
 <p class="lead" id="planline">Loading your account…</p>
+
+<div class="card sum hide" id="sumCard">
+  <div class="sumgrid">
+    <div><span class="k">Plan</span><span class="v" id="sPlan"></span></div>
+    <div><span class="k">Territory</span><span class="v" id="sTerr"></span></div>
+    <div><span class="k">Lists go to</span><span class="v" id="sEmail"></span></div>
+    <div><span class="k">Latest list</span><span class="v" id="sLatest"></span></div>
+  </div>
+  <div class="acts"><a class="cta hide" id="latestDl" href="#">Download the latest list</a><a class="ghost" id="searchLink2" href="../search/">Search &amp; export</a></div>
+</div>
 
 <div class="card hide" id="needLink">
   <h2>Sign in</h2>
@@ -925,9 +966,9 @@ ACCOUNT_BODY = """
 <div class="card up hide" id="upsell"><h2>Keep the full lists coming</h2><p class="help" id="upsellText"></p><a class="cta" href="../#pricing">See plans</a></div>
 
 <div class="card"><h2>Your lists</h2>
-  <p class="help">Every weekly email, as one zip per week (kept about 8 weeks). Your first paid list includes the last 90 days of new practices in your territory.</p>
+  <p class="help">Every weekly email, as one zip per week (kept about 8 weeks): the PanelReady spreadsheet, the CRM import file and the outreach kit. Your first paid list includes the last 90 days of new practices in your territory.</p>
   <p class="help"><a id="searchLink" href="../search/"><b>Search &amp; export</b></a>: filter everything in your territory (the last 13 weeks, plus this month's stuck-in-credentialing and revalidation lists) by county, city, distance from a ZIP, specialty or practice type, and download just the rows you want.</p>
-  <div class="tscroll"><table class="dl"><thead><tr><th>Week ending</th><th>Files</th><th class="r">Download</th></tr></thead><tbody id="dlRows"></tbody></table></div>
+  <div class="tscroll"><table class="dl"><thead><tr><th>Week ending</th><th>What's inside</th><th class="r"></th></tr></thead><tbody id="dlRows"></tbody></table></div>
 </div>
 
 <div class="card"><h2>Territory</h2>
@@ -974,7 +1015,21 @@ ACCOUNT_BODY = """
   var t = (location.hash.match(/[#&]t=([A-Za-z0-9_-]{20,64})/) || [])[1] || '';
   var $ = function(id){ return document.getElementById(id); };
   var show = function(id, on){ $(id).classList.toggle('hide', !on); };
-  if (t) $('searchLink').href = '../search/#t=' + t;
+  if (t) $('searchLink').href = $('searchLink2').href = '../search/#t=' + t;
+  function day(d){ var x = new Date(d + 'T12:00:00'); return isNaN(x) ? d : x.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }); }
+  var KIND = { leads: 'New practices', moved: 'Moved', changes: 'Changes', history: 'Last 90 days', reval: 'Revalidation due', stuck: 'Stuck in credentialing' };
+  function what(f){
+    if (/\\.xlsx$/i.test(f)) return ['Spreadsheet', 1];
+    if (/CRM_import/i.test(f)) return ['CRM import', 0];
+    if (/outreach_kit/i.test(f)) return ['Outreach kit', 0];
+    if (/extra_lists.*\\.zip$/i.test(f)) return ['Extra lists', 0];
+    var m = f.match(/^(leads|moved|changes|history|reval|stuck)_/);
+    return [m ? KIND[m[1]] + ' (CSV)' : f, 0];
+  }
+  function dlLink(d, cls, text){
+    return '<a class="' + cls + '" href="' + W + '/dl?t=' + encodeURIComponent(t) + '&f=' + encodeURIComponent(d.file) + '">' + text
+      + (d.bytes ? ' <span>· ' + (d.bytes > 1048576 ? (d.bytes / 1048576).toFixed(1) + ' MB' : Math.max(1, Math.round(d.bytes / 1024)) + ' KB') + '</span>' : '') + '</a>';
+  }
   function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
   function msg(id, text, ok){ var m = $(id); m.textContent = text; m.className = 'msg ' + (ok ? 'ok' : 'err'); }
   function post(path, body, msgId, okText){
@@ -1021,7 +1076,14 @@ ACCOUNT_BODY = """
     var cats = a.area ? 'every category' : (a.categories.indexOf('all') >= 0 ? 'every category' : a.categories.map(function(c){ return NICE[c] || c; }).join(', '));
     var plan = a.status === 'paid' ? '<span class="badge">' + esc(a.plan_label) + (a.price ? ' · $' + a.price + '/mo' : '') + '</span>'
       : '<span class="badge">' + esc(a.plan_label) + '</span>';
-    $('planline').innerHTML = plan + ' Lists go to <b>' + esc(a.email) + '</b>: ' + esc(where) + (cats ? ', ' + esc(cats) : '') + '.';
+    $('planline').textContent = 'Your lists, settings and Roster Watch, all in one place.';
+    show('sumCard', true);
+    $('sPlan').innerHTML = esc(a.plan_label) + (a.status === 'paid' && a.price ? '<small>$' + a.price + '/month</small>' : '');
+    $('sTerr').innerHTML = esc(where) + (cats ? '<small>' + esc(cats) + '</small>' : '');
+    $('sEmail').innerHTML = esc(a.email) + ((a.team || []).length ? '<small>+ ' + a.team.length + ' teammate' + (a.team.length > 1 ? 's' : '') + '</small>' : '');
+    var last = (a.deliveries || [])[0];
+    $('sLatest').innerHTML = last ? 'Week ending ' + esc(day(last.week)) + '<small>a new list every week</small>' : 'Coming soon<small>your first list is on its way</small>';
+    if (last) { $('latestDl').outerHTML = dlLink(last, 'cta', 'Download the latest list'); }
     if (a.ends) {
       var end = new Date(a.ends + 'T12:00:00').toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
       $('planline').innerHTML += ' <b>Cancelled:</b> your lists and this page continue until ' + esc(end) + '. <a href="../#pricing">Subscribe again</a> to keep them coming.';
@@ -1035,7 +1097,13 @@ ACCOUNT_BODY = """
     }
     // downloads
     var rows = (a.deliveries || []).map(function(d){
-      return '<tr><td>' + esc(d.week) + '</td><td class="muted">' + esc((d.files || []).join(', ')) + '</td><td class="r"><a href="' + W + '/dl?t=' + encodeURIComponent(t) + '&f=' + encodeURIComponent(d.file) + '">Download' + (d.bytes ? ' (' + Math.max(1, Math.round(d.bytes / 1024)) + ' KB)' : '') + '</a></td></tr>';
+      var seen = {}, chips = (d.files || []).map(function(f){
+        var w = what(f);
+        if (seen[w[0]]) return '';
+        seen[w[0]] = 1;
+        return '<span class="chip' + (w[1] ? ' main' : '') + '" title="' + esc(f) + '">' + esc(w[0]) + '</span>';
+      }).join('');
+      return '<tr><td class="wk">' + esc(day(d.week)) + '</td><td>' + chips + '</td><td class="r">' + dlLink(d, 'dlbtn', 'Download') + '</td></tr>';
     });
     $('dlRows').innerHTML = rows.join('') || '<tr><td colspan="3" class="muted">Your first list appears here after it\\'s emailed.</td></tr>';
     // territory
@@ -1614,8 +1682,43 @@ def write_sample(data: dict) -> str | None:
         w = csv.DictWriter(f, fieldnames=header)
         w.writeheader()
         w.writerows(rows)
-    data["sample"] = {"state": pick, "week": data["latest"], "rows": len(rows)}
+    data["sample"] = {"state": pick, "week": data["latest"], "rows": len(rows),
+                      "xlsx": write_sample_book(rows, pick, data["latest"])}
     return pick
+
+
+def write_sample_book(rows: list[dict], st: str, week: str) -> bool:
+    """sample/panelready-sample.xlsx: the same rows as the CSV, as the branded spreadsheet subscribers get (scored,
+    sorted best-first, an opener for each, the logo, Overview and How to use). False when this build can't (the
+    CSV stays the download then)."""
+    target = HERE / "sample" / "panelready-sample.xlsx"
+    if not can_book():
+        if target.exists():
+            target.unlink()                              # never leave last week's workbook behind as the link target
+        return False
+    from pr import boost as B
+    from pr import workbook as WB
+    tmp = HERE / "sample" / "_build"
+    try:
+        tmp.mkdir(parents=True, exist_ok=True)
+        up = B.upgrade(rows, dt.date.fromisoformat(week), {"npi": {}, "person": {}, "business": {}}, "")
+        src = tmp / f"leads_{st}_all.csv"
+        B.write(src, up, N.LEAD_HEADER)
+        WB.build_delivery([src], HERE / "sample", week=week, states=[st], cats=["all"], sample=True,
+                          fname=target.name, note_only=True,
+                          note=(f"This sample is every new practice that registered in {STATES.get(st, st)} in the week "
+                                f"ending {long_date(week)}, scored and sorted the way subscribers get their own state, "
+                                f"every week. Subscribers' lists also have the websites and emails we find for "
+                                f"organizations, the practices that moved or added a specialty, and an OIG exclusion "
+                                f"check."))
+        return True
+    except Exception as e:                               # noqa: BLE001
+        say(f"  sample spreadsheet not written ({e}); the CSV sample stays")
+        if target.exists():
+            target.unlink()
+        return False
+    finally:
+        shutil.rmtree(tmp, ignore_errors=True)
 
 
 # ------------------------------------------------------------------ landing page refresh
@@ -1704,7 +1807,9 @@ def refresh_landing(data: dict) -> list[str]:
     s = re.sub(r'(<span class="wkiso">)\d{4}-\d{2}-\d{2}', lambda m: m.group(1) + latest, s)
     sub("mail card count", r'(- NY, Behavioral Health: <b>)[\d,]+', lambda m: m.group(1) + fmt(ny[0]))
     if data.get("sample"):
-        sub("sample link", r'(<a href="sample/panelready-sample\.csv" id="sampleDl">)[^<]*(</a> \()[^)]*\)', lambda m: f'{m.group(1)}Download a full sample spreadsheet{m.group(2)}{STATES[data["sample"]["state"]]}, {fmt(data["sample"]["rows"])} rows, every column, nothing masked)')
+        ext = "xlsx" if data["sample"].get("xlsx") else "csv"
+        sub("sample link", r'<a href="sample/panelready-sample\.(?:csv|xlsx)" id="sampleDl">[^<]*(</a> \()[^)]*\)', lambda m: f'<a href="sample/panelready-sample.{ext}" id="sampleDl">Download a full sample spreadsheet{m.group(1)}{STATES[data["sample"]["state"]]}, {fmt(data["sample"]["rows"])} rows, every column, nothing masked)')
+        s = re.sub(r'href="sample/panelready-sample\.(?:csv|xlsx)">Sample spreadsheet', f'href="sample/panelready-sample.{ext}">Sample spreadsheet', s)
     if '<a href="#state">Your state</a>' in s:                # one-time: the nav points at the state pages
         sub("nav", r'<a href="#state">Your state</a>', '<a href="states/">By state</a>')
     if 'href="account/"' not in s:                        # one-time: an Account link in the header (kept on phones)
@@ -1769,12 +1874,16 @@ def build(data: dict) -> list[str]:
 
 
 def copy_pr():
-    """Keep a copy of pr/npi.py next to this script so the published folder can rebuild itself on GitHub."""
+    """Keep a copy of pr/npi.py (and the spreadsheet code and logo, for the sample workbook) next to this script so
+    the published folder can rebuild itself on GitHub."""
     src = ROOT / "pr" / "npi.py"
     if src.exists() and src.resolve() != (HERE / "pr" / "npi.py").resolve():
         (HERE / "pr").mkdir(exist_ok=True)
         shutil.copy2(src, HERE / "pr" / "npi.py")
         (HERE / "pr" / "__init__.py").write_text("", encoding="utf-8")
+        for name in ("boost.py", "workbook.py", "assets/logo_lockup.png", "assets/logo_print.png"):
+            if (ROOT / "pr" / name).exists():                # the logos sit right in pr/ on the website
+                shutil.copy2(ROOT / "pr" / name, HERE / "pr" / Path(name).name)
 
 
 def main():
@@ -1792,6 +1901,8 @@ def main():
         say("  nothing new; pages left as they are")
         return
     copy_pr()
+    global SAMPLE_FILE
+    SAMPLE_FILE = "panelready-sample.xlsx" if can_book() else "panelready-sample.csv"
     paths = build(data)
     miss = refresh_landing(data)
     if moved or data.get("sample"):
