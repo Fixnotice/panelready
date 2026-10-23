@@ -34,7 +34,7 @@ for cand in (ROOT, HERE):                            # pr/npi.py lives in the pr
 from pr import npi as N                              # noqa: E402
 
 SITE = "https://panelready.co"                       # the site's address, no trailing slash (the old github.io address redirects here)
-BUILD_VERSION = 22                                    # bump when the page layout changes, so the next run rewrites every page
+BUILD_VERSION = 23                                    # bump when the page layout changes, so the next run rewrites every page
 COMPANY = "Avery Data Co."
 PAYPAL_CLIENT_ID = "BAAQ4G4Hizw2wHo9EZQsTxcW_oBtYKOFEIoI41YQZJvC8ufp2vM9Z_lIU4ASqIUZvXAUrin0KLaYIpr8Js"   # the "PanelReady site" app on developer.paypal.com (Live); one-time orders
 PAYPAL_ME = ""                                       # optional plan B: a PayPal.me handle (e.g. "averydataco"); shown as a second way to pay $39
@@ -1667,8 +1667,13 @@ def write_sample(data: dict) -> str | None:
     leads = LATEST_LEADS
     if not leads:
         src = ROOT / "output" / (data["latest"] or "") / "leads_US_all.csv"
-        if not src.exists():
-            return None                                  # nothing new this run and no local files: the existing sample stays
+        if not src.exists():                             # nothing new this run and no local files: the existing sample
+            have = HERE / "sample" / "panelready-sample.csv"    # stays, made into the spreadsheet if it isn't one yet
+            if data.get("sample") and have.exists() and not (HERE / "sample" / "panelready-sample.xlsx").exists():
+                with open(have, encoding="utf-8", newline="") as f:
+                    rows = list(csv.DictReader(f))
+                data["sample"]["xlsx"] = write_sample_book(rows, data["sample"]["state"], data["sample"]["week"])
+            return None
         with open(src, encoding="utf-8", newline="") as f:
             leads = list(csv.DictReader(f))
     week = data["counts"][data["latest"]]
@@ -1840,6 +1845,11 @@ def build(data: dict) -> list[str]:
     latest = data["latest"]
     week = data["counts"][latest]
     paths = []
+    global SAMPLE_FILE
+    write_sample(data)                                # first, so every page's footer links the sample that exists
+    SAMPLE_FILE = "panelready-sample.xlsx" if (HERE / "sample" / "panelready-sample.xlsx").exists() else "panelready-sample.csv"
+    if data.get("sample"):
+        data["sample"]["xlsx"] = SAMPLE_FILE.endswith(".xlsx")
     out = HERE / "states"
     out.mkdir(exist_ok=True)
     (out / "index.html").write_text(hub_page(data), encoding="utf-8")
@@ -1862,7 +1872,6 @@ def build(data: dict) -> list[str]:
     info = info_pages(data)
     write_account()                                   # not in the sitemap: private, opened from the link in each email
     write_search()
-    write_sample(data)
     urls = [f"  <url><loc>{SITE}/</loc><lastmod>{latest}</lastmod><changefreq>weekly</changefreq><priority>1.0</priority></url>"]
     urls += [f"  <url><loc>{SITE}/search/</loc><lastmod>{latest}</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>"]
     urls += [f"  <url><loc>{SITE}/{p}</loc><lastmod>{latest}</lastmod><changefreq>weekly</changefreq><priority>{'0.8' if p.count('/') < 3 else '0.6'}</priority></url>" for p in paths]
@@ -1901,8 +1910,6 @@ def main():
         say("  nothing new; pages left as they are")
         return
     copy_pr()
-    global SAMPLE_FILE
-    SAMPLE_FILE = "panelready-sample.xlsx" if can_book() else "panelready-sample.csv"
     paths = build(data)
     miss = refresh_landing(data)
     if moved or data.get("sample"):
