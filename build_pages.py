@@ -34,7 +34,7 @@ for cand in (ROOT, HERE):                            # pr/npi.py lives in the pr
 from pr import npi as N                              # noqa: E402
 
 SITE = "https://panelready.co"                       # the site's address, no trailing slash (the old github.io address redirects here)
-BUILD_VERSION = 20                                    # bump when the page layout changes, so the next run rewrites every page
+BUILD_VERSION = 21                                    # bump when the page layout changes, so the next run rewrites every page
 COMPANY = "Avery Data Co."
 PAYPAL_CLIENT_ID = "BAAQ4G4Hizw2wHo9EZQsTxcW_oBtYKOFEIoI41YQZJvC8ufp2vM9Z_lIU4ASqIUZvXAUrin0KLaYIpr8Js"   # the "PanelReady site" app on developer.paypal.com (Live); one-time orders
 PAYPAL_ME = ""                                       # optional plan B: a PayPal.me handle (e.g. "averydataco"); shown as a second way to pay $39
@@ -430,7 +430,7 @@ def week_box(state_name: str, st: str, latest: str, total: int, avg: float = 0.0
     return f"""
 <div class="week" id="week">
   <h3>{head}</h3>
-  <p>{what}, as a spreadsheet, emailed to your PayPal address within the hour. One payment, nothing recurring. The charge shows as {COMPANY}</p>
+  <p>{what}, as a spreadsheet, emailed to your PayPal address within minutes. One payment, nothing recurring. The charge shows as {COMPANY}</p>
   <div class="paybox" id="paypal-week"></div>
   <p class="note" id="week-done"></p>{('<p>' + payme + '</p>') if payme else ''}
 </div>
@@ -452,7 +452,7 @@ def week_box(state_name: str, st: str, latest: str, total: int, avg: float = 0.0
       return actions.order.capture().then(function(o) {{
         var em = (o && o.payer && o.payer.email_address) || 'your PayPal email';
         box.style.display = 'none';
-        done.innerHTML = "<b>Paid, thank you.</b> {paid} goes to " + em + " within the hour. If it hasn't arrived in two hours, email matt@panelready.co with your PayPal receipt.";
+        done.innerHTML = "<b>Paid, thank you.</b> {paid} goes to " + em + " within minutes. If it hasn't arrived within the hour, email matt@panelready.co with your PayPal receipt.";
       }});
     }},
     onError: function(err) {{ done.innerHTML = "PayPal couldn't start the checkout" + (err && err.message ? " (" + String(err.message).slice(0, 160) + ")" : "") + ". {PAYME_HTML}"; console.error('PayPal week button', err); }}
@@ -472,7 +472,7 @@ def offer(state_name: str, st: str, cat: str | None, root: str, latest: str = ""
     week = week_box(state_name, st, latest, total, avg) if st and latest and (total or avg) else ""
     return (f'<section class="offer"><h2>Get every new {esc(what)} {where}, the week they register.</h2>'
             f'<p>This page shows a sample. Subscribers get the complete {esc(state_name) if st else "state"} list as a spreadsheet, {sub}, sorted best-first: the top 25 marked, a score and a ready-to-say opener for every practice, the owner\'s direct line where the registry lists it, phone, address and NPI, websites, emails and practice software for organizations where we can find them, an OIG exclusion check, and the practices that moved or added a specialty that week. Once a month: practices due for Medicare revalidation and practices that look stuck in credentialing. Your first paid list includes the last 90 days, teammates get copies, Roster Watch checks your own clients every week, and a webhook sends each list to your CRM. Backed by a 90-day guarantee. '
-            f'{plan} per state through PayPal (or ${LOCAL_PRICE}/month for just your local area, ${MULTI_PRICE}/month for three states, 2 months free yearly; the charge shows as {COMPANY}, {BRAND}\'s parent company); cancel any time. Try two lists free first, no card needed: the first arrives by the next morning.</p>'
+            f'{plan} per state through PayPal (or ${LOCAL_PRICE}/month for just your local area, ${MULTI_PRICE}/month for three states, 2 months free yearly; the charge shows as {COMPANY}, {BRAND}\'s parent company); cancel any time. Try two lists free first, no card needed: the first arrives within minutes.</p>'
             f'<div class="btns"><a class="cta" href="{root}{q}#free">Get two free {esc(state_name) if st else ""} lists</a><a class="cta ghost" href="{root}{q}#pricing">Subscribe · {plan}</a></div>{week}</section>')
 
 
@@ -853,7 +853,7 @@ def info_pages(data: dict) -> list[str]:
 <div class="prose">
 <p class="lead">These terms apply to the {BRAND} lists and website, provided by {COMPANY} ("we"). By requesting lists or subscribing you agree to them. Last updated {long_date(latest)}.</p>
 <h2>The service</h2>
-<p>{BRAND} sends you a spreadsheet of healthcare practices and sole proprietors that registered for an NPI in the previous week, for the state(s) and category(ies) on your plan, on the morning CMS posts the weekly file (normally once a week; CMS occasionally skips or delays a week). Your first list goes out the morning after you sign up or tell us your territory, from the latest weekly file; a subscription's first paid list also includes every new practice in your territory from the previous 90 days. The data comes from the public NPPES registry exactly as published. We sort it, score each practice and suggest an opener; for organizations we also look up websites, emails, Google ratings and the practice software their websites use, from public sources (Google and the practice's own website), and we check every name against the federal OIG exclusion list. Each week subscribers also get the practices whose registered location changed in the registry that week, and once a month two more lists: practices due (or overdue) for Medicare revalidation according to CMS's public Revalidation Due Date List, and practices that registered 2-12 months earlier and don't appear on Medicare's public enrollment list. A "Medicare pending" flag means the provider appears on CMS's public list of pending first-time applications. Scores, openers, practice-size counts and lookups are our best suggestions, not verified facts; dates and statuses are as CMS publishes them.</p>
+<p>{BRAND} sends you a spreadsheet of healthcare practices and sole proprietors that registered for an NPI in the previous week, for the state(s) and category(ies) on your plan, on the morning CMS posts the weekly file (normally once a week; CMS occasionally skips or delays a week). Your first list goes out as soon as you sign up and we know your territory, usually within minutes, from the latest weekly file (if that file has nothing for your territory, with the next one). A subscription's first paid list goes out as soon as your payment comes through and we know your territory, usually within minutes, and also includes every new practice in your territory from the previous 90 days; after that, lists follow the weekly schedule above. The data comes from the public NPPES registry exactly as published. We sort it, score each practice and suggest an opener; for organizations we also look up websites, emails, Google ratings and the practice software their websites use, from public sources (Google and the practice's own website), and we check every name against the federal OIG exclusion list. Each week subscribers also get the practices whose registered location changed in the registry that week, and once a month two more lists: practices due (or overdue) for Medicare revalidation according to CMS's public Revalidation Due Date List, and practices that registered 2-12 months earlier and don't appear on Medicare's public enrollment list. A "Medicare pending" flag means the provider appears on CMS's public list of pending first-time applications. Scores, openers, practice-size counts and lookups are our best suggestions, not verified facts; dates and statuses are as CMS publishes them.</p>
 <h2>The 90-day guarantee</h2>
 <p>If you don't sign at least one new client from your {BRAND} lists during your first 90 days as a paying subscriber, tell us by email within 30 days after that and your next three months are free: we pause your PayPal subscription for three months, then it resumes at your normal price. One guarantee per company; no proof required.</p>
 <h2>Free lists</h2>
@@ -1622,21 +1622,29 @@ def write_sample(data: dict) -> str | None:
 
 LANDING_WORDING = [
     ("Your first spreadsheet goes out with the next weekly federal file, the second one the week after. No call, no card.",
-     "Your first spreadsheet arrives by the next morning, the second with the following week's federal file. No call, no card."),
+     "Your first spreadsheet arrives within minutes, the second with the following week's federal file. No call, no card."),
+    ("Your first spreadsheet arrives by the next morning, the second with the following week's federal file. No call, no card.",
+     "Your first spreadsheet arrives within minutes, the second with the following week's federal file. No call, no card."),
     ("Or use a ZIP code and a radius to get just the practices near you.</p>",
      "Or use a ZIP code and a radius to get just the practices near you. Free lists have the weekly spreadsheet, the practices "
      "that moved or changed, the CRM file and the outreach kit; the 90-day history, monthly lists and account page come with a "
      "subscription.</p>"),
     ("You'll get a confirmation by email within a day, then the lists on the next two federal files.",
-     "You'll get a confirmation by email within the hour and your first list by the next morning; the second follows a week later."),
+     "You'll get a confirmation by email right away and your first list within minutes; the second follows a week later."),
+    ("You'll get a confirmation by email within the hour and your first list by the next morning; the second follows a week later.",
+     "You'll get a confirmation by email right away and your first list within minutes; the second follows a week later."),
     ("<b>1 · Next weekly file</b>Your first spreadsheet: every new practice in your state and category, sorted best-first",
-     "<b>1 · By the next morning</b>Your first spreadsheet: every new practice in your state and category from the latest federal file, sorted best-first"),
+     "<b>1 · Within minutes</b>Your first spreadsheet: every new practice in your state and category from the latest federal file, sorted best-first"),
+    ("<b>1 · By the next morning</b>Your first spreadsheet:", "<b>1 · Within minutes</b>Your first spreadsheet:"),
+    ("It's emailed to your PayPal address within the hour.</p>", "It's emailed to your PayPal address within minutes.</p>"),
     ("Every plan includes the full list, the monthly lists, Roster Watch, teammates and the 90-day guarantee.",
      "Every plan includes the full list, the last 90 days on day one, the monthly lists, Roster Watch, teammates, your account page and the 90-day guarantee."),
     ("Cancel from your PayPal account any time; the lists stop at the end of the paid month.",
      "Cancel from your PayPal account any time; your lists continue to the end of the period you've paid for."),
     ("One more thing so the right list goes out with the next weekly file: which state, and where to send it?",
-     "One more thing so your first list (with the last 90 days) goes out tomorrow morning: which state, and where to send it?"),
+     "One more thing so your first list (with the last 90 days) goes out right away: which state, and where to send it?"),
+    ("One more thing so your first list (with the last 90 days) goes out tomorrow morning: which state, and where to send it?",
+     "One more thing so your first list (with the last 90 days) goes out right away: which state, and where to send it?"),
     ("Your account page (link in every email) lets you change it later and add teammates.",
      "Your account page (the link in every list email, or Account at the top of this page) lets you change it later and add teammates."),
     ("Each email also carries a private link to your account page, where you can",
@@ -1645,13 +1653,21 @@ LANDING_WORDING = [
      "In your PayPal account under Subscriptions, any time: your lists and account page continue to the end of the period you've paid "
      "for. Or reply STOP to any email: our emails stop right away and we cancel the PayPal subscription for you. No calls, no forms."),
     ("Or subscribe above and your first list goes out with the next weekly file.",
-     "Or subscribe above and your first list, with the last 90 days, goes out the next morning."),
+     "Or subscribe above and your first list, with the last 90 days, arrives within minutes."),
+    ("Or subscribe above and your first list, with the last 90 days, goes out the next morning.",
+     "Or subscribe above and your first list, with the last 90 days, arrives within minutes."),
     ("Your first list includes the last 90 days. A private account page holds past weeks,",
      "Your first paid list includes the last 90 days. Subscribers get a private account page with past weeks,"),
     ("goes out with the next weekly federal file, usually Monday or Tuesday morning, from",
-     "arrives by tomorrow morning (around 7 AM Eastern), from"),
+     "arrives within minutes, from"),
     ("goes out with the next weekly file, with the last 90 days attached.",
-     "goes out by tomorrow morning, with the last 90 days attached."),
+     "is on its way: it arrives within minutes, with the last 90 days attached."),
+    ("goes out by tomorrow morning, with the last 90 days attached.", "is on its way: it arrives within minutes, with the last 90 days attached."),
+    ("') arrives by tomorrow morning (around 7 AM Eastern), from matt@panelready.co.",
+     "') ' + (function(){ if (body.zip) return 'arrives within minutes'; var d = DATA[String(body.state || '').split(',')[0]] || [], "
+     "i = CATS.indexOf(body.category), n = i >= 0 ? (d[i] || 0) : d.reduce(function(a, x){ return a + x; }, 0); "
+     "return n ? 'arrives within minutes' : 'goes out with the next weekly federal file (this week\\'s had no new practices for your pick)'; })()"
+     " + ', from matt@panelready.co."),
     ("Do I get email addresses?</summary><p>For organizations, where we can find one.",
      "Do I get email addresses?</summary><p>For organizations, where we can find one (on the two free lists, for the top 25)."),
 ]
