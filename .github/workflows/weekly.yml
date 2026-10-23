@@ -4,6 +4,9 @@
 # type that path as the name, paste this, Commit). It runs every day at 14:07 UTC; build_pages.py downloads
 # a weekly file only when there is one it hasn't seen, so most days it finishes in seconds and changes nothing.
 # "Run workflow" under the Actions tab runs it by hand. Needs nothing else: no secrets, no keys.
+# The sample spreadsheet is written as the branded .xlsx when pr/workbook.py, pr/boost.py and the logo images
+# (pr/logo_lockup.png, pr/logo_print.png) are in the repository and XlsxWriter is installed (the step below);
+# otherwise the plain CSV sample stays the download.
 name: Weekly state pages
 
 on:
@@ -27,6 +30,9 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+
+      - name: Install the spreadsheet writer (the branded sample spreadsheet)
+        run: pip install "XlsxWriter>=3.2,<4"
 
       - name: Fetch new weekly files and rebuild the pages
         run: python build_pages.py --fetch
