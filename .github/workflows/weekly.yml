@@ -1,8 +1,11 @@
 # PanelReady: rebuild the state pages whenever CMS posts a new weekly NPPES file.
 #
 # Put this file in the repository at  .github/workflows/weekly.yml  (GitHub -> Add file -> Create new file,
-# type that path as the name, paste this, Commit). It runs every day at 14:07 UTC; build_pages.py downloads
-# a weekly file only when there is one it hasn't seen, so most days it finishes in seconds and changes nothing.
+# type that path as the name, paste this, Commit). It runs every 3 hours (at :07); build_pages.py downloads
+# a weekly file only when there is one it hasn't seen, so most runs finish in seconds and change nothing.
+# Every 3 hours rather than once a day because CMS's download site goes down for maintenance for days at a time and
+# comes back for only a few hours; the PanelReady PC also publishes the pages it builds (publish_site.py), so
+# whichever sees the new file first updates the site. Public repository, so the runs cost nothing.
 # "Run workflow" under the Actions tab runs it by hand. Needs nothing else: no secrets, no keys.
 # The sample spreadsheet is written as the branded .xlsx when pr/workbook.py, pr/boost.py and the logo images
 # (pr/logo_lockup.png, pr/logo_print.png) are in the repository and XlsxWriter is installed (the step below);
@@ -11,7 +14,7 @@ name: Weekly state pages
 
 on:
   schedule:
-    - cron: "7 14 * * *"
+    - cron: "7 */3 * * *"
   workflow_dispatch:
 
 permissions:
@@ -46,5 +49,5 @@ jobs:
             echo "No new weekly file; nothing to publish."
           else
             git commit -m "State pages for the week ending $(python -c "import json;print(json.load(open('data/weeks.json'))['latest'])")"
-            git push
+            git push || echo "Not pushed: the PanelReady PC published at the same moment; the next run picks up from there."
           fi

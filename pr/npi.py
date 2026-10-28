@@ -9,9 +9,12 @@ from __future__ import annotations
 
 import csv
 import datetime as dt
+import hashlib
 import io
+import json
 import re
 import zipfile
+from pathlib import Path
 
 CATEGORIES = ["behavioral", "medical", "dental", "therapy", "home_senior", "dme_transport"]
 NICE = {"behavioral": "Behavioral Health", "medical": "Medical Practices & Clinics", "dental": "Dental",
@@ -149,6 +152,31 @@ TAX_NAMES = {
 }
 
 
+def _nucc_names() -> dict:
+    """Every other code in the NUCC taxonomy code set (version 26.1, display names in sentence case): the built-in
+    names above cover the common codes, this file the rest (doulas, phlebotomists, lactation consultants...)."""
+    try:
+        return json.loads(Path(__file__).with_name("nucc_names.json").read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return {}
+
+
+NUCC_NAMES = _nucc_names()
+CODE_RE = re.compile(r"^\d{3}[0-9A-Z]{6}X$")
+
+
+def taxonomy_name(code: str, names: dict | None = None) -> str:
+    """A taxonomy code's name: the built-in short names first, then NUCC's own, then whatever list was downloaded."""
+    code = (code or "").strip()
+    return TAX_NAMES.get(code) or NUCC_NAMES.get(code) or (names or {}).get(code) or code
+
+
+def tidy_specialty(value: str) -> str:
+    """'374J00000X' -> 'Doula'; names pass through. Also fixes '; '-separated lists (other_taxonomies)."""
+    parts = [p.strip() for p in (value or "").split(";")]
+    return "; ".join(taxonomy_name(p) if CODE_RE.match(p) else p for p in parts) if value else value
+
+
 def category(taxonomy: str) -> str:
     t = (taxonomy or "").upper()
     for prefix, cat in _RULES:
@@ -177,62 +205,147 @@ def _col(header, *needles):
 
 
 LEAD_HEADER = ["registered", "category", "specialty", "name", "entity", "credential", "phone", "address", "city",
-               "state", "zip", "npi", "taxonomy", "sole_proprietor", "authorized_official"]
+               "state", "zip", "npi", "taxonomy", "sole_proprietor", "authorized_official", "official_title",
+               "official_phone", "fax", "license", "license_state", "other_taxonomies", "registry_link"]
+REGISTRY_URL = "https://npiregistry.cms.hhs.gov/provider-view/{npi}"
+
+# the NPPES columns every reader here uses (weekly and monthly files share the V2 layout)
+COLUMNS = {
+    "npi": "NPI", "type": "Entity Type Code", "org": "Provider Organization Name (Legal Business Name)",
+    "last": "Provider Last Name (Legal Name)", "first": "Provider First Name", "cred": "Provider Credential Text",
+    "addr": "Provider First Line Business Practice Location Address",
+    "addr2": "Provider Second Line Business Practice Location Address",
+    "city": "Provider Business Practice Location Address City Name",
+    "state": "Provider Business Practice Location Address State Name",
+    "zip": "Provider Business Practice Location Address Postal Code",
+    "phone": "Provider Business Practice Location Address Telephone Number",
+    "country": "Provider Business Practice Location Address Country Code (If outside U.S.)",
+    "enum": "Provider Enumeration Date", "upd": "Last Update Date", "deact": "NPI Deactivation Date",
+    "tax": "Healthcare Provider Taxonomy Code_1", "sole": "Is Sole Proprietor",
+    "aof": "Authorized Official Last Name", "aofirst": "Authorized Official First Name",
+    "aotitle": "Authorized Official Title or Position", "aophone": "Authorized Official Telephone Number",
+    "fax": "Provider Business Practice Location Address Fax Number", "react": "NPI Reactivation Date"}
+# up to 15 taxonomies per NPI, each with its primary switch and license; read only for the rows that need them
+GROUP = {f"{k}{i}": f"{name}_{i}" for i in range(1, 16) for k, name in (
+    ("tax", "Healthcare Provider Taxonomy Code"), ("sw", "Healthcare Provider Primary Taxonomy Switch"),
+    ("lic", "Provider License Number"), ("licst", "Provider License Number State Code"))}
 
 
-def leads_from_weekly(zip_bytes: bytes, week_end: dt.date, names: dict | None = None, days: int = 9) -> list[dict]:
-    """Rows from the weekly zip that are NEW registrations (not updates), as lead dicts."""
-    names = names or {}
+_ABBR = {"STREET": "ST", "AVENUE": "AVE", "ROAD": "RD", "SUITE": "STE", "BOULEVARD": "BLVD", "DRIVE": "DR",
+         "HIGHWAY": "HWY", "PARKWAY": "PKWY", "BUILDING": "BLDG", "NORTH": "N", "SOUTH": "S", "EAST": "E", "WEST": "W",
+         "FLOOR": "FL", "LANE": "LN", "COURT": "CT", "PLACE": "PL"}
+_ABBR_RX = re.compile(r"\b(" + "|".join(_ABBR) + r")\b")
+_NOT_ALNUM = re.compile(r"[^A-Z0-9]+")
+
+
+def addr_key(addr: str, zip_code: str) -> int:
+    """A practice location as a number: ZIP + street line, spelled the same way ('Suite' = 'Ste', 'Street' = 'St')."""
+    a = _ABBR_RX.sub(lambda m: _ABBR[m.group(1)], _NOT_ALNUM.sub(" ", (addr or "").upper())).strip()
+    key = f"{(zip_code or '')[:5]}|{a}"
+    return int.from_bytes(hashlib.blake2b(key.encode(), digest_size=7).digest(), "big")
+
+
+def phone_key(p) -> int:
+    p = str(p or "")
+    d = p if p.isdigit() else re.sub(r"\D", "", p)
+    d = d[-10:]
+    return int(d) if len(d) == 10 and d[0] not in "01" else 0
+
+
+def _getter(r, c: dict):
+    if isinstance(r, dict):
+        def g(k):
+            return (r.get(c[k]) or "").strip() if c.get(k) else ""
+    else:
+        def g(k):
+            i = c.get(k, -1)
+            return r[i].strip() if i is not None and 0 <= i < len(r) else ""
+    return g
+
+
+def row_values(r, c: dict) -> dict:
+    """One NPPES row (list or dict) -> the fields PanelReady uses, by the column map from columns()."""
+    g = _getter(r, c)
+    v = {k: g(k) for k in COLUMNS}
+    v["_r"], v["_c"] = r, c
+    return v
+
+
+def taxonomies(v: dict) -> list[tuple]:
+    """[(code, primary?, license, license state)] for every taxonomy on the row, the primary one first."""
+    g = _getter(v["_r"], v["_c"]) if "_r" in v else (lambda k: "")
+    out = []
+    for i in range(1, 16):
+        code = g(f"tax{i}")
+        if code:
+            out.append((code, g(f"sw{i}").upper() == "Y", g(f"lic{i}"), g(f"licst{i}")))
+    out.sort(key=lambda t: not t[1])
+    if not out and v.get("tax"):
+        out = [(v["tax"], True, "", "")]
+    return out
+
+
+def columns(header: list) -> dict:
+    """Column positions for a csv.reader header."""
+    pos = {h: i for i, h in enumerate(header)}
+    return {k: pos.get(v, -1) for k, v in {**COLUMNS, **GROUP}.items()}
+
+
+def lead_from(v: dict, names: dict) -> dict | None:
+    """A lead dict from row_values(), or None for employees, other countries, deactivated or unknown categories."""
+    if v["deact"] or v["country"] not in ("", "US"):
+        return None
+    is_org, sole = v["type"] == "2", v["sole"].upper() == "Y"
+    if not is_org and not sole:
+        return None
+    tx = taxonomies(v)
+    tax, _, lic, licst = tx[0] if tx else (v["tax"], True, "", "")
+    cat = category(tax)
+    if cat == "other":
+        return None
+    nm = v["org"] if is_org else f"{v['first']} {v['last']}".strip()
+    if not nm:
+        return None
+    e = _d(v["enum"])
+    return {"registered": e.isoformat() if e else "", "category": cat,
+            "specialty": taxonomy_name(tax, names), "name": nm.title(),
+            "entity": "practice/organization" if is_org else "sole proprietor", "credential": v["cred"],
+            "phone": _phone(v["phone"]), "address": v["addr"].title(), "city": v["city"].title(), "state": v["state"].upper(),
+            "zip": v["zip"][:5], "npi": v["npi"], "taxonomy": tax, "sole_proprietor": "yes" if sole else "",
+            "authorized_official": f"{v['aofirst']} {v['aof']}".strip().title() if is_org else "",
+            "official_title": v["aotitle"].title() if is_org else "",
+            "official_phone": _phone(v["aophone"]) if is_org else "", "fax": _phone(v["fax"]), "license": lic,
+            "license_state": licst, "other_taxonomies": "; ".join(taxonomy_name(t[0], names) for t in tx[1:]),
+            "registry_link": REGISTRY_URL.format(npi=v["npi"])}
+
+
+def weekly_reader(zip_bytes: bytes):
+    """(csv.DictReader, column map) for the npidata CSV inside a weekly zip."""
     z = zipfile.ZipFile(io.BytesIO(zip_bytes))
     name = next((n for n in z.namelist() if n.lower().startswith("npidata_pfile") and n.lower().endswith(".csv")
                  and "fileheader" not in n.lower()), None)
     if not name:
         raise RuntimeError(f"no npidata CSV in the zip: {z.namelist()}")
-    f = io.TextIOWrapper(z.open(name), encoding="utf-8", errors="replace")
-    rd = csv.DictReader(f)
+    rd = csv.DictReader(io.TextIOWrapper(z.open(name), encoding="utf-8", errors="replace"))
     H = rd.fieldnames or []
-    c = {k: _col(H, v) for k, v in {
-        "type": "Entity Type Code", "org": "Provider Organization Name (Legal Business Name)",
-        "last": "Provider Last Name (Legal Name)", "first": "Provider First Name", "cred": "Provider Credential Text",
-        "addr": "Provider First Line Business Practice Location Address",
-        "city": "Provider Business Practice Location Address City Name",
-        "state": "Provider Business Practice Location Address State Name",
-        "zip": "Provider Business Practice Location Address Postal Code",
-        "phone": "Provider Business Practice Location Address Telephone Number",
-        "enum": "Provider Enumeration Date", "tax": "Healthcare Provider Taxonomy Code_1",
-        "sole": "Is Sole Proprietor", "deact": "NPI Deactivation Date", "npi": "NPI",
-        "aof": "Authorized Official Last Name", "aofirst": "Authorized Official First Name",
-        "country": "Provider Business Practice Location Address Country Code (If outside U.S.)"}.items()}
+    exact = set(H)
+    return rd, {k: (v if v in exact else _col(H, v)) for k, v in {**COLUMNS, **GROUP}.items()}
+
+
+def leads_from_weekly(zip_bytes: bytes, week_end: dt.date, names: dict | None = None, days: int = 9) -> list[dict]:
+    """Rows from the weekly zip that are NEW registrations (not updates), as lead dicts."""
+    names = names or {}
+    rd, c = weekly_reader(zip_bytes)
     cutoff = week_end - dt.timedelta(days=days)
     out = []
     for r in rd:
-        e = _d(r.get(c["enum"] or "", ""))
-        if not e or e < cutoff or (r.get(c["deact"] or "") or "").strip():
+        v = row_values(r, c)
+        e = _d(v["enum"])
+        if not e or e < cutoff:
             continue
-        if (r.get(c["country"] or "") or "US").strip() not in ("", "US"):
-            continue
-        is_org = r.get(c["type"]) == "2"
-        sole = (r.get(c["sole"] or "") or "").upper() == "Y"
-        if not is_org and not sole:
-            continue                                   # employees registering for an NPI are not practices
-        tax = (r.get(c["tax"]) or "").strip()
-        cat = category(tax)
-        if cat == "other":
-            continue
-        if is_org:
-            nm = (r.get(c["org"]) or "").strip()
-        else:
-            nm = f"{(r.get(c['first']) or '').strip()} {(r.get(c['last']) or '').strip()}".strip()
-        if not nm:
-            continue
-        aof = f"{(r.get(c['aofirst']) or '').strip()} {(r.get(c['aof']) or '').strip()}".strip() if is_org else ""
-        out.append({"registered": e.isoformat(), "category": cat, "specialty": names.get(tax) or TAX_NAMES.get(tax, tax),
-                    "name": nm.title() if is_org else nm.title(), "entity": "practice/organization" if is_org else "sole proprietor",
-                    "credential": (r.get(c["cred"]) or "").strip(), "phone": _phone(r.get(c["phone"])),
-                    "address": (r.get(c["addr"]) or "").title(), "city": (r.get(c["city"]) or "").title(),
-                    "state": (r.get(c["state"]) or "").upper(), "zip": (r.get(c["zip"]) or "")[:5],
-                    "npi": r.get(c["npi"]) or "", "taxonomy": tax, "sole_proprietor": "yes" if sole else "",
-                    "authorized_official": aof.title()})
+        lead = lead_from(v, names)
+        if lead:
+            out.append(lead)
     out.sort(key=lambda x: (x["state"], x["category"], x["entity"] != "practice/organization", x["name"]))
     return out
 

@@ -229,7 +229,7 @@ def local_weeks(data: dict) -> int:
     n = 0
     for p in sorted((ROOT / "output").glob("*/leads_US_all.csv")):
         week = p.parent.name
-        if week in data["counts"]:
+        if week in data["counts"] or (p.parent / "backup.json").exists():   # backup weeks (NPI Registry) stay off the pages
             continue
         with open(p, encoding="utf-8", newline="") as f:
             leads = list(csv.DictReader(f))
