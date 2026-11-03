@@ -10,6 +10,10 @@
 # The sample spreadsheet is written as the branded .xlsx when pr/workbook.py, pr/boost.py and the logo images
 # (pr/logo_lockup.png, pr/logo_print.png) are in the repository and XlsxWriter is installed (the step below);
 # otherwise the plain CSV sample stays the download.
+# Python's cache files are switched off (PYTHONDONTWRITEBYTECODE): until Nov 3, 2026 each run wrote fresh ones into
+# pr/__pycache__ and committed them, so every run made a commit and redeployed the site even with nothing new.
+# A weekly file CMS lists but won't hand over yet (or CMS being down) is not an error: the run says so and the next
+# run tries again (build_pages.py), so it doesn't email a failure every 3 hours while CMS catches up.
 name: Weekly state pages
 
 on:
@@ -27,6 +31,8 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
     steps:
       - uses: actions/checkout@v4
 

@@ -240,8 +240,16 @@ def local_weeks(data: dict) -> int:
 
 
 def fetch_weeks(data: dict, limit: int = 4) -> int:
-    """On GitHub: download the weekly files CMS has posted that aren't in data/weeks.json yet."""
-    page = urllib.request.urlopen(urllib.request.Request(CMS_INDEX, headers=UA), timeout=60).read().decode("utf-8", "replace")
+    """On GitHub: download the weekly files CMS has posted that aren't in data/weeks.json yet.
+
+    CMS's site is often the trouble, not this job: down for maintenance for days, or (Nov 2, 2026) listing a new
+    weekly file hours before the file itself can be downloaded (404). Either way this run just says so and stops
+    without an error; the next run, three hours later, tries again. Only a problem with the file itself fails the job."""
+    try:
+        page = urllib.request.urlopen(urllib.request.Request(CMS_INDEX, headers=UA), timeout=60).read().decode("utf-8", "replace")
+    except Exception as e:                               # noqa: BLE001
+        say(f"  couldn't reach CMS's download page ({e}); the next run tries again")
+        return 0
     found = re.findall(r"href=[\"']?([^\"' >]*NPPES_Data_Dissemination_(\d{6})_(\d{6})_Weekly(?:_V\d+)?\.zip)", page, re.I)
     files = sorted({(dt.datetime.strptime(b, "%m%d%y").date().isoformat(), link if link.startswith("http") else CMS_BASE + link.lstrip("./"))
                     for link, a, b in found})
@@ -250,13 +258,20 @@ def fetch_weeks(data: dict, limit: int = 4) -> int:
         say(f"  nothing new on CMS (newest weekly file: {files[-1][0] if files else 'none listed'})")
         return 0
     names = taxonomy_names()
+    done = 0
     for week, url in todo:
-        say(f"  downloading {url.split('/')[-1]} ...")
-        raw = urllib.request.urlopen(urllib.request.Request(url, headers=UA), timeout=600).read()
+        name = url.split("/")[-1]
+        say(f"  downloading {name} ...")
+        try:
+            raw = urllib.request.urlopen(urllib.request.Request(url, headers=UA), timeout=600).read()
+        except Exception as e:                           # noqa: BLE001
+            say(f"  CMS lists {name} but it can't be downloaded yet ({e}); the next run tries again")
+            continue
         leads = N.leads_from_weekly(raw, dt.date.fromisoformat(week), names)
         ingest(data, week, leads)
         say(f"  {week}: {len(leads):,} leads")
-    return len(todo)
+        done += 1
+    return done
 
 
 def taxonomy_names() -> dict:
