@@ -84,11 +84,18 @@ def score(lead: dict, week_end: Optional[dt.date] = None) -> tuple[int, str]:
     if not org and WEAK_CRED.search(lead.get("credential") or ""):
         pts -= 10
         why.append(f"{lead.get('credential')} credential (often not billing independently yet)")
+    shared = lead.get("phone_shared_kind")
     size = int(lead.get("providers_at_practice") or 0)
-    if org and 3 <= size < 200:
+    if shared == "filer":                            # the number belongs to whoever filed: no size bonus from it
+        pts -= 12
+        why.append(f"its phone is on {lead.get('phone_shared_n')} new practices with different owners this week "
+                   f"(probably whoever filed for them)")
+    elif shared == "owner":
+        why.append(f"same owner registered {lead.get('phone_shared_n')} new practices this week")
+    if shared != "filer" and org and 3 <= size < 200:
         pts += 8 if size >= 10 else 6
         why.append(f"{size} providers share its phone")
-    elif org and size >= 200:
+    elif shared != "filer" and org and size >= 200:
         why.append("phone shared by a large organization")
     if lead.get("phone"):
         pts += 4
@@ -378,15 +385,58 @@ def _acronym_match(name: str, g_name: str) -> bool:
 
 
 CACHE_V = 2          # cache entries keep Google's own answer, so a smarter matcher never needs a second lookup
+RECHECK_DAYS = 28    # a practice Google didn't know is looked up once more this long after (new practices get a
+                     # Google listing and website within a month or two; at first 69% of lookups found nothing)
+
+
+def _found(lead: dict, hit: dict) -> bool:
+    return bool(hit.get("website")) or bool(hit.get("g_name") and same_business(lead, hit["g_name"], hit.get("g_address", "")))
+
+
+def due_for_recheck(lead: dict, hit: Optional[dict], today: str, days: int = RECHECK_DAYS) -> bool:
+    """True for a cached lookup that found nothing (not on Google, or a different business), made at least `days`
+    ago, and not looked up again since: Google may know the practice by now."""
+    if not hit or hit.get("rechecked") or _found(lead, hit):
+        return False
+    try:
+        return (dt.date.fromisoformat(today) - dt.date.fromisoformat(hit.get("checked", "")[:10])).days >= days
+    except ValueError:
+        return False
+
+
+def apply_hit(l: dict, hit: dict):
+    """Copy a cached lookup's findings onto a lead (website, email, rating, software, social)."""
+    l["website"], l["email"], l["google_rating"] = hit.get("website", ""), hit.get("email", ""), hit.get("rating", "")
+    l["practice_software"], l["social"] = hit.get("software", ""), hit.get("social", "")
+    if l["practice_software"] and "uses " not in (l.get("why") or ""):
+        l["why"] = f"{l.get('why', '')}; uses {l['practice_software']}".strip("; ")
+
+
+def fill_from_cache(rows: list[dict], cache: dict) -> int:
+    """Websites and emails already found (by a weekly list or a recheck) onto rows that make no new lookups, e.g.
+    the 90-day history and the monthly stuck list. Returns how many rows got a website."""
+    n = 0
+    for l in rows:
+        hit = cache.get(l.get("npi", ""))
+        if not hit or l.get("entity") != "practice/organization":
+            continue
+        if not hit.get("website") and hit.get("g_name") and same_business(l, hit["g_name"], hit.get("g_address", "")):
+            hit = dict(hit, website=hit.get("g_website", ""), rating=hit.get("g_rating", ""))
+        if hit.get("website"):
+            apply_hit(l, hit)
+            n += 1
+    return n
 
 
 def enrich(leads: list[dict], cache: dict, lookup: Callable, scan: Callable, allowance: int, today: str,
-           deadline: float, stats: Optional[dict] = None, may_look: Optional[Callable] = None) -> int:
+           deadline: float, stats: Optional[dict] = None, may_look: Optional[Callable] = None,
+           recheck: bool = False) -> int:
     """Fill website/email/google_rating for organizations, best-scored first, from the cache or with at most
     `allowance` new Google lookups. Every answer (found or not) is cached by NPI so nobody is looked up twice;
     a lookup that errors isn't cached (tried again next run). `stats` gets found / not_on_google / different /
     errors counts, a few mismatch examples and the first error. may_look(lead) -> False means cache only for that
-    lead, no new lookup (trial lists look up just their TOP 25). Returns the number of Google lookups used."""
+    lead, no new lookup (trial lists look up just their TOP 25). recheck=True: a lookup that found nothing
+    RECHECK_DAYS or more ago is made once more (deliver.py --recheck). Returns the number of Google lookups used."""
     st = stats if stats is not None else {}
     for k in ("found", "not_on_google", "different", "errors", "rematched"):
         st.setdefault(k, 0)
@@ -397,9 +447,10 @@ def enrich(leads: list[dict], cache: dict, lookup: Callable, scan: Callable, all
     orgs.sort(key=lambda l: -int(l.get("score") or 0))
     for l in orgs:
         hit = cache.get(l["npi"])
+        again = recheck and due_for_recheck(l, hit, today)
         if hit is not None and hit.get("v") != CACHE_V and not hit.get("website"):
             hit = None                                   # from before Google's answer was kept: look again once
-        if hit is None:
+        if hit is None or again:
             if used >= allowance or time.monotonic() > deadline or st["errors"] >= 3 or (may_look and not may_look(l)):
                 continue
             used += 1
@@ -410,7 +461,7 @@ def enrich(leads: list[dict], cache: dict, lookup: Callable, scan: Callable, all
                 st["errors"] += 1
                 st["error"] = st["error"] or str(e)[:200]
                 continue
-            hit = {"v": CACHE_V, "checked": today, "website": "", "email": "", "rating": "",
+            hit = {"v": CACHE_V, "checked": today, "website": "", "email": "", "rating": "", **({"rechecked": today} if again else {}),
                    "g_name": biz.name if biz else "", "g_address": biz.address if biz else "",
                    "g_website": (biz.website or "") if biz else "",
                    "g_rating": f"{biz.rating} ({biz.reviews} reviews)" if biz and biz.rating else ""}
@@ -436,10 +487,7 @@ def enrich(leads: list[dict], cache: dict, lookup: Callable, scan: Callable, all
         elif not hit.get("website") and hit.get("g_name") and same_business(l, hit["g_name"], hit.get("g_address", "")):
             hit["website"], hit["rating"] = hit.get("g_website", ""), hit.get("g_rating", "")
             st["rematched"] += 1
-        l["website"], l["email"], l["google_rating"] = hit.get("website", ""), hit.get("email", ""), hit.get("rating", "")
-        l["practice_software"], l["social"] = hit.get("software", ""), hit.get("social", "")
-        if l["practice_software"] and "uses " not in (l.get("why") or ""):
-            l["why"] = f"{l.get('why', '')}; uses {l['practice_software']}".strip("; ")
+        apply_hit(l, hit)
     return used
 
 
@@ -454,16 +502,57 @@ def contact_fields(r: dict):
     r["contact_phone"] = own if org and own and own != r.get("phone") else ""
 
 
+SHARED_MIN = 3        # this many new practices on one phone number in the same week (two can be a couple or partners)
+
+
+def _phone_digits(p) -> str:
+    d = re.sub(r"\D", "", str(p or ""))[-10:]
+    return d if len(d) == 10 and d[0] not in "01" else ""
+
+
+def shared_phone_notes(rows: list[dict]) -> dict:
+    """One week's new practices -> {npi: {"kind", "n", "note"}} for every practice whose phone number is on
+    SHARED_MIN or more of that week's new practices. kind "owner": the same owner (authorized official) registered
+    several practices, so the number is theirs. kind "filer": the practices have different owners, so the number is
+    most likely the consultant, credentialing firm or agency that filed the registrations, not the practice's own
+    line (Nov 2026: one number was on 28 new practices in 5 states)."""
+    groups: dict[str, list[dict]] = {}
+    for r in rows:
+        k = _phone_digits(r.get("phone"))
+        if k and r.get("npi"):
+            groups.setdefault(k, []).append(r)
+    out = {}
+    for members in groups.values():
+        n = len({m["npi"] for m in members})
+        if n < SHARED_MIN:
+            continue
+        owners = {_norm((m.get("authorized_official") if m.get("entity") == "practice/organization" else "")
+                        or m.get("name", "")) for m in members}
+        if len(owners) <= max(1, n // 3):
+            kind, note = "owner", f"Same owner registered {n} new practices this week (several locations)"
+        else:
+            kind, note = "filer", (f"Same number as {n - 1} other new practices with different owners this week: "
+                                   f"probably whoever filed for them, not the practice's own line")
+        for m in members:
+            out[m["npi"]] = {"kind": kind, "n": n, "note": note}
+    return out
+
+
 def upgrade(rows: list[dict], week_end: Optional[dt.date], leie: dict, leie_as_of: str,
             extras: Optional[dict] = None) -> list[dict]:
     """Score, reason, opener, contact, OIG check; sorted best-first with the top 25 marked. extras: 'phone_count'
-    (phone -> providers sharing it, from the registry snapshot) and 'pending' ({npi: date} on CMS's pending list)."""
+    (phone -> providers sharing it, from the registry snapshot), 'pending' ({npi: date} on CMS's pending list) and
+    'shared' ({npi: note} from shared_phone_notes(): a phone number on several of the same week's new practices)."""
     extras = extras or {}
     count, pending, optout = extras.get("phone_count"), extras.get("pending") or {}, extras.get("optout") or {}
+    shared = extras.get("shared") or {}
     out = []
     for r in rows:
         r = dict(r)
         r["name"] = tidy_name(r.get("name", ""))
+        sh = shared.get(r.get("npi", ""))
+        if sh:
+            r["phone_shared"], r["phone_shared_kind"], r["phone_shared_n"] = sh["note"], sh["kind"], sh["n"]
         if r.get("entity") == "practice/organization":
             r["authorized_official"] = tidy_name(r.get("authorized_official", ""))
             if count and not r.get("providers_at_practice"):
@@ -479,7 +568,7 @@ def upgrade(rows: list[dict], week_end: Optional[dt.date], leie: dict, leie_as_o
         r["opener"] = opener(r)
         r["oig_check"] = oig_note(r, leie, leie_as_of)
         for k in ("website", "email", "google_rating", "providers_at_practice", "medicare_pending", "practice_software",
-                  "social", "medicare_optout"):
+                  "social", "medicare_optout", "phone_shared"):
             r.setdefault(k, "")
         out.append(r)
     out.sort(key=lambda r: (-r["score"], r.get("entity") != "practice/organization", r.get("name", "")))
@@ -490,8 +579,8 @@ def upgrade(rows: list[dict], week_end: Optional[dt.date], leie: dict, leie_as_o
 
 def write(path: Path, rows: list[dict], base_header: list[str]):
     """Upgraded columns first (what a buyer reads), then the registry fields."""
-    first = ["priority", "score", "name", "contact_name", "contact_title", "contact_phone", "phone", "email", "website",
-             "opener", "why", "specialty", "city", "state", "registered"]
+    first = ["priority", "score", "name", "contact_name", "contact_title", "contact_phone", "phone", "phone_shared",
+             "email", "website", "opener", "why", "specialty", "city", "state", "registered"]
     last = ["practice_software", "social", "providers_at_practice", "medicare_pending", "medicare_optout", "google_rating",
             "oig_check"]
     header = first + [h for h in base_header if h not in first + last + ["official_title", "official_phone"]] + last

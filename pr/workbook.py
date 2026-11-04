@@ -172,6 +172,7 @@ COLS = {
     "contact_title": ("Contact title", 20, "text"),
     "contact_phone": ("Direct phone", 14.5, "phone"),
     "phone": ("Practice phone", 14.5, "phone"),
+    "phone_shared": ("Phone note", 40, "text"),
     "email": ("Email", 26, "email"),
     "website": ("Website", 24, "url"),
     "opener": ("Suggested opener", 60, "text"),
@@ -212,8 +213,8 @@ COLS = {
 SKIP = {"registry_link", "authorized_official", "official_title", "official_phone", "sole_proprietor"}
 
 FRONT = {   # what a caller reads first, per list kind; everything else follows in COLS order
-    "leads": ["priority", "score", "name", "contact_name", "contact_title", "contact_phone", "phone", "email", "website",
-              "opener", "specialty", "category", "city", "state", "zip", "registered", "why"],
+    "leads": ["priority", "score", "name", "contact_name", "contact_title", "contact_phone", "phone", "phone_shared",
+              "email", "website", "opener", "specialty", "category", "city", "state", "zip", "registered", "why"],
     "moved": ["priority", "score", "name", "moved_on", "moved_from", "address", "city", "state", "zip", "contact_name",
               "contact_title", "contact_phone", "phone", "email", "website", "opener", "specialty", "category", "why"],
     "changes": ["priority", "score", "name", "change_type", "change_detail", "changed_on", "contact_name",
@@ -227,7 +228,7 @@ FRONT = {   # what a caller reads first, per list kind; everything else follows 
               "why"],
 }
 FRONT["history"] = FRONT["leads"]
-TOP_COLS = ["score", "name", "contact_name", "contact_title", "contact_phone", "phone", "email", "website", "opener",
+TOP_COLS = ["score", "name", "contact_name", "contact_title", "contact_phone", "phone", "phone_shared", "email", "website", "opener",
             "specialty", "city", "state", "registered", "npi"]
 
 KINDS = {   # file prefix -> (tab name, title, what it is)
@@ -520,6 +521,10 @@ COLUMN_GUIDE = [
     ("Contact, Contact title", "The owner or authorized official on the registration (the provider, for a solo practice)."),
     ("Direct phone", "The contact's own number from the registry, when it's different from the practice line. Try it first."),
     ("Practice phone, Fax, Street address", "As the practice filed them with the federal NPI registry."),
+    ("Phone note", "The practice phone is on 3 or more of this week's new practices. \"Same owner\" means one owner is "
+     "opening several locations, so the number is theirs. \"Different owners\" means it's most likely the consultant, "
+     "credentialing firm or agency that filed the registrations, not the practice: ask for the owner by name, or try "
+     "the Direct phone first. Those practices score a little lower."),
     ("Email, Website, Google rating", "Found for organizations on Google and on the practice's own website (on free "
      "lists, for the top 25). Blank means none was found yet."),
     ("Suggested opener", "A ready-to-say first line built only from facts in the public registration."),

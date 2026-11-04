@@ -31,6 +31,7 @@ _RULES = [
     ("102X", "behavioral"), ("104100000X", "behavioral"),
     ("3208", "behavioral"),
     ("122", "dental"), ("124Q", "dental"), ("125", "dental"), ("126", "dental"),
+    ("261QD0000X", "dental"),                            # dental clinic (was "medical" through Nov 2, 2026)
     ("225", "therapy"), ("235Z", "therapy"), ("231H", "therapy"), ("237", "therapy"), ("111N", "therapy"),
     ("1711", "therapy"), ("133", "therapy"), ("213E", "therapy"), ("152W", "therapy"), ("224", "therapy"),
     ("2278", "therapy"), ("2279", "therapy"), ("222Z", "therapy"), ("226", "therapy"), ("175F", "therapy"),

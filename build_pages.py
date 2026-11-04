@@ -158,6 +158,7 @@ def save(data: dict):
     WEEKS.parent.mkdir(parents=True, exist_ok=True)
     data["weeks"] = sorted(set(data["weeks"]))[-104:]
     data["counts"] = {w: data["counts"][w] for w in data["weeks"] if w in data["counts"]}
+    data["backup_weeks"] = sorted(w for w in set(data.get("backup_weeks", [])) if w in data["counts"])
     data["totals"] = {w: data.get("totals", {}).get(w, sum(sum(v) for v in data["counts"][w].values())) for w in data["weeks"] if w in data["counts"]}
     WEEKS.write_text(json.dumps(data, separators=(",", ":")), encoding="utf-8")
 
@@ -225,17 +226,30 @@ def _top_specs(ls: list[dict]) -> list:
 
 
 def local_weeks(data: dict) -> int:
-    """On the PC: fold in every output\\<week>\\leads_US_all.csv (new weeks, plus the newest to refresh its details)."""
+    """On the PC: fold in every output\\<week>\\leads_US_all.csv that isn't on file yet.
+
+    A week pull_npi.py built from the NPI Registry while CMS's weekly file was late (backup.json in its folder) goes on
+    the pages too, so the site doesn't sit a week behind, and is listed in data["backup_weeks"]. When CMS's own file
+    replaces it (pull_npi.py swaps the folder and drops backup.json), that week is read again here; on GitHub,
+    fetch_weeks() downloads CMS's file for it as soon as CMS hands it over."""
     n = 0
+    backups = set(data.get("backup_weeks", []))
     for p in sorted((ROOT / "output").glob("*/leads_US_all.csv")):
         week = p.parent.name
-        if week in data["counts"] or (p.parent / "backup.json").exists():   # backup weeks (NPI Registry) stay off the pages
-            continue
+        is_backup = (p.parent / "backup.json").exists()
+        if week in data["counts"] and not (week in backups and not is_backup):
+            continue                                     # on file (a backup week is read again once CMS's file replaces it)
         with open(p, encoding="utf-8", newline="") as f:
             leads = list(csv.DictReader(f))
         ingest(data, week, leads)
-        say(f"  {week}: {len(leads):,} leads from {p.relative_to(ROOT)}")
+        if is_backup:
+            backups.add(week)
+        else:
+            backups.discard(week)
+        say(f"  {week}: {len(leads):,} leads from {p.relative_to(ROOT)}"
+            + (" (NPI Registry backup; CMS's weekly file replaces it when it comes)" if is_backup else ""))
         n += 1
+    data["backup_weeks"] = sorted(backups)
     return n
 
 
@@ -253,7 +267,8 @@ def fetch_weeks(data: dict, limit: int = 4) -> int:
     found = re.findall(r"href=[\"']?([^\"' >]*NPPES_Data_Dissemination_(\d{6})_(\d{6})_Weekly(?:_V\d+)?\.zip)", page, re.I)
     files = sorted({(dt.datetime.strptime(b, "%m%d%y").date().isoformat(), link if link.startswith("http") else CMS_BASE + link.lstrip("./"))
                     for link, a, b in found})
-    todo = [(w, u) for w, u in files if w not in data["counts"]][-limit:]
+    backups = set(data.get("backup_weeks", []))            # weeks the PC built from the NPI Registry: CMS's file replaces them
+    todo = [(w, u) for w, u in files if w not in data["counts"] or w in backups][-limit:]
     if not todo:
         say(f"  nothing new on CMS (newest weekly file: {files[-1][0] if files else 'none listed'})")
         return 0
@@ -269,6 +284,10 @@ def fetch_weeks(data: dict, limit: int = 4) -> int:
             continue
         leads = N.leads_from_weekly(raw, dt.date.fromisoformat(week), names)
         ingest(data, week, leads)
+        if week in backups:
+            backups.discard(week)
+            say(f"  {week}: CMS's own file replaces the NPI Registry backup on the pages")
+        data["backup_weeks"] = sorted(backups)
         say(f"  {week}: {len(leads):,} leads")
         done += 1
     return done
@@ -779,7 +798,7 @@ def hub_page(data: dict) -> str:
 <div class="crumbs"><a href="../">{BRAND}</a> › All states</div>
 <span class="kicker">New practice leads by state for {esc(BUYERS)}</span>
 <h1><em>{fmt(nat['total'])}</em> new healthcare practices registered across the U.S. last week: leads for credentialing &amp; billing companies</h1>
-<p class="lead">Every practice, clinic, agency and sole proprietor that registered for an NPI in the week ending {long_date(latest)}, from the federal NPPES file, sorted by state. {fmt(nat['orgs'])} were brand-new organizations. Pick a state for its weekly count, trend, busiest cities, top specialties and a sample of the list.</p>
+<p class="lead">Every practice, clinic, agency and sole proprietor that registered for an NPI in the week ending {long_date(latest)}, {"from the federal NPPES registry (CMS's weekly file for this week is running late)" if latest in data.get("backup_weeks", []) else "from the federal NPPES file"}, sorted by state. {fmt(nat['orgs'])} were brand-new organizations. Pick a state for its weekly count, trend, busiest cities, top specialties and a sample of the list.</p>
 <div class="stats">
   <div class="stat"><b>{fmt(nat['total'])}</b><span>new practices &amp; sole proprietors, week ending {esc(short_date(latest))}</span></div>
   <div class="stat"><b>{fmt(nat['orgs'])}</b><span>brand-new organizations: practices, clinics, agencies, suppliers</span></div>
