@@ -3,7 +3,7 @@
 # Put this file in the repository at  .github/workflows/weekly.yml  (GitHub -> Add file -> Create new file,
 # type that path as the name, paste this, Commit). It runs every 3 hours (at :07); build_pages.py downloads
 # a weekly file only when there is one it hasn't seen, so most runs finish in seconds and change nothing.
-# Every 3 hours rather than once a day because CMS's download site goes down for maintenance for days at a time and
+# It also checks the PanelReady PC is running (last step). Every 3 hours rather than once a day because CMS's download site goes down for maintenance for days at a time and
 # comes back for only a few hours; the PanelReady PC also publishes the pages it builds (publish_site.py), so
 # whichever sees the new file first updates the site. Public repository, so the runs cost nothing.
 # "Run workflow" under the Actions tab runs it by hand. Needs nothing else: no secrets, no keys.
@@ -57,3 +57,22 @@ jobs:
             git commit -m "State pages for the week ending $(python -c "import json;print(json.load(open('data/weeks.json'))['latest'])")"
             git push || echo "Not pushed: the PanelReady PC published at the same moment; the next run picks up from there."
           fi
+
+      # The PanelReady PC sends the customers' lists, so it must be on. Its morning run updates data/pc_heartbeat.json
+      # (publish_site.py --heartbeat). If that's 30+ hours old, this step fails once a day, and GitHub emails the
+      # account that owns this repository ("Run failed: Weekly state pages"): the PC is off, asleep or offline.
+      - name: Check the PanelReady PC has run today
+        run: |
+          python - <<'EOF'
+          import datetime as dt, json, pathlib, sys
+          p = pathlib.Path("data/pc_heartbeat.json")
+          if not p.exists():
+              print("No PC heartbeat yet."); sys.exit(0)
+          last = dt.datetime.fromisoformat(json.loads(p.read_text())["last_run"])
+          hours = (dt.datetime.now(dt.timezone.utc) - last).total_seconds() / 3600
+          print(f"The PanelReady PC last ran its morning job {hours:.0f} hours ago ({last:%a %b %d %H:%M} UTC).")
+          if hours >= 30 and (hours - 30) % 24 < 3:
+              print("::error::The PanelReady PC hasn't run its morning job for over a day: customers' lists and replies "
+                    "wait until it's back on. Check that the PC is on, awake and online.")
+              sys.exit(1)
+          EOF
