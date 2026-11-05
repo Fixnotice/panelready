@@ -151,6 +151,11 @@
   .sample .cap b{color:var(--ink);font-weight:600;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12.5px}
   .tscroll{overflow-x:auto}
   .sample table{width:100%;border-collapse:collapse;font-size:14px;min-width:640px}
+  .sample .kind{font-size:12.5px;font-weight:600;color:var(--green)}
+  .sample .kind.loc{color:var(--blue)}
+  .sample .kind.ex{color:var(--amber)}
+  .sample td:nth-child(3){white-space:normal;min-width:150px;max-width:200px;line-height:1.35}
+  .sample td.nm{white-space:normal;min-width:180px;max-width:260px;line-height:1.35}
   .sample th,.sample td{text-align:left;padding:12px 16px;border-bottom:1px solid var(--line);vertical-align:top;white-space:nowrap}
   .sample th{color:var(--dim);font-weight:600;font-size:12px;letter-spacing:.06em;text-transform:uppercase}
   .sample tr:last-child td{border-bottom:0}
@@ -348,22 +353,23 @@
   <section id="sample">
     <div class="eyebrow rv">Sample</div>
     <h2 class="rv">What a Monday looks like.</h2>
-    <p class="sub rv">Real rows from last week's New York list, across categories. Phone numbers are masked on this page only.</p>
+    <p class="sub rv">Real rows from a recent New York list, across categories. Phone numbers are masked on this page only.</p>
     <div class="sample rv">
       <div class="cap"><b>leads_NY_all.csv</b><span>week ending Nov 1 · 231 rows · organizations first</span></div>
       <div class="tscroll"><table>
-        <thead><tr><th>Registered</th><th>Practice</th><th>Specialty</th><th>City</th><th>Phone</th><th>Category</th></tr></thead>
+        <thead><tr><th>Registered</th><th>Practice</th><th>What's new</th><th>Specialty</th><th>City</th><th>Phone</th><th>Category</th></tr></thead>
         <tbody>
-          <tr><td>2026-10-08</td><td class="nm">Achievement Autism Services LLC</td><td>Behavior analyst</td><td>Malverne</td><td class="ph">(516) 229-••••</td><td><span class="pill" data-c="behavioral">Behavioral</span></td></tr>
-          <tr><td>2026-10-08</td><td class="nm">Albert NP in Psychiatry PLLC</td><td>Psychiatric nurse practitioner</td><td>Albany</td><td class="ph">(240) 421-••••</td><td><span class="pill" data-c="behavioral">Behavioral</span></td></tr>
-          <tr><td>2026-10-07</td><td class="nm">99 Madison Medical PC</td><td>Cardiovascular disease</td><td>New York</td><td class="ph">(646) 404-••••</td><td><span class="pill" data-c="medical">Medical</span></td></tr>
-          <tr><td>2026-10-07</td><td class="nm">Adela Guset Dental PLLC</td><td>Dentist, general</td><td>Honeoye</td><td class="ph">(585) 229-••••</td><td><span class="pill" data-c="dental">Dental</span></td></tr>
-          <tr><td>2026-10-10</td><td class="nm">58 Acupuncture PC</td><td>Acupuncturist</td><td>New York</td><td class="ph">(347) 964-••••</td><td><span class="pill" data-c="therapy">Therapy</span></td></tr>
-          <tr><td>2026-10-09</td><td class="nm">Clover LHCSA Management LLC</td><td>Home health agency</td><td>Carmel</td><td class="ph">(845) 878-••••</td><td><span class="pill" data-c="home_senior">Home care</span></td></tr>
-          <tr><td>2026-10-08</td><td class="nm">57 Rx Pharmacy Inc</td><td>Community pharmacy</td><td>Corona</td><td class="ph">(718) 433-••••</td><td><span class="pill" data-c="dme_transport">Pharmacy</span></td></tr>
+          <tr><td>2026-10-30</td><td class="nm">Limitless Health Care Services LLC</td><td><span class="kind">Brand-new practice</span></td><td>Psychiatric nurse practitioner</td><td>Bronx</td><td class="ph">(718) 542-••••</td><td><span class="pill" data-c="behavioral">Behavioral</span></td></tr>
+          <tr><td>2026-10-26</td><td class="nm">Katherine Eiges Psychologist PLLC</td><td><span class="kind loc">New location of an existing organization</span></td><td>Clinical psychologist</td><td>New York</td><td class="ph">(917) 568-••••</td><td><span class="pill" data-c="behavioral">Behavioral</span></td></tr>
+          <tr><td>2026-10-27</td><td class="nm">Tranzform Care LLC</td><td><span class="kind ex">Existing office (5 providers already use this phone)</span></td><td>Nurse practitioner</td><td>Yonkers</td><td class="ph">(914) 964-••••</td><td><span class="pill" data-c="medical">Medical</span></td></tr>
+          <tr><td>2026-10-31</td><td class="nm">Augustin Family Health Nurse Practioner Services PLLC</td><td><span class="kind">Brand-new practice</span></td><td>Nurse practitioner</td><td>Floral Park</td><td class="ph">(347) 476-••••</td><td><span class="pill" data-c="medical">Medical</span></td></tr>
+          <tr><td>2026-10-28</td><td class="nm">D&amp;S Dental PC</td><td><span class="kind">Brand-new practice</span></td><td>Dental clinic</td><td>Jackson Heights</td><td class="ph">(718) 458-••••</td><td><span class="pill" data-c="dental">Dental</span></td></tr>
+          <tr><td>2026-10-29</td><td class="nm">Anu Pelvic Physical Therapy PLLC</td><td><span class="kind">Brand-new practice</span></td><td>Physical therapist</td><td>Irvington</td><td class="ph">(585) 729-••••</td><td><span class="pill" data-c="therapy">Therapy</span></td></tr>
+          <tr><td>2026-10-26</td><td class="nm">Anfisa Development Services Inc</td><td><span class="kind">Brand-new practice</span></td><td>Early intervention agency</td><td>Rockaway Beach</td><td class="ph">(646) 745-••••</td><td><span class="pill" data-c="home_senior">Home care</span></td></tr>
+          <tr><td>2026-10-31</td><td class="nm">Felicita Paradise LLC</td><td><span class="kind">Brand-new practice</span></td><td>DME &amp; medical supplies</td><td>Bronx</td><td class="ph">(713) 298-••••</td><td><span class="pill" data-c="dme_transport">DME</span></td></tr>
         </tbody>
       </table></div>
-      <div class="note">Source: NPPES weekly dissemination file, CMS. Public data, provided as-is. Columns in the real file also include full address, ZIP, NPI, taxonomy code, sole-proprietor flag and authorized official. <a href="sample/panelready-sample.xlsx" id="sampleDl">Download a full sample spreadsheet</a> (Vermont, 8 rows, every column, nothing masked).</div>
+      <div class="note">Source: NPPES weekly dissemination file, CMS. Public data, provided as-is. Columns in the real file also include the owner or authorized official with a one-click LinkedIn search, days since it registered, website and email (marked person or shared inbox, and checked that the domain takes mail), full address, ZIP, NPI and taxonomy code. <a href="sample/panelready-sample.xlsx" id="sampleDl">Download a full sample spreadsheet</a> (Vermont, 8 rows, every column, nothing masked).</div>
     </div>
     <div class="mailcard rv" aria-label="What the Monday email looks like">
       <div class="mh"><span><b>From:</b> Matt at PanelReady</span><span><b>Subject:</b> PanelReady leads, week ending <span class="wkiso">2026-11-01</span>: NY</span></div>
@@ -389,8 +395,10 @@ The TOP 25 are marked; the outreach kit (call script + email template) is attach
     <div class="cats">
       <div class="cat rv"><b>Top 25 &amp; lead score</b><span>Every practice scored 0-100 for how likely it needs credentialing and billing help soon, with the reason, including how many providers share its phone. The best 25 are marked and the list is sorted best-first.</span></div>
       <div class="cat rv"><b>A ready-to-say opener</b><span>A first line for every practice (name, city, date, specialty), a call script and email template, and a file that imports straight into HubSpot or Salesforce.</span></div>
-      <div class="cat rv"><b>The owner's direct line</b><span>The practice's owner or authorized official by name and title, with their own phone number when the registry lists one. Skip the front desk.</span></div>
-      <div class="cat rv"><b>Websites, emails &amp; software</b><span>For organizations, the practice's website, email and Google rating where we can find them, and the practice software its website runs (SimplePractice, athenahealth, Tebra...).</span></div>
+      <div class="cat rv"><b>The owner's direct line</b><span>The practice's owner or authorized official by name and title, with their own phone number when the registry lists one, and a one-click LinkedIn search for them. Skip the front desk.</span></div>
+      <div class="cat rv"><b>Websites, emails &amp; software</b><span>For organizations, the practice's website, email and Google rating where we can find them, and the practice software its website runs (SimplePractice, athenahealth, Tebra...). Every email is marked as a person or a shared inbox (info@, office@) and checked that its domain takes mail.</span></div>
+      <div class="cat rv"><b>What kind of new it is</b><span>Each row says whether it's a brand-new practice, a new location of a larger organization (named when the registry names it), an owner opening several locations, an established office that just registered as a practice, or a re-registration, plus how many days ago it registered. Brand-new practices need everything set up from scratch.</span></div>
+      <div class="cat rv"><b>Only the specialties you sell to</b><span>Work only with ABA, psychiatry or physical therapy? Pick your specialties (44 to choose from, ABA to home health to DME) when you sign up or on your account page, and your lists carry only those.</span></div>
       <div class="cat rv"><b>Practices that moved or changed</b><span>Every week: practices whose registered location changed, NPIs that were reactivated, and practices that added a new specialty. Each one needs updated or new enrollments with Medicare and the insurance plans: paid work for you.</span></div>
       <div class="cat rv"><b>Revalidation due</b><span>Once a month: practices due, or overdue, for Medicare revalidation, soonest first. Established practices that already bill, with a deadline.</span></div>
       <div class="cat rv"><b>Stuck in credentialing</b><span>Once a month: practices that registered 2-12 months ago, in specialties that commonly enroll with Medicare, and still aren't on Medicare's enrollment list.</span></div>
@@ -551,6 +559,7 @@ The TOP 25 are marked; the outreach kit (call script + email template) is attach
     <details class="rv"><summary>How does the guarantee work?</summary><p>If you don't sign at least one new client from your PanelReady lists during your first 90 days as a paying subscriber, reply to any of our emails and tell us. Your next 3 months are free: we pause your PayPal subscription for three months. One per company; no forms, no proof required.</p></details>
     <details class="rv"><summary>Is my list exclusive to me?</summary><p>No. PanelReady is a data subscription, not an exclusive-lead service: the Texas behavioral-health list is the same list for every company that subscribes to Texas behavioral health, and a new one arrives every week. In practice a state produces far more new practices each week than any one firm can call, and what you're paying for is being weeks ahead of everyone who isn't on the list. If you need a state and category reserved for your company alone, email us; that's a separate arrangement at a different price.</p></details>
     <details class="rv"><summary>Can I get more than one state, or just my local area?</summary><p>Both. The three-state plan covers three states, every category, for $199 a month, and the every-state plan covers the whole country for $499 a month. The local plan covers every new practice within 5 to 100 miles of your ZIP code, every category, for $49 a month. Every plan can be paid yearly for the price of ten months.</p></details>
+    <details class="rv"><summary>Can I get only certain specialties?</summary><p>Yes. Pick one on the free-trial form, and subscribers can tick as many as they like on their account page: ABA, psychiatry, counselors, primary care, physical therapy, dental specialists, home health, DME and more, 44 in all. Your lists carry only those from the next one on. Tick none to get every specialty in your territory.</p></details>
     <details class="rv"><summary>Can my team get the lists?</summary><p>Yes. Add teammates on your account page and each one gets a copy of every list email: 1 on the local plan, 2 on the single-category plan, 4 on the whole-state plan and 9 on the three-state plan. Each list email also carries a private link to your account page (or sign in from Account at the top of the page), where you can download past weeks, change your territory and manage teammates.</p></details>
     <details class="rv"><summary>What's Roster Watch?</summary><p>Give us the NPIs of the providers you already work for. Every week we check each one against the OIG exclusion list, Medicare opt-outs, NPI deactivations, Medicare revalidation due dates, Medicare enrollment and pending applications, and its registered address, and your weekly email tells you what changed, so a lapsed revalidation or an exclusion never surprises you. Up to 100, 500 or 2,000 providers depending on the plan.</p></details>
     <details class="rv"><summary>Does it work with my CRM?</summary><p>Every email has a file that imports straight into HubSpot or Salesforce. Or paste a webhook address (Zapier, Make or your own) on your account page, and every list is sent to it as JSON the moment it goes out.</p></details>
