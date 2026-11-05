@@ -207,7 +207,8 @@ def _col(header, *needles):
 
 LEAD_HEADER = ["registered", "category", "specialty", "name", "entity", "credential", "phone", "address", "city",
                "state", "zip", "npi", "taxonomy", "sole_proprietor", "authorized_official", "official_title",
-               "official_phone", "fax", "license", "license_state", "other_taxonomies", "registry_link"]
+               "official_phone", "fax", "license", "license_state", "other_taxonomies", "registry_link",
+               "subpart", "parent_org", "replaces_npi"]
 REGISTRY_URL = "https://npiregistry.cms.hhs.gov/provider-view/{npi}"
 
 # the NPPES columns every reader here uses (weekly and monthly files share the V2 layout)
@@ -225,7 +226,9 @@ COLUMNS = {
     "tax": "Healthcare Provider Taxonomy Code_1", "sole": "Is Sole Proprietor",
     "aof": "Authorized Official Last Name", "aofirst": "Authorized Official First Name",
     "aotitle": "Authorized Official Title or Position", "aophone": "Authorized Official Telephone Number",
-    "fax": "Provider Business Practice Location Address Fax Number", "react": "NPI Reactivation Date"}
+    "fax": "Provider Business Practice Location Address Fax Number", "react": "NPI Reactivation Date",
+    # Nov 2026: what kind of new it is (a location of a bigger organization; a replacement for an older NPI)
+    "subpart": "Is Organization Subpart", "parent": "Parent Organization LBN", "replaces": "Replacement NPI"}
 # up to 15 taxonomies per NPI, each with its primary switch and license; read only for the rows that need them
 GROUP = {f"{k}{i}": f"{name}_{i}" for i in range(1, 16) for k, name in (
     ("tax", "Healthcare Provider Taxonomy Code"), ("sw", "Healthcare Provider Primary Taxonomy Switch"),
@@ -317,7 +320,10 @@ def lead_from(v: dict, names: dict) -> dict | None:
             "official_title": v["aotitle"].title() if is_org else "",
             "official_phone": _phone(v["aophone"]) if is_org else "", "fax": _phone(v["fax"]), "license": lic,
             "license_state": licst, "other_taxonomies": "; ".join(taxonomy_name(t[0], names) for t in tx[1:]),
-            "registry_link": REGISTRY_URL.format(npi=v["npi"])}
+            "registry_link": REGISTRY_URL.format(npi=v["npi"]),
+            "subpart": "yes" if is_org and (v.get("subpart") or "").upper().startswith("Y") else "",
+            "parent_org": (v.get("parent") or "").title() if is_org else "",
+            "replaces_npi": v.get("replaces") or ""}
 
 
 def weekly_reader(zip_bytes: bytes):

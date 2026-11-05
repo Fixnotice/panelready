@@ -120,6 +120,47 @@ def label(s: int) -> str:
 
 # ---------------------------------------------------------------- opener + contact
 
+def new_kind(r: dict) -> str:
+    """What kind of new this is, in a few words (Nov 2026; competitors sell this as 'truly new vs restructures')."""
+    if r.get("replaces_npi"):
+        return "Re-registered (replaces an older NPI)"
+    if r.get("entity") != "practice/organization":
+        return "New solo provider"
+    if (r.get("subpart") or "").lower().startswith("y"):
+        parent = (r.get("parent_org") or "").strip()
+        return f"New location of {parent}" if parent and parent.lower() != (r.get("name") or "").lower() \
+            else "New location of an existing organization"
+    if r.get("phone_shared_kind") == "owner":
+        return "Owner opening several locations"
+    try:
+        n = int(r.get("providers_at_practice") or 0)
+    except ValueError:
+        n = 0
+    if n >= 3:
+        return f"Existing office ({n} providers already use this phone)"
+    return "Brand-new practice"
+
+
+def days_since(r: dict, today: Optional[dt.date] = None) -> str:
+    try:
+        d = dt.date.fromisoformat((r.get("registered") or "")[:10])
+    except ValueError:
+        return ""
+    return str(max(0, ((today or dt.date.today()) - d).days))
+
+
+def linkedin_link(r: dict) -> str:
+    """A LinkedIn people search for the owner (or the solo provider): one click for the customer, nothing scraped."""
+    import urllib.parse
+    who = contact_name(r).strip()
+    if not who:
+        return ""
+    company = re.sub(r"\b(LLC|PLLC|PC|PA|INC|CORP|CORPORATION|LTD|LP|LLP|P\.C\.|L\.L\.C\.)\b\.?", "",
+                     r.get("name", "") if r.get("entity") == "practice/organization" else "", flags=re.I)
+    words = " ".join(x for x in [who, company.strip(" ,."), "" if company.strip() else (r.get("city") or "")] if x)
+    return "https://www.linkedin.com/search/results/people/?keywords=" + urllib.parse.quote(re.sub(r"\s+", " ", words))
+
+
 def contact_name(lead: dict) -> str:
     return (lead.get("authorized_official") if lead.get("entity") == "practice/organization" else lead.get("name")) or ""
 
@@ -389,19 +430,60 @@ RECHECK_DAYS = 28    # a practice Google didn't know is looked up once more this
                      # Google listing and website within a month or two; at first 69% of lookups found nothing)
 
 
+def same_phone(lead: dict, phone: str) -> bool:
+    """Google's listing has the practice's own phone number (or its owner's, or its fax): the same practice, even when
+    Google knows it by a trade name ('Hands of Hope' for 'Hands Of Hope Bronx Pt Pc')."""
+    g = _phone_digits(phone)
+    return bool(g) and g in {_phone_digits(lead.get(k)) for k in ("phone", "official_phone", "fax")}
+
+
 def _found(lead: dict, hit: dict) -> bool:
-    return bool(hit.get("website")) or bool(hit.get("g_name") and same_business(lead, hit["g_name"], hit.get("g_address", "")))
+    return bool(hit.get("website")) or bool(hit.get("g_name") and (same_business(lead, hit["g_name"], hit.get("g_address", ""))
+                                                                    or same_phone(lead, hit.get("g_phone", ""))))
+
+
+def google_checked(hit: Optional[dict]) -> bool:
+    """A cache entry from a Google lookup (entries from the free website finder alone have no Google answer)."""
+    return bool(hit) and "g_name" in hit
 
 
 def due_for_recheck(lead: dict, hit: Optional[dict], today: str, days: int = RECHECK_DAYS) -> bool:
-    """True for a cached lookup that found nothing (not on Google, or a different business), made at least `days`
-    ago, and not looked up again since: Google may know the practice by now."""
+    """True for a practice with no website yet that Google never looked up (the month's searches ran out), or that
+    Google didn't know (not listed, or only a different business nearby) at least `days` ago and hasn't been looked
+    up again since: Google may know the practice by now."""
     if not hit or hit.get("rechecked") or _found(lead, hit):
         return False
+    if not google_checked(hit):
+        return True
     try:
         return (dt.date.fromisoformat(today) - dt.date.fromisoformat(hit.get("checked", "")[:10])).days >= days
     except ValueError:
         return False
+
+
+LOW_ODDS = re.compile(r"pharm|equipment|supplier|supplies|\bsupply\b|laborator|\blab\b|transport|ambulance", re.I)
+SOLO = re.compile(r"\b(LMHC|LCSW|LMFT|LPC|PSYD|PHD|NP|PMHNP|FNP|DPT|MD|DO|DDS|DMD)\b|LICENSED|NURSE PRACTITIONER", re.I)
+
+
+def google_odds(lead: dict) -> int:
+    """How likely Google already lists a brand-new practice, so the free monthly searches go where they pay off.
+    From 342 real lookups (Oct-Nov 2026): a location of a bigger organization 58%, most practices 20-24%, a solo
+    clinician's PLLC 16%, pharmacy / DME / lab 10%; a phone shared with other providers means an office that already
+    exists. Higher is better; the rest wait for the second look 4-9 weeks later, when far more are on Google."""
+    odds = 0
+    try:
+        if int(lead.get("providers_at_practice") or 0) >= 3:
+            odds += 2
+    except ValueError:
+        pass
+    if (lead.get("phone_shared") or "").startswith("Same owner"):
+        odds += 1
+    text = f"{lead.get('name', '')} {lead.get('specialty', '')}"
+    if lead.get("category") == "dme_transport" or LOW_ODDS.search(text):
+        odds -= 2
+    if SOLO.search(lead.get("name", "")):
+        odds -= 1
+    return odds
 
 
 def apply_hit(l: dict, hit: dict):
@@ -420,7 +502,8 @@ def fill_from_cache(rows: list[dict], cache: dict) -> int:
         hit = cache.get(l.get("npi", ""))
         if not hit or l.get("entity") != "practice/organization":
             continue
-        if not hit.get("website") and hit.get("g_name") and same_business(l, hit["g_name"], hit.get("g_address", "")):
+        if not hit.get("website") and hit.get("g_name") and (same_business(l, hit["g_name"], hit.get("g_address", ""))
+                                                             or same_phone(l, hit.get("g_phone", ""))):
             hit = dict(hit, website=hit.get("g_website", ""), rating=hit.get("g_rating", ""))
         if hit.get("website"):
             apply_hit(l, hit)
@@ -428,17 +511,82 @@ def fill_from_cache(rows: list[dict], cache: dict) -> int:
     return n
 
 
+def _scan_into(hit: dict, site: str, scan: Callable, deadline: float):
+    """Email, practice software and social links from the practice's own website, when there's time left."""
+    if not site or time.monotonic() > deadline - 20:
+        return
+    try:
+        res = scan(site)
+    except Exception:                                    # noqa: BLE001
+        res = ([], [])
+    emails, sig = res[0], (res[2] if len(res) > 2 else {})
+    hit["email"] = emails[0] if emails else hit.get("email", "")
+    hit["software"] = ", ".join(sig.get("software", []))
+    hit["social"] = " ".join(sig.get("social", [])[:3])
+
+
+def find_free(orgs: list[dict], cache: dict, free_find: Callable, scan: Callable, today: str, deadline: float,
+              st: dict, recheck: bool = False, workers: int = 8) -> int:
+    """The free website finder (pr/sitefind.py) for every organization with no website yet that it hasn't tried
+    (or, on a recheck, tried RECHECK_DAYS or more ago). Several practices at once; each answer is cached by NPI.
+    Returns how many websites it found."""
+    from concurrent.futures import ThreadPoolExecutor
+
+    def due(l):
+        hit = cache.get(l["npi"])
+        if hit and hit.get("website"):
+            return False
+        tried = (hit or {}).get("free_tried", "")
+        if not tried:
+            return True
+        if not recheck:
+            return False
+        try:
+            return (dt.date.fromisoformat(today) - dt.date.fromisoformat(tried[:10])).days >= RECHECK_DAYS
+        except ValueError:
+            return True
+
+    todo = [l for l in orgs if due(l)]
+
+    def one(l):
+        if time.monotonic() > deadline:
+            return l, "late"
+        try:
+            return l, free_find(l)
+        except Exception:                                # noqa: BLE001 - a guess that errors is just a miss
+            return l, None
+
+    found = tried = 0
+    with ThreadPoolExecutor(max(1, workers)) as ex:
+        for l, res in ex.map(one, todo):
+            if res == "late":
+                continue
+            tried += 1
+            hit = cache.get(l["npi"]) or {"v": CACHE_V, "website": "", "email": "", "rating": ""}
+            hit["free_tried"] = today
+            if res and res.get("website"):
+                hit["website"], hit["found_by"] = res["website"], f"site guess ({res.get('how', '')})"
+                _scan_into(hit, res["website"], scan, max(deadline, time.monotonic() + 60))
+                found += 1
+            cache[l["npi"]] = hit
+    st["free_found"] = st.get("free_found", 0) + found
+    st["free_tried"] = st.get("free_tried", 0) + tried
+    return found
+
+
 def enrich(leads: list[dict], cache: dict, lookup: Callable, scan: Callable, allowance: int, today: str,
            deadline: float, stats: Optional[dict] = None, may_look: Optional[Callable] = None,
-           recheck: bool = False) -> int:
-    """Fill website/email/google_rating for organizations, best-scored first, from the cache or with at most
-    `allowance` new Google lookups. Every answer (found or not) is cached by NPI so nobody is looked up twice;
-    a lookup that errors isn't cached (tried again next run). `stats` gets found / not_on_google / different /
-    errors counts, a few mismatch examples and the first error. may_look(lead) -> False means cache only for that
-    lead, no new lookup (trial lists look up just their TOP 25). recheck=True: a lookup that found nothing
-    RECHECK_DAYS or more ago is made once more (deliver.py --recheck). Returns the number of Google lookups used."""
+           recheck: bool = False, free_find: Optional[Callable] = None, free_deadline: Optional[float] = None) -> int:
+    """Fill website/email/google_rating for organizations: first from the cache, then the free website finder
+    (free_find, every organization, no limit), then at most `allowance` Google lookups for the ones still without a
+    website, most likely to be on Google first (google_odds), then best score. Every answer (found or not) is
+    cached by NPI so nobody is looked up twice; a lookup that errors isn't cached (tried again next run). A Google
+    result counts when it's plainly the same practice by name and place, or has the practice's phone number.
+    `stats` gets found / not_on_google / different / errors / free_found counts, a few mismatch examples and the first
+    error. may_look(lead) -> False means no Google lookup for that lead. recheck=True: a practice Google didn't know
+    RECHECK_DAYS or more ago is looked up once more (deliver.py --recheck). Returns the number of Google lookups used."""
     st = stats if stats is not None else {}
-    for k in ("found", "not_on_google", "different", "errors", "rematched"):
+    for k in ("found", "not_on_google", "different", "errors", "rematched", "free_found", "free_tried"):
         st.setdefault(k, 0)
     st.setdefault("examples", [])
     st.setdefault("error", "")
@@ -447,47 +595,57 @@ def enrich(leads: list[dict], cache: dict, lookup: Callable, scan: Callable, all
     orgs.sort(key=lambda l: -int(l.get("score") or 0))
     for l in orgs:
         hit = cache.get(l["npi"])
-        again = recheck and due_for_recheck(l, hit, today)
         if hit is not None and hit.get("v") != CACHE_V and not hit.get("website"):
-            hit = None                                   # from before Google's answer was kept: look again once
-        if hit is None or again:
-            if used >= allowance or time.monotonic() > deadline or st["errors"] >= 3 or (may_look and not may_look(l)):
-                continue
-            used += 1
-            q = f"{l.get('name')}, {l.get('city')}, {l.get('state')}"
-            try:
-                biz = lookup(q)
-            except Exception as e:                       # noqa: BLE001
-                st["errors"] += 1
-                st["error"] = st["error"] or str(e)[:200]
-                continue
-            hit = {"v": CACHE_V, "checked": today, "website": "", "email": "", "rating": "", **({"rechecked": today} if again else {}),
-                   "g_name": biz.name if biz else "", "g_address": biz.address if biz else "",
-                   "g_website": (biz.website or "") if biz else "",
-                   "g_rating": f"{biz.rating} ({biz.reviews} reviews)" if biz and biz.rating else ""}
-            if biz is None:
-                st["not_on_google"] += 1
-            elif same_business(l, biz.name, biz.address):
-                st["found"] += 1
-                hit["website"], hit["rating"] = hit["g_website"], hit["g_rating"]
-                if biz.website and time.monotonic() < deadline - 20:
-                    try:
-                        res = scan(biz.website)
-                    except Exception:                    # noqa: BLE001
-                        res = ([], [])
-                    emails, sig = res[0], (res[2] if len(res) > 2 else {})
-                    hit["email"] = emails[0] if emails else ""
-                    hit["software"] = ", ".join(sig.get("software", []))
-                    hit["social"] = " ".join(sig.get("social", [])[:3])
-            else:
-                st["different"] += 1
-                if len(st["examples"]) < 5:
-                    st["examples"].append(f"{l.get('name')} ({l.get('city')}) -> Google: {biz.name} ({biz.address})")
-            cache[l["npi"]] = hit
-        elif not hit.get("website") and hit.get("g_name") and same_business(l, hit["g_name"], hit.get("g_address", "")):
+            cache.pop(l["npi"], None)                    # from before Google's answer was kept: look again once
+        elif hit and not hit.get("website") and google_checked(hit) and _found(l, hit):
             hit["website"], hit["rating"] = hit.get("g_website", ""), hit.get("g_rating", "")
-            st["rematched"] += 1
-        apply_hit(l, hit)
+            st["rematched"] += 1                         # a smarter match on an answer we already have
+    if free_find is not None:
+        find_free(orgs, cache, free_find, scan, today, free_deadline or deadline, st, recheck)
+    want = []
+    for l in orgs:
+        hit = cache.get(l["npi"])
+        if hit and hit.get("website"):
+            continue
+        again = recheck and due_for_recheck(l, hit, today)
+        if google_checked(hit) and not again:
+            continue
+        if may_look and not may_look(l):
+            continue
+        want.append((l, again))
+    want.sort(key=lambda x: (-google_odds(x[0]), -int(x[0].get("score") or 0)))
+    for l, again in want:
+        if used >= allowance or time.monotonic() > deadline or st["errors"] >= 3:
+            break
+        used += 1
+        q = f"{l.get('name')}, {l.get('city')}, {l.get('state')}"
+        try:
+            biz = lookup(q)
+        except Exception as e:                           # noqa: BLE001
+            st["errors"] += 1
+            st["error"] = st["error"] or str(e)[:200]
+            continue
+        old = cache.get(l["npi"]) or {}
+        hit = {**old, "v": CACHE_V, "checked": today, "website": "", "email": "", "rating": "",
+               **({"rechecked": today} if again else {}),
+               "g_name": biz.name if biz else "", "g_address": biz.address if biz else "",
+               "g_website": (biz.website or "") if biz else "", "g_phone": (getattr(biz, "phone", "") or "") if biz else "",
+               "g_rating": f"{biz.rating} ({biz.reviews} reviews)" if biz and biz.rating else ""}
+        if biz is None:
+            st["not_on_google"] += 1
+        elif same_business(l, biz.name, biz.address) or same_phone(l, getattr(biz, "phone", "")):
+            st["found"] += 1
+            hit["website"], hit["rating"], hit["found_by"] = hit["g_website"], hit["g_rating"], "Google"
+            _scan_into(hit, biz.website, scan, deadline)
+        else:
+            st["different"] += 1
+            if len(st["examples"]) < 5:
+                st["examples"].append(f"{l.get('name')} ({l.get('city')}) -> Google: {biz.name} ({biz.address})")
+        cache[l["npi"]] = hit
+    for l in orgs:
+        hit = cache.get(l["npi"])
+        if hit:
+            apply_hit(l, hit)
     return used
 
 
@@ -565,6 +723,9 @@ def upgrade(rows: list[dict], week_end: Optional[dt.date], leie: dict, leie_as_o
         s, why = score(r, week_end)
         r["score"], r["why"] = s, f"{label(s)}: {why}"
         contact_fields(r)
+        r["new_kind"] = new_kind(r)
+        r["days_since_registered"] = days_since(r)
+        r["linkedin_search"] = linkedin_link(r)
         r["opener"] = opener(r)
         r["oig_check"] = oig_note(r, leie, leie_as_of)
         for k in ("website", "email", "google_rating", "providers_at_practice", "medicare_pending", "practice_software",
@@ -579,8 +740,9 @@ def upgrade(rows: list[dict], week_end: Optional[dt.date], leie: dict, leie_as_o
 
 def write(path: Path, rows: list[dict], base_header: list[str]):
     """Upgraded columns first (what a buyer reads), then the registry fields."""
-    first = ["priority", "score", "name", "contact_name", "contact_title", "contact_phone", "phone", "phone_shared",
-             "email", "website", "opener", "why", "specialty", "city", "state", "registered"]
+    first = ["priority", "score", "name", "new_kind", "contact_name", "contact_title", "contact_phone", "linkedin_search",
+             "phone", "phone_shared", "email", "email_type", "email_check", "website", "opener", "why", "specialty",
+             "specialty_group", "city", "state", "registered", "days_since_registered"]
     last = ["practice_software", "social", "providers_at_practice", "medicare_pending", "medicare_optout", "google_rating",
             "oig_check"]
     header = first + [h for h in base_header if h not in first + last + ["official_title", "official_phone"]] + last

@@ -173,6 +173,12 @@ COLS = {
     "contact_phone": ("Direct phone", 14.5, "phone"),
     "phone": ("Practice phone", 14.5, "phone"),
     "phone_shared": ("Phone note", 40, "text"),
+    "new_kind": ("What kind of new", 30, "text"),
+    "linkedin_search": ("Owner on LinkedIn", 15, "linkedin"),
+    "email_type": ("Email type", 12, "text"),
+    "email_check": ("Email check", 17, "text"),
+    "specialty_group": ("Specialty group", 22, "text"),
+    "days_since_registered": ("Days since registered", 10, "int"),
     "email": ("Email", 26, "email"),
     "website": ("Website", 24, "url"),
     "opener": ("Suggested opener", 60, "text"),
@@ -213,8 +219,9 @@ COLS = {
 SKIP = {"registry_link", "authorized_official", "official_title", "official_phone", "sole_proprietor"}
 
 FRONT = {   # what a caller reads first, per list kind; everything else follows in COLS order
-    "leads": ["priority", "score", "name", "contact_name", "contact_title", "contact_phone", "phone", "phone_shared",
-              "email", "website", "opener", "specialty", "category", "city", "state", "zip", "registered", "why"],
+    "leads": ["priority", "score", "name", "new_kind", "contact_name", "contact_title", "contact_phone", "linkedin_search",
+              "phone", "phone_shared", "email", "email_type", "email_check", "website", "opener", "specialty",
+              "specialty_group", "category", "city", "state", "zip", "registered", "days_since_registered", "why"],
     "moved": ["priority", "score", "name", "moved_on", "moved_from", "address", "city", "state", "zip", "contact_name",
               "contact_title", "contact_phone", "phone", "email", "website", "opener", "specialty", "category", "why"],
     "changes": ["priority", "score", "name", "change_type", "change_detail", "changed_on", "contact_name",
@@ -228,8 +235,8 @@ FRONT = {   # what a caller reads first, per list kind; everything else follows 
               "why"],
 }
 FRONT["history"] = FRONT["leads"]
-TOP_COLS = ["score", "name", "contact_name", "contact_title", "contact_phone", "phone", "phone_shared", "email", "website", "opener",
-            "specialty", "city", "state", "registered", "npi"]
+TOP_COLS = ["score", "name", "new_kind", "contact_name", "contact_title", "contact_phone", "linkedin_search", "phone",
+            "phone_shared", "email", "email_type", "website", "opener", "specialty", "city", "state", "registered", "npi"]
 
 KINDS = {   # file prefix -> (tab name, title, what it is)
     "leads": ("New practices", "New practices registered this week",
@@ -399,6 +406,8 @@ class Book:
         elif kind == "npi":
             reg = row.get("registry_link") or f"https://npiregistry.cms.hhs.gov/provider-view/{v}"
             self.url(ws, r, c, reg, v, link)
+        elif kind == "linkedin":
+            self.url(ws, r, c, v, "Search LinkedIn", link)
         elif kind == "social":
             links = social_links(v)
             if links:
@@ -525,8 +534,18 @@ COLUMN_GUIDE = [
      "opening several locations, so the number is theirs. \"Different owners\" means it's most likely the consultant, "
      "credentialing firm or agency that filed the registrations, not the practice: ask for the owner by name, or try "
      "the Direct phone first. Those practices score a little lower."),
-    ("Email, Website, Google rating", "Found for organizations on Google and on the practice's own website (on free "
-     "lists, for the top 25). Blank means none was found yet."),
+    ("Email, Website, Google rating", "Found for organizations on the practice's own website and on Google. Blank "
+     "means none was found yet (most brand-new practices don't have a website in their first weeks)."),
+    ("Email type, Email check", "\"Person\" is someone's own address; \"Shared inbox\" is info@, office@ and the like "
+     "(fine, but a person's address gets answered more). The check says whether the email's domain takes mail today."),
+    ("What kind of new", "Brand-new practice; a new location of an existing organization (it says which one when the "
+     "registry does); an owner opening several locations at once; an existing office (other providers already use the "
+     "phone); or re-registered. Brand-new practices need everything set up; new locations usually need payer address "
+     "and group enrollment updates."),
+    ("Days since registered", "How many days ago the NPI was issued. The first 30-60 days are when a new practice picks "
+     "who does its credentialing."),
+    ("Owner on LinkedIn", "Opens a LinkedIn search for the owner (or the solo provider) by name and practice."),
+    ("Specialty group", "The specialty group you picked on your account page (all of them when you didn't narrow it)."),
     ("Suggested opener", "A ready-to-say first line built only from facts in the public registration."),
     ("Practice software", "The EHR, practice-management, booking or patient-portal system the practice's website "
      "links to (SimplePractice, athenahealth, Tebra...). \"Insurance platform\" (Headway, Alma, Rula, Grow) means "
@@ -720,6 +739,9 @@ def territory_words(states: list[str], cats: list[str], area: str = "") -> str:
     if area:
         z, _, miles = area.partition(":")
         return f"Within {miles or 25} miles of {z}"
+    if len(set(states)) >= 50:
+        where = "Every state"
+        return where if not cats or "all" in cats else f"{where} · " + ", ".join(NICE.get(c, c) for c in cats)
     names = [STATES.get(s, s) for s in states]
     where = names[0] if len(names) == 1 else ", ".join(names[:-1]) + " and " + names[-1] if names else "Your territory"
     if not cats or "all" in cats:
@@ -731,6 +753,8 @@ def file_tag(states: list[str], area: str = "") -> str:
     if area:
         z, _, miles = area.partition(":")
         return f"{z}_{miles or 25}mi"
+    if len(set(states)) >= 50:
+        return "US"
     return "-".join(states) or "list"
 
 

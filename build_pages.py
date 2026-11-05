@@ -40,7 +40,7 @@ PAYPAL_CLIENT_ID = "BAAQ4G4Hizw2wHo9EZQsTxcW_oBtYKOFEIoI41YQZJvC8ufp2vM9Z_lIU4AS
 PAYPAL_ME = ""                                       # optional plan B: a PayPal.me handle (e.g. "averydataco"); shown as a second way to pay $39
 WEEK_PRICE = 39                                      # one-time: this week's list for one state, every category
 SMALL_WEEK, SMALL_WEEKS = 25, 4                      # a state under 25 new practices this week sells its last 4 weeks for the $39
-LOCAL_PRICE, CAT_PRICE, ALL_PRICE, MULTI_PRICE = 49, 89, 149, 199   # monthly plans (yearly = 10 months); see pr/plans.py
+LOCAL_PRICE, CAT_PRICE, ALL_PRICE, MULTI_PRICE, NATIONAL_PRICE = 49, 89, 149, 199, 499   # monthly plans (yearly = 10 months); see pr/plans.py
 SAMPLE_STATES = ["VT", "DE", "RI", "AK", "WY", "ND", "SD", "MT", "ME", "NH"]   # the free sample: the first of these with 8-25 rows this week
 BRAND, MAIL = "PanelReady", "matt@panelready.co"
 WEEKS = HERE / "data" / "weeks.json"
@@ -519,7 +519,7 @@ def offer(state_name: str, st: str, cat: str | None, root: str, latest: str = ""
     week = week_box(state_name, st, latest, total, avg) if st and latest and (total or avg) else ""
     return (f'<section class="offer"><h2>Get every new {esc(what)} {where}, the week they register.</h2>'
             f'<p>This page shows a sample. Subscribers get the complete {esc(state_name) if st else "state"} list as a spreadsheet, {sub}, sorted best-first: the top 25 marked, a score and a ready-to-say opener for every practice, the owner\'s direct line where the registry lists it, phone, address and NPI, websites, emails and practice software for organizations where we can find them, an OIG exclusion check, and the practices that moved or added a specialty that week. Once a month: practices due for Medicare revalidation and practices that look stuck in credentialing. Your first paid list includes the last 90 days, teammates get copies, Roster Watch checks your own clients every week, and a webhook sends each list to your CRM. Backed by a 90-day guarantee. '
-            f'{plan} per state through PayPal (or ${LOCAL_PRICE}/month for just your local area, ${MULTI_PRICE}/month for three states, 2 months free yearly; the charge shows as {COMPANY}, {BRAND}\'s parent company); cancel any time. Try two lists free first, no card needed: the first arrives within minutes.</p>'
+            f'{plan} per state through PayPal (or ${LOCAL_PRICE}/month for just your local area, ${MULTI_PRICE}/month for three states, ${NATIONAL_PRICE}/month for every state, 2 months free yearly; the charge shows as {COMPANY}, {BRAND}\'s parent company); cancel any time. Try two lists free first, no card needed: the first arrives within minutes.</p>'
             f'<div class="btns"><a class="cta" href="{root}{q}#free">Get two free {esc(state_name) if st else ""} lists</a><a class="cta ghost" href="{root}{q}#pricing">Subscribe · {plan}</a></div>{week}</section>')
 
 
@@ -689,7 +689,7 @@ def state_page(data: dict, st: str) -> str:
 {offer(name, st, None, root, latest, total, avg4(series))}
 
 <section><h2>{esc(name)} by category</h2>
-<p class="lead" style="font-size:16px">One state, one category is ${CAT_PRICE}/month; every category is ${ALL_PRICE}/month; three states are ${MULTI_PRICE}/month; just your local area (a ZIP code and a radius) is ${LOCAL_PRICE}/month. {('Weekly pages for: ' + ', '.join(f'<a href="{cat_pages[c]}">{esc(CAT_TITLE[c])}</a>' for c in CATS if c in cat_pages) + '.') if cat_pages else 'Category pages appear once a category has ' + str(CAT_PAGE_MIN) + '+ new practices in a week.'}</p>
+<p class="lead" style="font-size:16px">One state, one category is ${CAT_PRICE}/month; every category is ${ALL_PRICE}/month; three states are ${MULTI_PRICE}/month; every state is ${NATIONAL_PRICE}/month; just your local area (a ZIP code and a radius) is ${LOCAL_PRICE}/month. {('Weekly pages for: ' + ', '.join(f'<a href="{cat_pages[c]}">{esc(CAT_TITLE[c])}</a>' for c in CATS if c in cat_pages) + '.') if cat_pages else 'Category pages appear once a category has ' + str(CAT_PAGE_MIN) + '+ new practices in a week.'}</p>
 <div class="tscroll"><table><thead><tr><th>Category</th><th>Who is in it</th><th class="r">This week</th><th class="r">4-wk avg</th></tr></thead><tbody>
 {''.join(cat_row(data, st, c, v, cat_pages) for c in CATS)}
 </tbody></table></div></section>
@@ -941,6 +941,10 @@ ACCOUNT_CSS = """
 .acct textarea{min-height:110px;font:13px ui-monospace,Menlo,Consolas,monospace}
 .acct input:focus,.acct select:focus,.acct textarea:focus{outline:none;border-color:var(--teal);box-shadow:0 0 0 4px rgba(14,124,123,.14)}
 .acct button.cta{border:0;cursor:pointer;margin-top:12px}
+.acct .specs fieldset{border:1px solid var(--line);border-radius:12px;padding:8px 14px 10px;margin:0 0 10px}
+.acct .specs legend{font-weight:700;font-size:13.5px;padding:0 6px}
+.acct .specs label.chk{display:inline-flex;align-items:center;gap:6px;margin:4px 16px 4px 0;font-weight:500;font-size:14.5px}
+.acct .specs input{width:auto;margin:0}
 .acct .row3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.acct .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 @media(max-width:640px){.acct .row3,.acct .row2{grid-template-columns:1fr}}
 .acct .msg{min-height:1.2em;font-size:14px;margin-top:8px}.acct .msg.ok{color:var(--green)}.acct .msg.err{color:#be123c}
@@ -1012,8 +1016,14 @@ ACCOUNT_BODY = """
       <div><label for="radius">Radius (miles)</label><input id="radius" type="number" min="5" max="100" value="25"></div></div>
     <div id="stateBox" class="hide"><div class="row3" id="stateSels"></div>
       <div id="catBox"><label for="cat">Category</label><div class="sel"><select id="cat"></select></div></div></div>
-    <button class="cta" type="submit">Save territory</button><div class="msg" id="terrMsg"></div>
+    <button class="cta" type="submit" id="terrBtn">Save territory</button><div class="msg" id="terrMsg"></div>
   </form>
+</div>
+
+<div class="card" id="specCard"><h2>Specialties</h2>
+  <p class="help" id="specHelp">Only sell to certain kinds of practices (ABA, psychiatry, PT, home health...)? Tick them and your lists carry just those, starting with the next one. Tick none to get everything in your territory.</p>
+  <form id="specForm" novalidate><div id="specBoxes" class="specs"></div>
+  <button class="cta" type="submit">Save specialties</button><div class="msg" id="specMsg"></div></form>
 </div>
 
 <div class="card" id="teamCard"><h2>Teammates</h2>
@@ -1127,7 +1137,8 @@ ACCOUNT_BODY = """
       var p = a.plans || {};
       $('upsellText').textContent = (a.status === 'free' ? 'You\\'re on the free weekly digest (the best new practices by name). ' : 'You\\'re on the free trial. ')
         + 'Plans: $' + (p.local||{}).price + '/mo for a local area, $' + (p.cat||{}).price + ' for one state and category, $' + (p.all||{}).price
-        + ' for every category in a state, $' + (p.multi||{}).price + ' for three states. Yearly billing gets 2 months free.';
+        + ' for every category in a state, $' + (p.multi||{}).price + ' for three states, $' + (p.national||{}).price
+        + ' for every state. Yearly billing gets 2 months free.';
     }
     // downloads
     var rows = (a.deliveries || []).map(function(d){
@@ -1142,8 +1153,10 @@ ACCOUNT_BODY = """
     $('dlRows').innerHTML = rows.join('') || '<tr><td colspan="3" class="muted">Your first list appears here after it\\'s emailed.</td></tr>';
     // territory
     var local = a.plan === 'local' || !!a.area;
-    show('areaBox', local); show('stateBox', !local);
-    if (local) {
+    show('areaBox', local && !a.national); show('stateBox', !local && !a.national); show('terrBtn', !a.national);
+    if (a.national) {
+      $('terrHelp').textContent = 'Your plan covers every state and every category. To narrow it, pick specialties below.';
+    } else if (local) {
       var parts = (a.area || '').split(':');
       $('zip').value = parts[0] || ''; $('radius').value = parts[1] || 25;
       $('terrHelp').textContent = 'Every new practice within your radius of one ZIP code, every category (5 to 100 miles).';
@@ -1162,6 +1175,18 @@ ACCOUNT_BODY = """
         ? 'Your plan covers ' + n + ' state' + (n > 1 ? 's' : '') + (a.one_category ? ' and one category.' : ', every category.')
         : 'The free plan covers one state.';
     }
+    // specialties (inside the plan's category, if it has one)
+    var cats = (a.categories || []).filter(function(c){ return c && c !== 'all'; });
+    var groups = (a.specialties_all || []).filter(function(g){ return !cats.length || cats.indexOf(g.category) >= 0; });
+    var byCat = {}, order = [];
+    groups.forEach(function(g){ if (!byCat[g.category]) { byCat[g.category] = []; order.push(g.category); } byCat[g.category].push(g); });
+    var picked = a.specialties || [];
+    $('specBoxes').innerHTML = order.map(function(c){
+      return '<fieldset><legend>' + esc(NICE[c] || c) + '</legend>' + byCat[c].map(function(g){
+        return '<label class="chk"><input type="checkbox" value="' + esc(g.key) + '"' + (picked.indexOf(g.key) >= 0 ? ' checked' : '') + '> ' + esc(g.label) + '</label>';
+      }).join('') + '</fieldset>';
+    }).join('');
+    show('specCard', groups.length > 0);
     // team
     var room = Math.max(0, (a.seats || 1) - 1);
     $('team').value = (a.team || []).join('\\n');
@@ -1197,6 +1222,11 @@ ACCOUNT_BODY = """
     if (!states.length) { msg('terrMsg', 'Please pick a state.', false); return; }
     var cat = $('catBox').classList.contains('hide') ? 'all' : $('cat').value;
     post('/change?t=' + encodeURIComponent(t), { change: { states: states, categories: [cat] } }, 'terrMsg', SAVED);
+  });
+  $('specForm').addEventListener('submit', function(e){
+    e.preventDefault();
+    var keys = [].slice.call(document.querySelectorAll('#specBoxes input:checked')).map(function(x){ return x.value; });
+    post('/change?t=' + encodeURIComponent(t), { change: { specialties: keys } }, 'specMsg', SAVED);
   });
   $('teamForm').addEventListener('submit', function(e){
     e.preventDefault();

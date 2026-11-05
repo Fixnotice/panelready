@@ -185,6 +185,9 @@
   /* pricing */
   .plans{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
   @media (max-width:1180px){.plans{grid-template-columns:repeat(2,1fr)}}
+  .plan.wide{grid-column:1/-1;display:grid;grid-template-columns:1fr 1.5fr 1fr;gap:24px;align-items:center}
+  .plan.wide ul{margin:0}
+  @media (max-width:900px){.plan.wide{display:block}}
   .bill{display:inline-flex;background:var(--card);border:1px solid var(--line2);border-radius:999px;padding:4px;margin:0 0 26px;gap:4px}
   .bill button{border:0;background:transparent;color:var(--muted);font:600 14px Inter,sans-serif;padding:9px 16px;border-radius:999px;cursor:pointer}
   .bill button.on{background:var(--ink);color:#fff}
@@ -445,6 +448,9 @@ The TOP 25 are marked; the outreach kit (call script + email template) is attach
         <div><label for="suState">State</label><div class="sel"><select id="suState" name="state"></select></div></div>
         <div><label for="suCat">Category</label><div class="sel"><select id="suCat" name="category"></select></div></div>
       </div>
+      <div class="f2">
+        <div><label for="suSpec">Only one specialty? <span style="font-weight:400;color:var(--muted)">(optional)</span></label><div class="sel"><select id="suSpec" name="specialties"><option value="">Every specialty</option></select></div></div>
+      </div>
       <p class="orzip">Only want practices near you? <a id="suZipT">Use a ZIP code and a radius instead of the whole state</a>.</p>
       <div class="f2" id="suZipBox" style="display:none">
         <div><label for="suZip">ZIP code</label><input type="text" id="suZip" name="zip" inputmode="numeric" maxlength="5" placeholder="12207"></div>
@@ -504,9 +510,18 @@ The TOP 25 are marked; the outreach kit (call script + email template) is attach
         <div class="price" data-m="199" data-y="1,990">$199<small>/month</small></div>
         <div class="per" data-y="$1,990 a year: 2 months free"></div>
         <div class="free"><a href="#free" style="color:inherit;text-decoration:none">Two free lists first? Start above ↑</a></div>
-        <ul><li>Three states, all six categories, every week</li><li>Everything in the whole-state plan</li><li>You + 9 teammates</li><li>Roster Watch for 2,000 providers</li><li>More than three states? Email us</li></ul>
+        <ul><li>Three states, all six categories, every week</li><li>Everything in the whole-state plan</li><li>You + 9 teammates</li><li>Roster Watch for 2,000 providers</li><li>More than three? Every state is below</li></ul>
         <div class="paybox" id="paypal-multi"></div>
         <p class="fallback" id="fb-multi"></p>
+      </div>
+      <div class="plan wide rv">
+        <div><div class="name">Every state</div>
+          <div class="price" data-m="499" data-y="4,990">$499<small>/month</small></div>
+          <div class="per" data-y="$4,990 a year: 2 months free"></div>
+          <div class="free"><a href="#free" style="color:inherit;text-decoration:none">Two free lists first? Start above ↑</a></div></div>
+        <ul><li>Every new practice in every state, all six categories, every week, in one spreadsheet</li><li>For billing and credentialing firms that work nationwide</li><li>Narrow it to the specialties you sell to (ABA, psychiatry, PT, home health...)</li><li>Everything in the three-state plan; you + 14 teammates; Roster Watch for 5,000 providers</li></ul>
+        <div><div class="paybox" id="paypal-national"></div>
+          <p class="fallback" id="fb-national"></p></div>
       </div>
     </div>
     <p class="paynote rv"><b>Not ready for monthly?</b> Buy just this week's list for one state, every category, for $39 one time: open <a href="/states/">your state's page</a> and use the "Just this week" button. It's emailed to your PayPal address within minutes.</p>
@@ -535,7 +550,7 @@ The TOP 25 are marked; the outreach kit (call script + email template) is attach
     <details class="rv"><summary>What are the revalidation and practice-moved lists?</summary><p>Every Medicare provider has to revalidate its enrollment every few years or Medicare can deactivate its billing, and CMS publishes the due dates. Once a month you get the practices in your state that are due in the next six months or already overdue, soonest first, with phone and owner. Every week you also get the practices whose registered location changed: each one has to update its address with Medicare and every insurance plan. Both are established practices that already bill, not start-ups.</p></details>
     <details class="rv"><summary>How does the guarantee work?</summary><p>If you don't sign at least one new client from your PanelReady lists during your first 90 days as a paying subscriber, reply to any of our emails and tell us. Your next 3 months are free: we pause your PayPal subscription for three months. One per company; no forms, no proof required.</p></details>
     <details class="rv"><summary>Is my list exclusive to me?</summary><p>No. PanelReady is a data subscription, not an exclusive-lead service: the Texas behavioral-health list is the same list for every company that subscribes to Texas behavioral health, and a new one arrives every week. In practice a state produces far more new practices each week than any one firm can call, and what you're paying for is being weeks ahead of everyone who isn't on the list. If you need a state and category reserved for your company alone, email us; that's a separate arrangement at a different price.</p></details>
-    <details class="rv"><summary>Can I get more than one state, or just my local area?</summary><p>Both. The three-state plan covers three states, every category, for $199 a month (more than three: email us). The local plan covers every new practice within 5 to 100 miles of your ZIP code, every category, for $49 a month. Every plan can be paid yearly for the price of ten months.</p></details>
+    <details class="rv"><summary>Can I get more than one state, or just my local area?</summary><p>Both. The three-state plan covers three states, every category, for $199 a month, and the every-state plan covers the whole country for $499 a month. The local plan covers every new practice within 5 to 100 miles of your ZIP code, every category, for $49 a month. Every plan can be paid yearly for the price of ten months.</p></details>
     <details class="rv"><summary>Can my team get the lists?</summary><p>Yes. Add teammates on your account page and each one gets a copy of every list email: 1 on the local plan, 2 on the single-category plan, 4 on the whole-state plan and 9 on the three-state plan. Each list email also carries a private link to your account page (or sign in from Account at the top of the page), where you can download past weeks, change your territory and manage teammates.</p></details>
     <details class="rv"><summary>What's Roster Watch?</summary><p>Give us the NPIs of the providers you already work for. Every week we check each one against the OIG exclusion list, Medicare opt-outs, NPI deactivations, Medicare revalidation due dates, Medicare enrollment and pending applications, and its registered address, and your weekly email tells you what changed, so a lapsed revalidation or an exclusion never surprises you. Up to 100, 500 or 2,000 providers depending on the plan.</p></details>
     <details class="rv"><summary>Does it work with my CRM?</summary><p>Every email has a file that imports straight into HubSpot or Salesforce. Or paste a webhook address (Zapier, Make or your own) on your account page, and every list is sent to it as JSON the moment it goes out.</p></details>
@@ -694,6 +709,11 @@ The TOP 25 are marked; the outreach kit (call script + email template) is attach
   }
   var pre = (qs.state || '').toUpperCase(), preCat = (qs.cat || qs.category || '').toLowerCase();
   fillSelects($('suState'), $('suCat'), pre || fromQuery, preCat);
+  var SPECS = [["aba","ABA / behavior analysis","behavioral"],["substance_use","Substance use treatment","behavioral"],["psychiatry","Psychiatry & psychiatric NPs","behavioral"],["counseling","Counselors (LPC / LMHC)","behavioral"],["social_work","Clinical social workers","behavioral"],["psychology","Psychologists","behavioral"],["mft","Marriage & family therapists","behavioral"],["mh_clinics","Mental health clinics & agencies","behavioral"],["urgent_care","Urgent care","medical"],["primary_care","Primary care (family, internal, NPs, PAs)","medical"],["pediatrics","Pediatrics","medical"],["womens_health","OB/GYN & women's health","medical"],["cardiology","Cardiology","medical"],["dermatology","Dermatology","medical"],["orthopedics","Orthopedics & sports medicine","medical"],["neurology","Neurology","medical"],["surgery","Surgery & surgery centers","medical"],["anesthesia","Anesthesia & pain","medical"],["imaging","Radiology & imaging","medical"],["labs","Labs","medical"],["dialysis","Dialysis","medical"],["ophthalmology","Ophthalmology","medical"],["schools","School-based services (LEAs)","medical"],["physical_therapy","Physical therapy","therapy"],["occupational_therapy","Occupational therapy","therapy"],["speech_hearing","Speech & hearing","therapy"],["rehab_clinics","Rehab clinics & practitioners","therapy"],["chiropractic","Chiropractic","therapy"],["podiatry","Podiatry","therapy"],["optometry","Optometry","therapy"],["dietitians","Dietitians & nutrition","therapy"],["acupuncture_massage","Acupuncture & massage","therapy"],["general_dentistry","General dentistry","dental"],["dental_specialists","Dental specialists (ortho, pediatric, oral surgery...)","dental"],["dental_hygiene","Dental hygienists","dental"],["home_health","Home health agencies","home_senior"],["hospice","Hospice","home_senior"],["home_care","Home care & aides","home_senior"],["senior_living","Nursing & assisted living facilities","home_senior"],["doulas","Doulas","home_senior"],["case_management","Case management & care coordination","home_senior"],["dme","DME & medical supplies","dme_transport"],["pharmacy","Pharmacies","dme_transport"],["transport","Medical transport","dme_transport"]];
+  function fillSpecs(){ var c = $('suCat').value, sel = $('suSpec'), keep = sel.value;
+    sel.innerHTML = '<option value="">Every specialty</option>' + SPECS.filter(function(g){ return c === 'all' || g[2] === c; }).map(function(g){ return '<option value="' + g[0] + '">' + g[1] + '</option>'; }).join('');
+    sel.value = keep; if (sel.value !== keep) sel.value = ''; }
+  $('suCat').addEventListener('change', fillSpecs); fillSpecs();
   fillSelects($('pdState'), $('pdCat'), pre || fromQuery, preCat);
   ['pdState2', 'pdState3'].forEach(function(id){ var s = $(id), o = document.createElement('option'); o.value = ''; o.textContent = '(none)'; s.appendChild(o);
     Object.keys(NAMES).sort(function(a,b){ return NAMES[a] < NAMES[b] ? -1 : 1; }).forEach(function(k){ var o = document.createElement('option'); o.value = k; o.textContent = NAMES[k]; s.appendChild(o); }); });
@@ -725,20 +745,20 @@ The TOP 25 are marked; the outreach kit (call script + email template) is attach
   $('signup').onsubmit = function(e){ e.preventDefault(); post(this, $('suMsg'), $('suBtn')); };
   $('paidForm').onsubmit = function(e){ e.preventDefault();
     var states = [$('pdState').value, $('pdState2').value, $('pdState3').value].filter(function(s, i, a){ return s && a.indexOf(s) === i; });
-    var extra = { sub: $('pdSub').value, state: bought === 'multi' ? states.join(',') : $('pdState').value };
+    var extra = { sub: $('pdSub').value, state: bought === 'multi' ? states.join(',') : (bought === 'national' ? 'NY' : $('pdState').value) };
     if (bought !== 'local') extra.zip = '';
-    if (bought === 'all' || bought === 'multi') extra.category = 'all';
+    if (bought === 'all' || bought === 'multi' || bought === 'national') extra.category = 'all';   // national: every state, set by the PC
     post(this, $('paidMsg'), this.querySelector('button'), extra); };
   if (qs.state && $('free')) setTimeout(function(){ $('free').scrollIntoView({behavior: reduce ? 'auto' : 'smooth'}); }, 300);
 
   // ---- PayPal
   // PayPal plan ids, monthly (m) and yearly (y). A missing id shows the email fallback instead of a button.
-  var PLANS = {"local": {"m": "P-167553502R680420TNLLBXAQ", "y": "P-1WK68279M99169438NLLBXRI"}, "cat": {"m": "P-3LM945184V097602ENLGJTCY", "y": "P-5L986763S8747390VNLLBWEY"}, "all": {"m": "P-89S96425784666029NLLBVBI", "y": "P-01G78206SN901843UNLLBVTQ"}, "multi": {"m": "P-14P32363S82796315NLLBYJA", "y": "P-4UH914937S789304WNLLBY4A"}};
+  var PLANS = {"local": {"m": "P-167553502R680420TNLLBXAQ", "y": "P-1WK68279M99169438NLLBXRI"}, "cat": {"m": "P-3LM945184V097602ENLGJTCY", "y": "P-5L986763S8747390VNLLBWEY"}, "all": {"m": "P-89S96425784666029NLLBVBI", "y": "P-01G78206SN901843UNLLBVTQ"}, "multi": {"m": "P-14P32363S82796315NLLBYJA", "y": "P-4UH914937S789304WNLLBY4A"}, "national": {"m": "P-7U970114J3667782YNLWHP6I", "y": "P-80986284DX6262020NLWHQ5Y"}};
   var MAIL = 'Want the free lists first, no card? <a href="#free">Use the form above</a>.';
   var bought = '', billing = 'm';
   function afterPay(id, subId){
     bought = id; $('pdSub').value = subId || '';
-    $('pdOne').style.display = id === 'local' ? 'none' : ''; $('pdZipBox').style.display = id === 'local' ? '' : 'none';
+    $('pdOne').style.display = (id === 'local' || id === 'national') ? 'none' : ''; $('pdZipBox').style.display = id === 'local' ? '' : 'none';
     $('pdMore').style.display = id === 'multi' ? '' : 'none'; $('pdCatBox').style.display = id === 'cat' ? '' : 'none';
     if (id !== 'cat') $('pdCat').value = 'all';
     var t = $('thanks'); t.style.display = 'block'; t.scrollIntoView({behavior:'smooth'});
@@ -746,6 +766,7 @@ The TOP 25 are marked; the outreach kit (call script + email template) is attach
   function sub(id){
     var fb = $('fb-' + id), box = $('paypal-' + id), planId = (PLANS[id] || {})[billing];
     box.innerHTML = '';
+    if (!planId && id === 'national') { fb.innerHTML = 'To start the Every-state plan, email <a href="mailto:matt@panelready.co?subject=PanelReady%20every-state%20plan">matt@panelready.co</a> and we\'ll send your payment link the same day. ' + MAIL; return; }
     if (!planId || !window.paypal) { fb.innerHTML = planId || !(PLANS[id] || {}).m ? MAIL : 'Yearly billing for this plan: email <a href="mailto:matt@panelready.co">matt@panelready.co</a>. ' + MAIL; return; }
     paypal.Buttons({
       style: { shape: 'pill', color: 'gold', layout: 'vertical', label: 'subscribe' },
@@ -757,7 +778,7 @@ The TOP 25 are marked; the outreach kit (call script + email template) is attach
   function renderAll(){
     document.querySelectorAll('.plan .price').forEach(function(p){ var y = billing === 'y'; p.innerHTML = '$' + (y ? p.getAttribute('data-y') : p.getAttribute('data-m')) + '<small>/' + (y ? 'year' : 'month') + '</small>'; });
     document.querySelectorAll('.plan .per').forEach(function(p){ p.textContent = billing === 'y' ? p.getAttribute('data-y') : ''; });
-    ['local', 'cat', 'all', 'multi'].forEach(sub);
+    ['local', 'cat', 'all', 'multi', 'national'].forEach(sub);
   }
   document.querySelectorAll('.bill button').forEach(function(b){ b.onclick = function(){
     billing = b.getAttribute('data-b');

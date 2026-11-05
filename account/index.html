@@ -20,6 +20,10 @@
 .acct textarea{min-height:110px;font:13px ui-monospace,Menlo,Consolas,monospace}
 .acct input:focus,.acct select:focus,.acct textarea:focus{outline:none;border-color:var(--teal);box-shadow:0 0 0 4px rgba(14,124,123,.14)}
 .acct button.cta{border:0;cursor:pointer;margin-top:12px}
+.acct .specs fieldset{border:1px solid var(--line);border-radius:12px;padding:8px 14px 10px;margin:0 0 10px}
+.acct .specs legend{font-weight:700;font-size:13.5px;padding:0 6px}
+.acct .specs label.chk{display:inline-flex;align-items:center;gap:6px;margin:4px 16px 4px 0;font-weight:500;font-size:14.5px}
+.acct .specs input{width:auto;margin:0}
 .acct .row3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.acct .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 @media(max-width:640px){.acct .row3,.acct .row2{grid-template-columns:1fr}}
 .acct .msg{min-height:1.2em;font-size:14px;margin-top:8px}.acct .msg.ok{color:var(--green)}.acct .msg.err{color:#be123c}
@@ -155,8 +159,14 @@ footer{color:var(--dim);font-size:13px;padding:30px 0 40px;border-top:1px solid 
       <div><label for="radius">Radius (miles)</label><input id="radius" type="number" min="5" max="100" value="25"></div></div>
     <div id="stateBox" class="hide"><div class="row3" id="stateSels"></div>
       <div id="catBox"><label for="cat">Category</label><div class="sel"><select id="cat"></select></div></div></div>
-    <button class="cta" type="submit">Save territory</button><div class="msg" id="terrMsg"></div>
+    <button class="cta" type="submit" id="terrBtn">Save territory</button><div class="msg" id="terrMsg"></div>
   </form>
+</div>
+
+<div class="card" id="specCard"><h2>Specialties</h2>
+  <p class="help" id="specHelp">Only sell to certain kinds of practices (ABA, psychiatry, PT, home health...)? Tick them and your lists carry just those, starting with the next one. Tick none to get everything in your territory.</p>
+  <form id="specForm" novalidate><div id="specBoxes" class="specs"></div>
+  <button class="cta" type="submit">Save specialties</button><div class="msg" id="specMsg"></div></form>
 </div>
 
 <div class="card" id="teamCard"><h2>Teammates</h2>
@@ -270,7 +280,8 @@ footer{color:var(--dim);font-size:13px;padding:30px 0 40px;border-top:1px solid 
       var p = a.plans || {};
       $('upsellText').textContent = (a.status === 'free' ? 'You\'re on the free weekly digest (the best new practices by name). ' : 'You\'re on the free trial. ')
         + 'Plans: $' + (p.local||{}).price + '/mo for a local area, $' + (p.cat||{}).price + ' for one state and category, $' + (p.all||{}).price
-        + ' for every category in a state, $' + (p.multi||{}).price + ' for three states. Yearly billing gets 2 months free.';
+        + ' for every category in a state, $' + (p.multi||{}).price + ' for three states, $' + (p.national||{}).price
+        + ' for every state. Yearly billing gets 2 months free.';
     }
     // downloads
     var rows = (a.deliveries || []).map(function(d){
@@ -285,8 +296,10 @@ footer{color:var(--dim);font-size:13px;padding:30px 0 40px;border-top:1px solid 
     $('dlRows').innerHTML = rows.join('') || '<tr><td colspan="3" class="muted">Your first list appears here after it\'s emailed.</td></tr>';
     // territory
     var local = a.plan === 'local' || !!a.area;
-    show('areaBox', local); show('stateBox', !local);
-    if (local) {
+    show('areaBox', local && !a.national); show('stateBox', !local && !a.national); show('terrBtn', !a.national);
+    if (a.national) {
+      $('terrHelp').textContent = 'Your plan covers every state and every category. To narrow it, pick specialties below.';
+    } else if (local) {
       var parts = (a.area || '').split(':');
       $('zip').value = parts[0] || ''; $('radius').value = parts[1] || 25;
       $('terrHelp').textContent = 'Every new practice within your radius of one ZIP code, every category (5 to 100 miles).';
@@ -305,6 +318,18 @@ footer{color:var(--dim);font-size:13px;padding:30px 0 40px;border-top:1px solid 
         ? 'Your plan covers ' + n + ' state' + (n > 1 ? 's' : '') + (a.one_category ? ' and one category.' : ', every category.')
         : 'The free plan covers one state.';
     }
+    // specialties (inside the plan's category, if it has one)
+    var cats = (a.categories || []).filter(function(c){ return c && c !== 'all'; });
+    var groups = (a.specialties_all || []).filter(function(g){ return !cats.length || cats.indexOf(g.category) >= 0; });
+    var byCat = {}, order = [];
+    groups.forEach(function(g){ if (!byCat[g.category]) { byCat[g.category] = []; order.push(g.category); } byCat[g.category].push(g); });
+    var picked = a.specialties || [];
+    $('specBoxes').innerHTML = order.map(function(c){
+      return '<fieldset><legend>' + esc(NICE[c] || c) + '</legend>' + byCat[c].map(function(g){
+        return '<label class="chk"><input type="checkbox" value="' + esc(g.key) + '"' + (picked.indexOf(g.key) >= 0 ? ' checked' : '') + '> ' + esc(g.label) + '</label>';
+      }).join('') + '</fieldset>';
+    }).join('');
+    show('specCard', groups.length > 0);
     // team
     var room = Math.max(0, (a.seats || 1) - 1);
     $('team').value = (a.team || []).join('\n');
@@ -340,6 +365,11 @@ footer{color:var(--dim);font-size:13px;padding:30px 0 40px;border-top:1px solid 
     if (!states.length) { msg('terrMsg', 'Please pick a state.', false); return; }
     var cat = $('catBox').classList.contains('hide') ? 'all' : $('cat').value;
     post('/change?t=' + encodeURIComponent(t), { change: { states: states, categories: [cat] } }, 'terrMsg', SAVED);
+  });
+  $('specForm').addEventListener('submit', function(e){
+    e.preventDefault();
+    var keys = [].slice.call(document.querySelectorAll('#specBoxes input:checked')).map(function(x){ return x.value; });
+    post('/change?t=' + encodeURIComponent(t), { change: { specialties: keys } }, 'specMsg', SAVED);
   });
   $('teamForm').addEventListener('submit', function(e){
     e.preventDefault();
