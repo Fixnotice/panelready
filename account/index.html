@@ -280,7 +280,8 @@ footer{color:var(--dim);font-size:13px;padding:30px 0 40px;border-top:1px solid 
       var p = a.plans || {};
       $('upsellText').textContent = (a.status === 'free' ? 'You\'re on the free weekly digest (the best new practices by name). ' : 'You\'re on the free trial. ')
         + 'Plans: $' + (p.local||{}).price + '/mo for a local area, $' + (p.cat||{}).price + ' for one state and category, $' + (p.all||{}).price
-        + ' for every category in a state, $' + (p.multi||{}).price + ' for three states, $' + (p.national||{}).price
+        + ' for every category in a state, $' + (p.multi||{}).price + ' for three states, $' + (p.niche||{}).price
+        + ' for one specialty in every state, $' + (p.national||{}).price
         + ' for every state. Yearly billing gets 2 months free.';
     }
     // downloads
@@ -297,7 +298,9 @@ footer{color:var(--dim);font-size:13px;padding:30px 0 40px;border-top:1px solid 
     // territory
     var local = a.plan === 'local' || !!a.area;
     show('areaBox', local && !a.national); show('stateBox', !local && !a.national); show('terrBtn', !a.national);
-    if (a.national) {
+    if (a.niche) {
+      $('terrHelp').textContent = 'Your plan covers one specialty in every state. Pick it below (you can switch any time).';
+    } else if (a.national) {
       $('terrHelp').textContent = 'Your plan covers every state and every category. To narrow it, pick specialties below.';
     } else if (local) {
       var parts = (a.area || '').split(':');
@@ -326,10 +329,11 @@ footer{color:var(--dim);font-size:13px;padding:30px 0 40px;border-top:1px solid 
     var picked = a.specialties || [];
     $('specBoxes').innerHTML = order.map(function(c){
       return '<fieldset><legend>' + esc(NICE[c] || c) + '</legend>' + byCat[c].map(function(g){
-        return '<label class="chk"><input type="checkbox" value="' + esc(g.key) + '"' + (picked.indexOf(g.key) >= 0 ? ' checked' : '') + '> ' + esc(g.label) + '</label>';
+        return '<label class="chk"><input type="' + (a.max_specialties === 1 ? 'radio" name="spec1' : 'checkbox') + '" value="' + esc(g.key) + '"' + (picked.indexOf(g.key) >= 0 ? ' checked' : '') + '> ' + esc(g.label) + '</label>';
       }).join('') + '</fieldset>';
     }).join('');
     show('specCard', groups.length > 0);
+    if (a.max_specialties === 1) $('specHelp').textContent = 'Your plan covers one specialty in every state. Pick the one you sell to; your lists carry just that, starting with the next one.';
     // team
     var room = Math.max(0, (a.seats || 1) - 1);
     $('team').value = (a.team || []).join('\n');

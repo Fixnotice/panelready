@@ -213,6 +213,11 @@ COLS = {
     "license": ("License #", 13, "text"),
     "license_state": ("License state", 8, "text"),
     "other_taxonomies": ("Other specialties", 30, "text"),
+    "plan_change": ("What's changing", 52, "text"),
+    "effective": ("Effective", 12, "date"),
+    "county": ("County", 15, "text"),
+    "members_affected": ("Members losing their plan (county)", 13, "int"),
+    "plans_to_contact": ("Plans to be contracted with", 40, "text"),
     "npi": ("NPI", 12, "npi"),
     "taxonomy": ("Taxonomy code", 13, "text"),
 }
@@ -234,6 +239,9 @@ FRONT = {   # what a caller reads first, per list kind; everything else follows 
               "contact_phone", "phone", "email", "website", "opener", "specialty", "category", "city", "state", "zip",
               "why"],
 }
+FRONT["plans"] = ["name", "plan_change", "effective", "county", "members_affected", "plans_to_contact", "contact_name",
+                  "contact_title", "contact_phone", "linkedin_search", "phone", "providers_at_practice", "specialty",
+                  "category", "entity", "address", "city", "state", "zip"]
 FRONT["history"] = FRONT["leads"]
 TOP_COLS = ["score", "name", "new_kind", "contact_name", "contact_title", "contact_phone", "linkedin_search", "phone",
             "phone_shared", "email", "email_type", "website", "opener", "specialty", "city", "state", "registered", "npi"]
@@ -251,8 +259,11 @@ KINDS = {   # file prefix -> (tab name, title, what it is)
               "Monthly. Established practices that already bill, soonest due first; overdue ones flagged."),
     "stuck": ("Stuck in credentialing", "Practices that look stuck in credentialing",
               "Monthly. Registered 2-12 months ago and still not on Medicare's enrollment list."),
+    "plans": ("Plan changes", "Practices whose patients must switch health plans",
+              "An insurer leaves Medicare Advantage in their county on Jan 1, or the state's Medicaid plans change: their "
+              "patients must pick new plans, so they may need contracts and credentialing with the plans patients move to."),
 }
-ORDER = ["leads", "moved", "changes", "history", "reval", "stuck"]
+ORDER = ["leads", "moved", "changes", "plans", "history", "reval", "stuck"]
 
 
 def kind_of(path: Path) -> str:
@@ -562,6 +573,11 @@ COLUMN_GUIDE = [
     ("NPI", "The practice's National Provider Identifier. Click it to open the official CMS registry record."),
     ("Moved on, Moved from", "Moved tab: when the practice changed its address in the registry, and where it was before."),
     ("Change, Details, Changed on", "Changes tab: an NPI that was reactivated or added a specialty, and when."),
+    ("What's changing, Effective, County, Members losing their plan", "Plan changes tab: an insurer that stops offering "
+     "Medicare Advantage in the practice's county (from CMS's plan files for this year and next), or a state Medicaid "
+     "plan change, the date it takes effect, and about how many members in that county are in the plans that end. "
+     "Those patients must pick new plans, so the practice may need contracts and credentialing with them."),
+    ("Plans to be contracted with", "Plan changes tab, Medicaid changes: the plans the state's members move to."),
     ("Revalidation due, Days until due", "Revalidation tab (monthly): when Medicare needs the practice to revalidate "
      "its enrollment. Negative days means overdue."),
     ("Medicare status", "Stuck tab (monthly): how long the practice has been registered without appearing on "
@@ -812,7 +828,7 @@ def build_delivery(files: list[Path], out_dir: Path, *, week: str, states: list[
     for tab, cols, rows, *_ , kind in tabs:
         counts.append(({"leads": "New practices", "moved": "Practices that moved", "changes": "Reactivated / new specialty",
                         "history": "New in the last 90 days", "reval": "Due for revalidation",
-                        "stuck": "Stuck in credentialing"}[kind], len(rows), tab))
+                        "stuck": "Stuck in credentialing", "plans": "Affected by plan changes"}[kind], len(rows), tab))
         if kind == "leads" and top:
             counts.insert(1, ("Top picks to call first", len(top), "Top 25"))
     tab_list = []

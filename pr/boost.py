@@ -127,9 +127,9 @@ def new_kind(r: dict) -> str:
     if r.get("entity") != "practice/organization":
         return "New solo provider"
     if (r.get("subpart") or "").lower().startswith("y"):
-        parent = (r.get("parent_org") or "").strip()
-        return f"New location of {parent}" if parent and parent.lower() != (r.get("name") or "").lower() \
-            else "New location of an existing organization"
+        parent = tidy_name((r.get("parent_org") or "").strip())
+        same = re.sub(r"[^a-z0-9]", "", parent.lower()) == re.sub(r"[^a-z0-9]", "", (r.get("name") or "").lower())
+        return f"New location of {parent}" if parent and not same else "New location of an existing organization"
     if r.get("phone_shared_kind") == "owner":
         return "Owner opening several locations"
     try:

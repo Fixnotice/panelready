@@ -29,7 +29,8 @@ _RULES = [
     ("1041", "behavioral"), ("103T", "behavioral"), ("103K", "behavioral"), ("103G", "behavioral"),
     ("106H", "behavioral"), ("106S", "behavioral"), ("106E", "behavioral"), ("102L", "behavioral"),
     ("102X", "behavioral"), ("104100000X", "behavioral"),
-    ("3208", "behavioral"),
+    ("3208", "behavioral"), ("323P", "behavioral"), ("322D", "behavioral"),   # residential treatment (Nov 7, 2026:
+    # psychiatric and youth residential treatment facilities were "other" and dropped until then)
     ("122", "dental"), ("124Q", "dental"), ("125", "dental"), ("126", "dental"),
     ("261QD0000X", "dental"),                            # dental clinic (was "medical" through Nov 2, 2026)
     ("225", "therapy"), ("235Z", "therapy"), ("231H", "therapy"), ("237", "therapy"), ("111N", "therapy"),
@@ -39,6 +40,7 @@ _RULES = [
     ("251E", "home_senior"), ("253Z", "home_senior"), ("374", "home_senior"), ("376", "home_senior"),
     ("3104", "home_senior"), ("3140", "home_senior"), ("311", "home_senior"), ("313", "home_senior"),
     ("315", "home_senior"), ("3105", "home_senior"), ("385H", "home_senior"), ("3209", "home_senior"),
+    ("3206", "home_senior"), ("3207", "home_senior"),     # residential treatment, IDD / physical disabilities
     ("251B", "home_senior"), ("251C", "home_senior"), ("251F", "home_senior"), ("251G", "home_senior"),
     ("251J", "home_senior"), ("251X", "home_senior"), ("252Y", "home_senior"), ("253J", "home_senior"),
     ("171M", "home_senior"),
@@ -68,6 +70,9 @@ TAX_NAMES = {
     "261QM0801X": "Mental health clinic", "261QM0850X": "Adult mental health clinic",
     "261QM0855X": "Child & adolescent mental health clinic", "261QR0405X": "Substance use disorder rehab clinic",
     "324500000X": "Substance abuse rehabilitation facility",
+    "3245S0500X": "Substance abuse treatment facility, children",
+    "323P00000X": "Psychiatric residential treatment facility",
+    "322D00000X": "Residential treatment facility, emotionally disturbed children",
     # medical
     "207Q00000X": "Family medicine", "207QG0300X": "Family medicine, geriatric", "207QS0010X": "Family medicine, sports",
     "207QH0002X": "Family medicine, hospice & palliative", "207R00000X": "Internal medicine",
@@ -134,7 +139,9 @@ TAX_NAMES = {
     "311Z00000X": "Custodial care facility", "313M00000X": "Nursing facility / intermediate care",
     "315D00000X": "Hospice, inpatient", "315P00000X": "Intermediate care facility, intellectual disabilities",
     "385H00000X": "Respite care", "320800000X": "Residential treatment, mental illness",
-    "320900000X": "Residential treatment, developmental disabilities", "171M00000X": "Case manager / care coordinator",
+    "320900000X": "Residential treatment, developmental disabilities",
+    "320600000X": "Residential treatment facility, developmental disabilities",
+    "320700000X": "Residential treatment facility, physical disabilities", "171M00000X": "Case manager / care coordinator",
     # DME, pharmacy & transport
     "332B00000X": "DME & medical supplies", "332BC3200X": "DME, customized equipment",
     "332BX2000X": "DME, oxygen equipment", "332BP3500X": "DME, parenteral & enteral nutrition",
