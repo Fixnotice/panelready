@@ -58,11 +58,11 @@ BUYERS = "credentialing & billing companies"          # who the pages are for (t
 CAT_SLUG = {"behavioral": "behavioral-health", "medical": "medical-practices", "dental": "dental", "therapy": "therapy-rehab",
             "home_senior": "home-care-senior-living", "dme_transport": "dme-pharmacy-transport"}
 CAT_WHO = {"behavioral": "counselors, social workers, psychologists, psychiatry and psychiatric NPs, ABA providers, residential treatment, substance-use programs and peer specialists",
-           "medical": "physicians, nurse practitioners, PAs, midwives, primary care and specialty clinics, urgent care, surgery centers and medical groups",
+           "medical": "physicians, nurse practitioners, PAs, midwives, primary care and specialty clinics, community health centers (FQHCs) and rural health clinics, urgent care, surgery centers and medical groups",
            "dental": "general dentists, dental specialists, hygienists, dental groups and clinics",
            "therapy": "physical, occupational and speech therapy, chiropractic, podiatry, optometry, acupuncture and dietitians",
            "home_senior": "home health agencies, in-home and companion care, assisted living, nursing facilities, hospice, IDD group homes, day habilitation and case management",
-           "dme_transport": "durable medical equipment suppliers, pharmacies, non-emergency medical transport and ambulance services"}
+           "dme_transport": "durable medical equipment suppliers, orthotics and prosthetics (O&P), pharmacies, non-emergency medical transport and ambulance services"}
 CAT_COLOR = {"behavioral": "#6d28d9", "medical": "#2563eb", "dental": "#be185d", "therapy": "#047857", "home_senior": "#b45309", "dme_transport": "#c2410c"}
 STATES = {"AL": "Alabama", "AK": "Alaska", "AZ": "Arizona", "AR": "Arkansas", "CA": "California", "CO": "Colorado", "CT": "Connecticut",
           "DE": "Delaware", "DC": "Washington, DC", "FL": "Florida", "GA": "Georgia", "HI": "Hawaii", "ID": "Idaho", "IL": "Illinois",

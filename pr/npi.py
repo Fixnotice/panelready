@@ -44,7 +44,7 @@ _RULES = [
     ("261QD0000X", "dental"),                            # dental clinic (was "medical" through Nov 2, 2026)
     ("225", "therapy"), ("235Z", "therapy"), ("231H", "therapy"), ("237", "therapy"), ("111N", "therapy"),
     ("1711", "therapy"), ("133", "therapy"), ("213E", "therapy"), ("152W", "therapy"), ("224", "therapy"),
-    ("2278", "therapy"), ("2279", "therapy"), ("222Z", "therapy"), ("226", "therapy"), ("175F", "therapy"),
+    ("2278", "therapy"), ("2279", "therapy"), ("226", "therapy"), ("175F", "therapy"),
     ("261QR0400X", "therapy"), ("261QP1100X", "therapy"), ("261QP2000X", "therapy"),
     ("251E", "home_senior"), ("253Z", "home_senior"), ("374", "home_senior"), ("376", "home_senior"),
     ("3104", "home_senior"), ("3140", "home_senior"), ("311", "home_senior"), ("313", "home_senior"),
@@ -53,6 +53,10 @@ _RULES = [
     ("251B", "home_senior"), ("251C", "home_senior"), ("251F", "home_senior"), ("251G", "home_senior"),
     ("251J", "home_senior"), ("251X", "home_senior"), ("252Y", "home_senior"), ("253J", "home_senior"),
     ("171M", "home_senior"),
+    # Nov 8, 2026: orthotists, prosthetists, pedorthists and fitters enroll and bill as DMEPOS suppliers, like the O&P
+    # supplier businesses (335E), so they sit with DME (they were under Therapy & Rehab)
+    ("222Z", "dme_transport"), ("224P", "dme_transport"), ("224L", "dme_transport"), ("2249", "dme_transport"),
+    ("225000000X", "dme_transport"),
     ("332", "dme_transport"), ("3336", "dme_transport"), ("3343", "dme_transport"), ("3416", "dme_transport"),
     ("3438", "dme_transport"), ("3439", "dme_transport"), ("344", "dme_transport"), ("347", "dme_transport"),
     ("183", "dme_transport"), ("335", "dme_transport"), ("333", "dme_transport"), ("3418", "dme_transport"),
