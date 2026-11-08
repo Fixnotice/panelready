@@ -488,7 +488,10 @@ def google_odds(lead: dict) -> int:
 
 def apply_hit(l: dict, hit: dict):
     """Copy a cached lookup's findings onto a lead (website, email, rating, software, social)."""
-    l["website"], l["email"], l["google_rating"] = hit.get("website", ""), hit.get("email", ""), hit.get("rating", "")
+    from pr import contacts as C                      # (a font designer's address found before Nov 7 stays off the lists)
+    email = hit.get("email", "")
+    l["website"], l["email"], l["google_rating"] = hit.get("website", ""), "" if C.JUNK_EMAIL.search(email or "") \
+        else email, hit.get("rating", "")
     l["practice_software"], l["social"] = hit.get("software", ""), hit.get("social", "")
     if l["practice_software"] and "uses " not in (l.get("why") or ""):
         l["why"] = f"{l.get('why', '')}; uses {l['practice_software']}".strip("; ")

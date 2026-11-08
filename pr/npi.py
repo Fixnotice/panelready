@@ -29,6 +29,15 @@ _RULES = [
     ("1041", "behavioral"), ("103T", "behavioral"), ("103K", "behavioral"), ("103G", "behavioral"),
     ("106H", "behavioral"), ("106S", "behavioral"), ("106E", "behavioral"), ("102L", "behavioral"),
     ("102X", "behavioral"), ("104100000X", "behavioral"),
+    # Nov 8, 2026: practice types that were left out ("other") but bill insurers or Medicaid themselves. Nurses only by
+    # specialty (psychiatric, addiction, wound care, infusion, lactation, home health, hospice): a plain RN number is
+    # usually an employee's or a travel nurse's
+    ("1012", "behavioral"), ("175T", "behavioral"), ("172V", "behavioral"), ("163WP08", "behavioral"),
+    ("163WA0400X", "behavioral"),
+    ("176B", "medical"), ("175M", "medical"), ("163WW0000X", "medical"), ("163WI0500X", "medical"),
+    ("163WL0100X", "medical"),
+    ("163WH0200X", "home_senior"), ("163WH1000X", "home_senior"), ("3725", "home_senior"), ("3726", "home_senior"),
+    ("373H", "home_senior"),
     ("3208", "behavioral"), ("323P", "behavioral"), ("322D", "behavioral"),   # residential treatment (Nov 7, 2026:
     # psychiatric and youth residential treatment facilities were "other" and dropped until then)
     ("122", "dental"), ("124Q", "dental"), ("125", "dental"), ("126", "dental"),

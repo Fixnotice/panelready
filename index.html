@@ -8,7 +8,9 @@
 <meta name="theme-color" content="#f6f8fb">
 <link rel="canonical" href="https://panelready.co/">
 <link rel="icon" href="favicon.svg" type="image/svg+xml"><link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png"><link rel="apple-touch-icon" href="apple-touch-icon.png">
-<meta property="og:type" content="website"><meta property="og:url" content="https://panelready.co/"><meta property="og:title" content="PanelReady — new healthcare practices, the week they register"><meta property="og:description" content="Weekly lists of newly registered healthcare practices from the federal NPI registry, by state and specialty, with phone and address. First two lists free."><meta property="og:image" content="https://panelready.co/icon-512.png">
+<meta property="og:type" content="website"><meta property="og:url" content="https://panelready.co/"><meta property="og:title" content="PanelReady — new healthcare practices, the week they register"><meta property="og:description" content="Weekly lists of newly registered healthcare practices from the federal NPI registry, by state and specialty, with phone and address. First two lists free."><meta property="og:image" content="https://panelready.co/og-image.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="PanelReady: new healthcare practices every Monday, for credentialing and billing companies"><meta property="og:site_name" content="PanelReady">
+<meta name="twitter:card" content="summary_large_image"><meta name="twitter:image" content="https://panelready.co/og-image.png">
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://panelready.co/#org","name":"PanelReady","url":"https://panelready.co/","logo":"https://panelready.co/icon-512.png","email":"matt@panelready.co"},{"@type":"WebSite","name":"PanelReady","url":"https://panelready.co/","publisher":{"@id":"https://panelready.co/#org"}},{"@type":"Service","name":"PanelReady weekly new-practice lists","serviceType":"Healthcare provider lead lists","provider":{"@id":"https://panelready.co/#org"},"areaServed":"US","audience":{"@type":"BusinessAudience","name":"Credentialing and medical billing companies"},"description":"Weekly lists of newly registered healthcare practices from the federal NPI registry, by state and specialty, with phone and address.","offers":{"@type":"AggregateOffer","priceCurrency":"USD","lowPrice":"49","highPrice":"499"}}]}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,600;0,8..60,700;1,8..60,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -147,8 +149,8 @@
 
   /* sample */
   .sample{background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:var(--shadow)}
-  .sample .cap{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 18px;border-bottom:1px solid var(--line);font-size:13px;color:var(--muted);background:var(--card2)}
-  .sample .cap b{color:var(--ink);font-weight:600;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12.5px}
+  .sample .cap{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:4px 12px;padding:14px 18px;border-bottom:1px solid var(--line);font-size:13px;color:var(--muted);background:var(--card2)}
+  .sample .cap b{color:var(--ink);font-weight:600;overflow-wrap:anywhere;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12.5px}
   .tscroll{overflow-x:auto}
   .sample table{width:100%;border-collapse:collapse;font-size:14px;min-width:640px}
   .sample .kind{font-size:12.5px;font-weight:600;color:var(--green)}
@@ -267,8 +269,11 @@
   .mailcard .mh b{color:var(--ink);font-weight:600}
   .mailcard pre{margin:0;padding:18px;white-space:pre-wrap;font:14px/1.6 Inter,sans-serif;color:var(--muted)}
   .mailcard pre b{color:var(--ink);font-weight:600}
-  .mailcard .att{display:inline-flex;align-items:center;gap:8px;margin:0 18px 16px;padding:8px 12px;border:1px solid var(--line2);border-radius:10px;font-size:13px;color:var(--ink);background:var(--card2)}
+  .mailcard .nw{white-space:nowrap}
+  .mailcard .atts{display:flex;flex-wrap:wrap;gap:8px;padding:0 18px 16px}
+  .mailcard .att{display:inline-flex;align-items:center;gap:8px;margin:0;max-width:100%;overflow-wrap:anywhere;padding:8px 12px;border:1px solid var(--line2);border-radius:10px;font-size:13px;color:var(--ink);background:var(--card2)}
   .mailcard .att i{width:18px;height:18px;border-radius:4px;background:#1d6f42;display:inline-grid;place-items:center;font:700 10px Inter,sans-serif;font-style:normal;color:#fff}
+  .mailcard .att i.csv{background:#0e7c7b} .mailcard .att i.pdf{background:#b91c1c}
   @media (max-width:700px){.f2,.after{grid-template-columns:1fr}}
 
   /* reveal */
@@ -357,7 +362,7 @@
     <h2 class="rv">What a Monday looks like.</h2>
     <p class="sub rv">Real rows from a recent New York list, across categories. Phone numbers are masked on this page only.</p>
     <div class="sample rv">
-      <div class="cap"><b>leads_NY_all.csv</b><span>week ending Nov 1 · 231 rows · organizations first</span></div>
+      <div class="cap"><b>PanelReady_NY_week_of_Nov_1_2026.xlsx</b><span>week ending Nov 1 · 231 rows · organizations first</span></div>
       <div class="tscroll"><table>
         <thead><tr><th>Registered</th><th>Practice</th><th>What's new</th><th>Specialty</th><th>City</th><th>Phone</th><th>Category</th></tr></thead>
         <tbody>
@@ -377,16 +382,16 @@
       <div class="mh"><span><b>From:</b> Matt at PanelReady</span><span><b>Subject:</b> PanelReady leads, week ending <span class="wkiso">2026-11-01</span>: NY</span></div>
 <pre>Hi there,
 
-Your PanelReady list for the week ending <span class="wkiso">2026-11-01</span>.
+Your PanelReady list for the week ending <span class="wklong">November 1, 2026</span>.
 
 - NY, Behavioral Health: <b>89</b> newly registered practices and sole proprietors (attached), with phone, address, a score and an opener for each.
 
 Hottest this week:
-  89  Achievement Autism Services LLC (Behavior analyst, Malverne, NY) (516) 229-••••
-  89  Principia Psychiatric Services (Psychiatric NP, White Plains, NY) (914) 330-••••
+  91  LM Therapeutic Services LCSW, PLLC (Clinical social worker, Jamaica, NY) <span class="nw">(929) 753-••••</span>
+  89  Limitless Health Care Services LLC (Psychiatric NP, Bronx, NY) <span class="nw">(718) 542-••••</span>
 
-The TOP 25 are marked; the outreach kit (call script + email template) is attached too.</pre>
-      <span class="att"><i>X</i> leads_NY_behavioral.csv</span> <span class="att"><i>T</i> PanelReady_outreach_kit.txt</span>
+Your spreadsheet: an overview, the Top 25 to call first with an opener for each, every new practice with the owner's direct line, and the call script. The outreach kit and a CRM import file are attached too.</pre>
+      <div class="atts"><span class="att"><i>X</i> PanelReady_NY_week_of_Nov_1_2026.xlsx</span><span class="att"><i class="csv">C</i> PanelReady_CRM_import.csv</span><span class="att"><i class="pdf">P</i> PanelReady_Outreach_Kit.pdf</span></div>
     </div>
   </section>
 
@@ -437,11 +442,11 @@ The TOP 25 are marked; the outreach kit (call script + email template) is attach
     <h2 class="rv">Pick the one you sell to, or take the whole state.</h2>
     <p class="sub rv">Every practice is filed by the specialty code it registered under, so a therapy-billing company never wades through pharmacies.</p>
     <div class="cats">
-      <div class="cat rv"><div class="ic" style="background:rgba(109,40,217,.1)"><svg viewBox="0 0 24 24" fill="none" stroke="#6d28d9" stroke-width="2" stroke-linecap="round"><path d="M12 3a7 7 0 0 0-7 7c0 3 2 4.5 2 7h10c0-2.5 2-4 2-7a7 7 0 0 0-7-7z"/><path d="M9 21h6"/></svg></div><b>Behavioral Health</b><span>Counselors, social workers, psychologists, psychiatry, psychiatric NPs, ABA, substance-use programs.</span><i class="ct">1,768 last week · the biggest every week</i></div>
-      <div class="cat rv"><div class="ic" style="background:rgba(37,99,235,.1)"><svg viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round"><path d="M12 4v16M4 12h16"/></svg></div><b>Medical Practices &amp; Clinics</b><span>Physicians, nurse practitioners, PAs, primary care and specialty clinics, urgent care, medical groups.</span><i class="ct">851 last week</i></div>
+      <div class="cat rv"><div class="ic" style="background:rgba(109,40,217,.1)"><svg viewBox="0 0 24 24" fill="none" stroke="#6d28d9" stroke-width="2" stroke-linecap="round"><path d="M12 3a7 7 0 0 0-7 7c0 3 2 4.5 2 7h10c0-2.5 2-4 2-7a7 7 0 0 0-7-7z"/><path d="M9 21h6"/></svg></div><b>Behavioral Health</b><span>Counselors, social workers, psychologists, psychiatry and psychiatric NPs, ABA, residential treatment, substance-use programs, peer specialists.</span><i class="ct">1,768 last week · the biggest every week</i></div>
+      <div class="cat rv"><div class="ic" style="background:rgba(37,99,235,.1)"><svg viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round"><path d="M12 4v16M4 12h16"/></svg></div><b>Medical Practices &amp; Clinics</b><span>Physicians, nurse practitioners, PAs, midwives, primary care and specialty clinics, urgent care, surgery centers, nurse-owned practices.</span><i class="ct">851 last week</i></div>
       <div class="cat rv"><div class="ic" style="background:rgba(190,24,93,.1)"><svg viewBox="0 0 24 24" fill="none" stroke="#be185d" stroke-width="2" stroke-linecap="round"><path d="M7 3c-3 0-4 3-3 6l2 11h2l1-6h6l1 6h2l2-11c1-3 0-6-3-6-2 0-3 1-5 1S9 3 7 3z"/></svg></div><b>Dental</b><span>General dentists, specialists, hygienists, dental groups and clinics.</span><i class="ct">129 last week</i></div>
       <div class="cat rv"><div class="ic" style="background:rgba(4,120,87,.1)"><svg viewBox="0 0 24 24" fill="none" stroke="#047857" stroke-width="2" stroke-linecap="round"><path d="M4 12h3l2-5 3 10 3-7 2 2h3"/></svg></div><b>Therapy &amp; Rehab</b><span>Physical, occupational and speech therapy, chiropractic, podiatry, optometry, acupuncture, dietitians.</span><i class="ct">594 last week</i></div>
-      <div class="cat rv"><div class="ic" style="background:rgba(180,83,9,.1)"><svg viewBox="0 0 24 24" fill="none" stroke="#b45309" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/></svg></div><b>Home Care &amp; Senior Living</b><span>Home health agencies, in-home care, personal care, assisted living, nursing facilities, hospice, case management.</span><i class="ct">734 last week</i></div>
+      <div class="cat rv"><div class="ic" style="background:rgba(180,83,9,.1)"><svg viewBox="0 0 24 24" fill="none" stroke="#b45309" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/></svg></div><b>Home Care &amp; Senior Living</b><span>Home health agencies, in-home and companion care, assisted living, nursing facilities, hospice, IDD group homes and day habilitation.</span><i class="ct">734 last week</i></div>
       <div class="cat rv"><div class="ic" style="background:rgba(194,65,12,.1)"><svg viewBox="0 0 24 24" fill="none" stroke="#c2410c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h11v9H3zM14 10h4l3 3v3h-7z"/><circle cx="7" cy="18" r="1.5"/><circle cx="17" cy="18" r="1.5"/></svg></div><b>DME, Pharmacy &amp; Transport</b><span>Durable medical equipment suppliers, pharmacies, non-emergency medical transport, ambulance.</span><i class="ct">556 last week</i></div>
     </div>
   </section>
@@ -492,7 +497,7 @@ The TOP 25 are marked; the outreach kit (call script + email template) is attach
         <div class="name">Your local area</div>
         <div class="price" data-m="49" data-y="490">$49<small>/month</small></div>
         <div class="per" data-y="$490 a year: 2 months free"></div>
-        <div class="free"><a href="#free" style="color:inherit;text-decoration:none">Two free lists first? Start above ↑</a></div>
+        <div class="free"><a href="#free" style="color:inherit;text-decoration:none">Two free lists first? Start&nbsp;above&nbsp;↑</a></div>
         <ul><li>Every new practice within 5-100 miles of your ZIP code</li><li>Every category</li><li>Score, opener and the owner's direct line</li><li>Moved and changed practices weekly; revalidation, stuck and plan-change lists monthly</li><li>Your last 90 days on day one</li><li>You + 1 teammate; Roster Watch for 100 providers</li></ul>
         <div class="paybox" id="paypal-local"></div>
         <p class="fallback" id="fb-local"></p>
@@ -501,7 +506,7 @@ The TOP 25 are marked; the outreach kit (call script + email template) is attach
         <div class="name">One state, one category</div>
         <div class="price" data-m="89" data-y="890">$89<small>/month</small></div>
         <div class="per" data-y="$890 a year: 2 months free"></div>
-        <div class="free"><a href="#free" style="color:inherit;text-decoration:none">Two free lists first? Start above ↑</a></div>
+        <div class="free"><a href="#free" style="color:inherit;text-decoration:none">Two free lists first? Start&nbsp;above&nbsp;↑</a></div>
         <ul><li>Weekly spreadsheet for your state and category, top 25 marked</li><li>Websites, emails and practice software</li><li>Moved and changed practices weekly; revalidation, stuck and plan-change lists monthly</li><li>OIG, Medicare opt-out and pending flags; CRM-ready file and webhook</li><li>Your last 90 days on day one</li><li>You + 2 teammates; Roster Watch for 100 providers</li></ul>
         <div class="paybox" id="paypal-cat"></div>
         <p class="fallback" id="fb-cat"></p>
@@ -511,7 +516,7 @@ The TOP 25 are marked; the outreach kit (call script + email template) is attach
         <div class="name">One whole state</div>
         <div class="price" data-m="149" data-y="1,490">$149<small>/month</small></div>
         <div class="per" data-y="$1,490 a year: 2 months free"></div>
-        <div class="free"><a href="#free" style="color:inherit;text-decoration:none">Two free lists first? Start above ↑</a></div>
+        <div class="free"><a href="#free" style="color:inherit;text-decoration:none">Two free lists first? Start&nbsp;above&nbsp;↑</a></div>
         <ul><li>Every new practice in your state, all six categories, every week</li><li>Everything in the single-category plan</li><li>You + 4 teammates</li><li>Roster Watch for 500 providers</li><li>Priority email support</li></ul>
         <div class="paybox" id="paypal-all"></div>
         <p class="fallback" id="fb-all"></p>
@@ -520,7 +525,7 @@ The TOP 25 are marked; the outreach kit (call script + email template) is attach
         <div class="name">Three whole states</div>
         <div class="price" data-m="199" data-y="1,990">$199<small>/month</small></div>
         <div class="per" data-y="$1,990 a year: 2 months free"></div>
-        <div class="free"><a href="#free" style="color:inherit;text-decoration:none">Two free lists first? Start above ↑</a></div>
+        <div class="free"><a href="#free" style="color:inherit;text-decoration:none">Two free lists first? Start&nbsp;above&nbsp;↑</a></div>
         <ul><li>Three states, all six categories, every week</li><li>Everything in the whole-state plan</li><li>You + 9 teammates</li><li>Roster Watch for 2,000 providers</li><li>More than three? Every state is below</li></ul>
         <div class="paybox" id="paypal-multi"></div>
         <p class="fallback" id="fb-multi"></p>
@@ -529,7 +534,7 @@ The TOP 25 are marked; the outreach kit (call script + email template) is attach
         <div><div class="name">One specialty, every state</div>
           <div class="price" data-m="249" data-y="2,490">$249<small>/month</small></div>
           <div class="per" data-y="$2,490 a year: 2 months free"></div>
-          <div class="free"><a href="#free" style="color:inherit;text-decoration:none">Two free lists first? Start above ↑</a></div></div>
+          <div class="free"><a href="#free" style="color:inherit;text-decoration:none">Two free lists first? Start&nbsp;above&nbsp;↑</a></div></div>
         <ul><li>Every new practice in one specialty, in every state, every week</li><li>For firms that serve one kind of practice nationwide: residential treatment centers, ABA, home health, dental specialists...</li><li>Pick from 48 specialties; switch any time from your account page</li><li>Everything in the whole-state plan; you + 4 teammates; Roster Watch for 500 providers</li></ul>
         <div><div class="paybox" id="paypal-niche"></div>
           <p class="fallback" id="fb-niche"></p></div>
@@ -538,7 +543,7 @@ The TOP 25 are marked; the outreach kit (call script + email template) is attach
         <div><div class="name">Every state</div>
           <div class="price" data-m="499" data-y="4,990">$499<small>/month</small></div>
           <div class="per" data-y="$4,990 a year: 2 months free"></div>
-          <div class="free"><a href="#free" style="color:inherit;text-decoration:none">Two free lists first? Start above ↑</a></div></div>
+          <div class="free"><a href="#free" style="color:inherit;text-decoration:none">Two free lists first? Start&nbsp;above&nbsp;↑</a></div></div>
         <ul><li>Every new practice in every state, all six categories, every week, in one spreadsheet</li><li>For billing and credentialing firms that work nationwide</li><li>Narrow it to the specialties you sell to (ABA, psychiatry, PT, home health...)</li><li>Everything in the three-state plan; you + 14 teammates; Roster Watch for 5,000 providers</li></ul>
         <div><div class="paybox" id="paypal-national"></div>
           <p class="fallback" id="fb-national"></p></div>
@@ -607,32 +612,32 @@ The TOP 25 are marked; the outreach kit (call script + email template) is attach
   var NAMES = {AL:"Alabama",AK:"Alaska",AZ:"Arizona",AR:"Arkansas",CA:"California",CO:"Colorado",CT:"Connecticut",DE:"Delaware",DC:"Washington, DC",FL:"Florida",GA:"Georgia",HI:"Hawaii",ID:"Idaho",IL:"Illinois",IN:"Indiana",IA:"Iowa",KS:"Kansas",KY:"Kentucky",LA:"Louisiana",ME:"Maine",MD:"Maryland",MA:"Massachusetts",MI:"Michigan",MN:"Minnesota",MS:"Mississippi",MO:"Missouri",MT:"Montana",NE:"Nebraska",NV:"Nevada",NH:"New Hampshire",NJ:"New Jersey",NM:"New Mexico",NY:"New York",NC:"North Carolina",ND:"North Dakota",OH:"Ohio",OK:"Oklahoma",OR:"Oregon",PA:"Pennsylvania",PR:"Puerto Rico",RI:"Rhode Island",SC:"South Carolina",SD:"South Dakota",TN:"Tennessee",TX:"Texas",UT:"Utah",VT:"Vermont",VA:"Virginia",WA:"Washington",WV:"West Virginia",WI:"Wisconsin",WY:"Wyoming"};
   // real organizations from the same file (date, name, specialty, city, state, category)
   var FEED = [
-    ["10-08","A Place To Heal LLC","Clinical social worker","Smyrna","GA","behavioral"],
-    ["10-09","Angelo Cacciatore DMD, Inc.","Pediatric dentist","San Diego","CA","dental"],
-    ["10-07","Agape Health Corporation LLC","Home health agency","Aurora","CO","home_senior"],
-    ["10-07","99 Madison Medical PC","Cardiovascular disease","New York","NY","medical"],
-    ["10-08","Altrivia Medical Corp","DME supplier","Orlando","FL","dme_transport"],
-    ["10-07","Agave Assessment and Therapy Group PLLC","Clinical psychologist","San Antonio","TX","behavioral"],
-    ["10-10","After Hours Chiropractic, Medical and Injury","Chiropractor","Orlando","FL","therapy"],
-    ["10-09","Bee Meek Psychiatric Care LLC","Psychiatric nurse practitioner","Roselle","NJ","behavioral"],
-    ["10-06","ACNP Healthcare Services, Inc","Nurse practitioner, primary care","Porter Ranch","CA","medical"],
-    ["10-06","Dream Smiles","Dentist, general","Norcross","GA","dental"],
-    ["10-09","Clover LHCSA Management LLC","Home health agency","Carmel","NY","home_senior"],
-    ["10-09","Brek Therapy and Wellness, PLLC","Mental health counselor","Rockford","IL","behavioral"],
-    ["10-09","AZ Ortho Joint Replacement Center LLC","Ambulatory surgical center","Scottsdale","AZ","medical"],
-    ["10-10","58 Acupuncture PC","Acupuncturist","New York","NY","therapy"],
-    ["10-08","Achievement Autism Services LLC","Behavior analyst","Malverne","NY","behavioral"],
-    ["10-05","Aba Helping Everyone LLC","Behavior analyst","Toms River","NJ","behavioral"],
-    ["10-08","Alivio Psychological Services, PLLC","Psychologist","Austin","TX","behavioral"],
-    ["10-09","Altera Health and Wellness PLLC","Nurse practitioner, adult health","Littleton","CO","medical"],
-    ["10-08","Back To Health LLC","Chiropractor","Grand Junction","CO","therapy"],
-    ["10-10","Empoweru Social Work Solutions PLLC","Clinical social worker","Farmington Hills","MI","behavioral"],
-    ["10-06","Snowflake Family Dental","Dentist, general","Snowflake","AZ","dental"],
-    ["10-05","Allygn LLC","Behavior analyst","Carnegie","PA","behavioral"],
-    ["10-06","Aloha Assisted Living LLC","Assisted living","Sacramento","CA","home_senior"],
-    ["10-09","A Peace of Serenity Support Services LLC","Behavioral health agency","Kannapolis","NC","behavioral"],
-    ["10-08","Areyto Holistic Psychotherapy PLLC","Clinical social worker","Hadley","MA","behavioral"],
-    ["10-07","Adela Guset Dental PLLC","Dentist, general","Honeoye","NY","dental"]
+    ["10-31", "Nova-Rise Therapy", "Mental health clinic", "Tucson", "AZ", "behavioral"],
+    ["10-31", "New England Body Contouring LLC", "Plastic surgery", "Middletown", "CT", "medical"],
+    ["10-31", "Jessica Chiang DDS Ms Inc", "Pediatric dentist", "San Jose", "CA", "dental"],
+    ["10-31", "Wrighthealth LLC", "Occupational therapist", "Wilmington", "DE", "therapy"],
+    ["10-31", "Ronay Support Services", "Homemaker", "Green Cove Springs", "FL", "home_senior"],
+    ["10-31", "Alwaah Med Transportation LLC", "Non-emergency medical transport", "Aurora", "CO", "dme_transport"],
+    ["10-31", "New Found Awareness, LLC", "Adult mental health clinic", "Richmond Hill", "GA", "behavioral"],
+    ["10-31", "Hibarr Chiropractic", "Health service clinic", "Kailua", "HI", "medical"],
+    ["10-31", "Yankton Ernst Smiles PC", "Dentist, general", "Yankton", "SD", "dental"],
+    ["10-31", "Nextvision Optometry", "Optometrist", "Burbank", "CA", "therapy"],
+    ["10-31", "Placidity Home Care LLC", "In-home supportive care", "Biddeford", "ME", "home_senior"],
+    ["10-31", "Pharma Supply Partners LLC", "Community/retail pharmacy", "Fort Myers", "FL", "dme_transport"],
+    ["10-31", "Mountain Ascent Counseling PLLC", "Mental health counselor", "Boulder", "CO", "behavioral"],
+    ["10-31", "Renewed Health And Wellness Medical & Aesthetics PLLC", "Nurse practitioner, family", "Prospect", "CT", "medical"],
+    ["10-30", "Leominster Dental Studio", "Dentist, general", "Leominster", "MA", "dental"],
+    ["10-31", "Ota Physical Therapy And Performance, LLC", "Physical therapist", "Honolulu", "HI", "therapy"],
+    ["10-31", "Angel's Breeze RCFE LLC", "Assisted living", "Granada Hills", "CA", "home_senior"],
+    ["10-31", "Cocoon Transit Of Georgia LLC", "Non-emergency medical transport", "Atlanta", "GA", "dme_transport"],
+    ["10-31", "A Guided Path LLC", "Behavior analyst", "Port St Lucie", "FL", "behavioral"],
+    ["10-31", "VIP Convenient Care And Wellness, PLLC", "Nurse practitioner, family", "Lumberton", "NC", "medical"],
+    ["10-30", "Terri Todaro DDS", "Dentist", "Livonia", "MI", "dental"],
+    ["10-31", "Speech Focused", "Speech-language pathologist", "Baltimore", "MD", "therapy"],
+    ["10-31", "Carneden Ent LLC", "Assisted living", "Irving", "TX", "home_senior"],
+    ["10-31", "Humanity Ride LLC", "Non-emergency medical transport", "Pueblo", "CO", "dme_transport"],
+    ["10-31", "Kaweah Delta Health Care Inc", "Social worker", "Visalia", "CA", "behavioral"],
+    ["10-31", "Jolis Health Care Services, LLC", "Nurse practitioner, family", "Pembroke Pines", "FL", "medical"]
   ];
   var fmt = function(n){ return n.toLocaleString('en-US'); };
   var $ = function(id){ return document.getElementById(id); };

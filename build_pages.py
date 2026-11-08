@@ -57,11 +57,11 @@ CAT_LEAD = {"behavioral": "Behavioral Health", "medical": "Medical Practice", "d
 BUYERS = "credentialing & billing companies"          # who the pages are for (titles, headlines, descriptions)
 CAT_SLUG = {"behavioral": "behavioral-health", "medical": "medical-practices", "dental": "dental", "therapy": "therapy-rehab",
             "home_senior": "home-care-senior-living", "dme_transport": "dme-pharmacy-transport"}
-CAT_WHO = {"behavioral": "counselors, social workers, psychologists, psychiatry and psychiatric NPs, ABA providers and substance-use programs",
-           "medical": "physicians, nurse practitioners, PAs, primary care and specialty clinics, urgent care and medical groups",
+CAT_WHO = {"behavioral": "counselors, social workers, psychologists, psychiatry and psychiatric NPs, ABA providers, residential treatment, substance-use programs and peer specialists",
+           "medical": "physicians, nurse practitioners, PAs, midwives, primary care and specialty clinics, urgent care, surgery centers and medical groups",
            "dental": "general dentists, dental specialists, hygienists, dental groups and clinics",
            "therapy": "physical, occupational and speech therapy, chiropractic, podiatry, optometry, acupuncture and dietitians",
-           "home_senior": "home health agencies, in-home and personal care, assisted living, nursing facilities, hospice and case management",
+           "home_senior": "home health agencies, in-home and companion care, assisted living, nursing facilities, hospice, IDD group homes, day habilitation and case management",
            "dme_transport": "durable medical equipment suppliers, pharmacies, non-emergency medical transport and ambulance services"}
 CAT_COLOR = {"behavioral": "#6d28d9", "medical": "#2563eb", "dental": "#be185d", "therapy": "#047857", "home_senior": "#b45309", "dme_transport": "#c2410c"}
 STATES = {"AL": "Alabama", "AK": "Alaska", "AZ": "Arizona", "AR": "Arkansas", "CA": "California", "CO": "Colorado", "CT": "Connecticut",
@@ -130,11 +130,14 @@ def short_date(iso: str) -> str:
 SUFFIX = {"llc": "LLC", "pllc": "PLLC", "pc": "PC", "pa": "PA", "inc": "Inc", "ltd": "Ltd", "lp": "LP", "llp": "LLP", "md": "MD",
           "do": "DO", "dds": "DDS", "dmd": "DMD", "od": "OD", "dpm": "DPM", "phd": "PhD", "np": "NP", "rn": "RN", "lcsw": "LCSW",
           "cpa": "CPA", "sc": "SC", "ii": "II", "iii": "III", "iv": "IV", "dba": "DBA", "aba": "ABA", "ems": "EMS", "dme": "DME",
-          "usa": "USA", "nyc": "NYC", "la": "LA", "pt": "PT", "ot": "OT"}
+          "usa": "USA", "nyc": "NYC", "la": "LA", "pt": "PT", "ot": "OT",
+          "vip": "VIP", "rcfe": "RCFE", "lmft": "LMFT", "lpc": "LPC", "lmhc": "LMHC", "lcpc": "LCPC", "bcba": "BCBA", "aprn": "APRN",
+          "fnp": "FNP", "pmhnp": "PMHNP", "slp": "SLP", "dpt": "DPT", "lhcsa": "LHCSA", "hcbs": "HCBS", "idd": "IDD", "adhd": "ADHD"}
 
 
 def nice_name(n: str) -> str:
     n = re.sub(r"\b(\d+)(St|Nd|Rd|Th)\b", lambda m: m.group(1) + m.group(2).lower(), n)     # 1St -> 1st
+    n = re.sub(r"(\w)'S\b", r"\1's", n)                                                      # Angel'S -> Angel's
     out = []
     for w in n.split():
         key = re.sub(r"[^a-z]", "", w.lower())
@@ -199,6 +202,7 @@ def ingest(data: dict, week_end: str, leads: list[dict]):
             specs[st][c] = _top_specs([l for l in ls if l["category"] == c])
         orgs[st] = sum(1 for l in ls if l["entity"] == "practice/organization")
     data["samples"], data["cities"], data["specialties"], data["orgs"] = samples, cities, specs, orgs
+    data["feed"] = _feed(leads)
     usable = [l for l in leads if l["category"] in CATS]               # territories outside STATES still count nationally
     data["national"] = {"total": len(usable), "orgs": sum(1 for l in usable if l["entity"] == "practice/organization"),
                         "cats": [sum(1 for l in usable if l["category"] == c) for c in CATS], "states": len(counts)}
@@ -218,6 +222,28 @@ def _spread(ls: list[dict], n: int) -> list:
         if buckets[c]:
             out.append(_row(buckets[c].pop(0)))
         i += 1
+    return out
+
+
+def _feed(leads: list[dict], n: int = 26) -> list:
+    """The homepage's live feed (Nov 8, 2026: it showed an October week under 'week ending Nov 1'): n organizations
+    from the newest week, newest first, taking the categories in turn and no state twice in a row of six."""
+    orgs = [l for l in leads if l.get("entity") == "practice/organization" and l.get("category") in CATS
+            and l.get("state") in STATES and l.get("name") and l.get("city") and not CODE_RE.match(l.get("specialty") or "")
+            and not (l.get("taxonomy") or "").startswith(("27", "28"))          # hospitals: not who billing firms call
+            and not re.search(r"\blimo\b|\bholdings?\b|\benterprises?\b", l["name"], re.I)]
+    orgs.sort(key=lambda l: l.get("registered", ""), reverse=True)
+    buckets = {c: [l for l in orgs if l["category"] == c] for c in CATS}
+    out, recent, i = [], [], 0
+    while len(out) < n and any(buckets.values()):
+        c = CATS[i % len(CATS)]
+        i += 1
+        pick = next((l for l in buckets[c] if l["state"] not in recent), None) or (buckets[c][0] if buckets[c] else None)
+        if not pick:
+            continue
+        buckets[c].remove(pick)
+        recent = (recent + [pick["state"]])[-6:]
+        out.append([pick["registered"][5:], nice_name(pick["name"]), pick["specialty"], pick["city"].title(), pick["state"], c])
     return out
 
 
@@ -355,6 +381,7 @@ section{margin:34px 0}
 table{width:100%;border-collapse:collapse;font-size:14px}th{text-align:left;color:var(--dim);font-size:12px;text-transform:uppercase;letter-spacing:.06em;padding:8px 10px;border-bottom:1px solid var(--line)}
 td{padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}td:first-child,td:nth-child(5){white-space:nowrap}tr:last-child td{border-bottom:0}td.n{font-weight:600;color:var(--ink)}td.r,th.r{text-align:right;font-variant-numeric:tabular-nums}
 .tscroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.who-m{display:none}@media (max-width:600px){th.who,td.who{display:none}.who-m{display:block;white-space:normal;margin-top:3px;color:var(--muted);font-size:12.5px;font-weight:400;line-height:1.45}}
 .pill{display:inline-block;font-size:11px;font-weight:700;padding:3px 8px;border-radius:999px;background:var(--bg2);white-space:nowrap}
 .cta{display:inline-block;background:var(--ink);color:#fff;font-weight:600;padding:13px 22px;border-radius:10px;text-decoration:none;font-size:15px;box-shadow:0 8px 24px -8px rgba(15,35,64,.45)}
 .cta:hover{background:#1a365d}
@@ -399,6 +426,7 @@ def shell(title: str, desc: str, path: str, body: str, jsonld: dict | None = Non
 <meta name="description" content="{esc(desc)}">
 <link rel="canonical" href="{url}">
 <meta property="og:title" content="{esc(title)}"><meta property="og:description" content="{esc(desc)}"><meta property="og:url" content="{url}"><meta property="og:type" content="website">
+<meta property="og:image" content="{SITE}/og-image.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:site_name" content="PanelReady"><meta name="twitter:card" content="summary_large_image">
 <meta name="theme-color" content="#f6f8fb">
 <link rel="icon" href="{root}favicon.svg" type="image/svg+xml"><link rel="icon" href="{root}favicon-32.png" sizes="32x32" type="image/png"><link rel="apple-touch-icon" href="{root}apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -690,7 +718,7 @@ def state_page(data: dict, st: str) -> str:
 
 <section><h2>{esc(name)} by category</h2>
 <p class="lead" style="font-size:16px">One state, one category is ${CAT_PRICE}/month; every category is ${ALL_PRICE}/month; three states are ${MULTI_PRICE}/month; every state is ${NATIONAL_PRICE}/month; just your local area (a ZIP code and a radius) is ${LOCAL_PRICE}/month. {('Weekly pages for: ' + ', '.join(f'<a href="{cat_pages[c]}">{esc(CAT_TITLE[c])}</a>' for c in CATS if c in cat_pages) + '.') if cat_pages else 'Category pages appear once a category has ' + str(CAT_PAGE_MIN) + '+ new practices in a week.'}</p>
-<div class="tscroll"><table><thead><tr><th>Category</th><th>Who is in it</th><th class="r">This week</th><th class="r">4-wk avg</th></tr></thead><tbody>
+<div class="tscroll"><table><thead><tr><th>Category</th><th class="who">Who is in it</th><th class="r">This week</th><th class="r">4-wk avg</th></tr></thead><tbody>
 {''.join(cat_row(data, st, c, v, cat_pages) for c in CATS)}
 </tbody></table></div></section>
 
@@ -717,7 +745,8 @@ def state_page(data: dict, st: str) -> str:
 
 def cat_row(data: dict, st: str, c: str, v: list, cat_pages: dict) -> str:
     label = f'<a href="{cat_pages[c]}">{esc(CAT_TITLE[c])}</a>' if c in cat_pages else esc(CAT_TITLE[c])
-    return (f'<tr><td class="n">{label}</td><td style="color:var(--muted)">{esc(CAT_WHO[c])}</td><td class="r">{fmt(v[CATS.index(c)])}</td>'
+    return (f'<tr><td class="n">{label}<small class="who-m">{esc(CAT_WHO[c])}</small></td><td class="who" style="color:var(--muted)">{esc(CAT_WHO[c])}</td>'
+            f'<td class="r">{fmt(v[CATS.index(c)])}</td>'
             f'<td class="r">{fmt(avg4(state_series(data, st, c)))}</td></tr>')
 
 
@@ -1879,6 +1908,12 @@ def refresh_landing(data: dict) -> list[str]:
     sub("updated", r'(<span class="upd" id="updated">Data updated for the week ending )[^.<]+', lambda m: m.group(1) + long_date(latest))
     s = re.sub(r'(<span class="wkiso">)\d{4}-\d{2}-\d{2}', lambda m: m.group(1) + latest, s)
     sub("mail card count", r'(- NY, Behavioral Health: <b>)[\d,]+', lambda m: m.group(1) + fmt(ny[0]))
+    s = re.sub(r'(<span class="wklong">)[^<]+', lambda m: m.group(1) + long_date(latest), s)
+    wk = dt.date.fromisoformat(latest)
+    s = re.sub(r"(PanelReady_NY_week_of_)[A-Z][a-z]{2}_\d{1,2}_\d{4}(\.xlsx)", lambda m: f"{m.group(1)}{wk:%b}_{wk.day}_{wk.year}{m.group(2)}", s)
+    if data.get("feed"):                                  # the hero's live feed: real organizations from the newest week
+        rows = ",\n".join("    " + json.dumps(r, ensure_ascii=False) for r in data["feed"])
+        sub("feed", r"(var FEED = \[\n)[\s\S]*?(\n  \];)", lambda m: m.group(1) + rows + m.group(2))
     if data.get("sample"):
         ext = "xlsx" if data["sample"].get("xlsx") else "csv"
         sub("sample link", r'<a href="sample/panelready-sample\.(?:csv|xlsx)" id="sampleDl">[^<]*(</a> \()[^)]*\)', lambda m: f'<a href="sample/panelready-sample.{ext}" id="sampleDl">Download a full sample spreadsheet{m.group(1)}{STATES[data["sample"]["state"]]}, {fmt(data["sample"]["rows"])} rows, every column, nothing masked)')
