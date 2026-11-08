@@ -204,6 +204,8 @@
   .orzip{font-size:13px;color:var(--muted);margin:-4px 0 12px}.orzip a{cursor:pointer}
   .plan{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:30px;position:relative;box-shadow:var(--shadow)}
   .plan.best{border-color:rgba(14,124,123,.6);box-shadow:0 30px 60px -24px rgba(14,124,123,.35),0 1px 2px rgba(15,35,64,.06)}
+  .plan.mine{border-color:var(--teal);outline:3px solid rgba(14,124,123,.35);outline-offset:2px}
+  .mine-tag{display:block;margin:0 0 10px;padding:8px 12px;border-radius:10px;background:rgba(14,124,123,.1);color:var(--teal);font-size:13.5px;font-weight:600;line-height:1.4}
   .badge{position:absolute;top:-13px;left:26px;background:var(--teal);color:#fff;font-size:12px;font-weight:700;padding:5px 12px;border-radius:999px;letter-spacing:.02em}
   .plan .name{font-weight:600;color:var(--muted);font-size:15px}
   .price{font-family:"Source Serif 4",Georgia,serif;font-size:54px;font-weight:600;letter-spacing:-.03em;margin:6px 0 0;line-height:1;color:var(--ink)}
@@ -751,7 +753,7 @@ The TOP 25 are marked; the outreach kit (call script + email template) is attach
     if (!/^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i.test(body.email || '')) { msgEl.className = 'msg bad'; msgEl.textContent = 'Please enter a work email address.'; return; }
     if (btn) { btn.disabled = true; btn.setAttribute('data-label', btn.textContent); btn.textContent = 'Sending\u2026'; } msgEl.className = 'msg'; msgEl.textContent = '';
     if (body.zip && !/^\d{5}$/.test(body.zip)) { msgEl.className = 'msg bad'; msgEl.textContent = 'Please enter a 5-digit ZIP code.'; return; }
-    var where = body.zip ? 'within ' + (parseInt(body.radius, 10) || 25) + ' miles of ' + body.zip : String(body.state || '').split(',').map(function(s){ return NAMES[s] || s; }).join(', ');
+    var where = body.zip ? 'within ' + (parseInt(body.radius, 10) || 25) + ' miles of ' + body.zip : (extra && extra.sub && (bought === 'national' || bought === 'niche')) ? 'every state' : String(body.state || '').split(',').map(function(s){ return NAMES[s] || s; }).join(', ');
     var mail = MAILTO + '&body=' + encodeURIComponent('Please send me the next two lists.\nWhere: ' + where + '\nCategory: ' + (body.zip || body.category === 'all' ? 'all categories' : NICE[body.category]) + '\nCompany: ' + (body.company || '') + '\nEmail: ' + body.email);
     var undo = function(){ if (btn) { btn.disabled = false; btn.textContent = btn.getAttribute('data-label') || btn.textContent; } };
     var fail = function(){ undo(); msgEl.className = 'msg bad'; msgEl.innerHTML = 'That didn\'t go through. <a href="' + mail + '">Send it by email instead</a> and we\'ll set it up by hand.'; };
@@ -774,13 +776,31 @@ The TOP 25 are marked; the outreach kit (call script + email template) is attach
     if (bought === 'all' || bought === 'multi' || every) extra.category = 'all';   // national, niche: every state, set by the PC
     extra.specialties = bought === 'niche' ? $('pdSpec').value : '';
     post(this, $('paidMsg'), this.querySelector('button'), extra); };
-  if (qs.state && $('free')) setTimeout(function(){ $('free').scrollIntoView({behavior: reduce ? 'auto' : 'smooth'}); }, 300);
+  if (qs.state && !qs.pay && $('free')) setTimeout(function(){ $('free').scrollIntoView({behavior: reduce ? 'auto' : 'smooth'}); }, 300);
 
   // ---- PayPal
   // PayPal plan ids, monthly (m) and yearly (y). A missing id shows the email fallback instead of a button.
   var PLANS = {"local": {"m": "P-167553502R680420TNLLBXAQ", "y": "P-1WK68279M99169438NLLBXRI"}, "cat": {"m": "P-3LM945184V097602ENLGJTCY", "y": "P-5L986763S8747390VNLLBWEY"}, "all": {"m": "P-89S96425784666029NLLBVBI", "y": "P-01G78206SN901843UNLLBVTQ"}, "multi": {"m": "P-14P32363S82796315NLLBYJA", "y": "P-4UH914937S789304WNLLBY4A"}, "niche": {"m": "P-62043299VG738332CNLXN2IQ", "y": "P-0MN92348BH9230837NLXN26I"}, "national": {"m": "P-7U970114J3667782YNLWHP6I", "y": "P-80986284DX6262020NLWHQ5Y"}};
   var MAIL = 'Want the free lists first, no card? <a href="#free">Use the form above</a>.';
   var bought = '', billing = 'm';
+  // ---- one-click links from the trial emails (Nov 8, 2026): ?pay=<plan>&state=..&cat=..&spec=..&zip=..&radius=..#e=<email>
+  // pick out that plan's card; after PayPal, fill in the territory and email and send them in (no form to fill)
+  var PAY = PLANS[qs.pay] ? { plan: qs.pay, states: String(qs.state || '').toUpperCase().split(',').filter(function(x){ return NAMES[x]; }),
+    cat: String(qs.cat || '').toLowerCase(), spec: String(qs.spec || '').toLowerCase(), zip: String(qs.zip || ''), radius: String(qs.radius || ''), email: '' } : null;
+  if (PAY) {
+    try { var em = (location.hash.match(/[#&]e=([A-Za-z0-9_-]+)/) || [])[1]; if (em) PAY.email = decodeURIComponent(escape(atob(em.replace(/-/g, '+').replace(/_/g, '/')))); } catch (e) {}
+    var card = $('paypal-' + PAY.plan) && $('paypal-' + PAY.plan).closest('.plan');
+    if (card) {
+      var words = PAY.plan === 'local' ? (PAY.zip ? 'Within ' + (PAY.radius || 25) + ' miles of ' + PAY.zip : 'Your local area')
+        : PAY.plan === 'niche' ? ((SPECS.filter(function(g){ return g[0] === PAY.spec; })[0] || [0, 'One specialty'])[1].split(' (')[0] + ', every state')
+        : PAY.plan === 'national' ? 'Every state' : (PAY.plan === 'cat' && NICE[PAY.cat] ? NICE[PAY.cat] + ' in ' : 'Every category in ') + PAY.states.map(function(x){ return NAMES[x]; }).join(', ');
+      card.classList.add('mine');
+      var tag = document.createElement('div'); tag.className = 'mine-tag';
+      tag.textContent = 'Your plan: ' + words + '. Pay with PayPal below and your lists continue right away; nothing else to fill in.';
+      var at = card.querySelector('.paybox'); at.parentNode.insertBefore(tag, at);
+      setTimeout(function(){ card.scrollIntoView({behavior: reduce ? 'auto' : 'smooth', block: 'center'}); }, 300);
+    }
+  }
   function afterPay(id, subId){
     bought = id; $('pdSub').value = subId || '';
     $('pdOne').style.display = (id === 'local' || id === 'national' || id === 'niche') ? 'none' : ''; $('pdZipBox').style.display = id === 'local' ? '' : 'none';
@@ -788,6 +808,17 @@ The TOP 25 are marked; the outreach kit (call script + email template) is attach
     $('pdMore').style.display = id === 'multi' ? '' : 'none'; $('pdCatBox').style.display = id === 'cat' ? '' : 'none';
     if (id !== 'cat') $('pdCat').value = 'all';
     var t = $('thanks'); t.style.display = 'block'; t.scrollIntoView({behavior:'smooth'});
+    if (PAY && PAY.plan === id && PAY.email) {           // from a one-click link: their details are known
+      $('pdEmail').value = PAY.email;
+      if (PAY.states[0]) $('pdState').value = PAY.states[0];
+      if (PAY.states[1]) $('pdState2').value = PAY.states[1];
+      if (PAY.states[2]) $('pdState3').value = PAY.states[2];
+      if (id === 'cat' && NICE[PAY.cat]) $('pdCat').value = PAY.cat;
+      if (PAY.zip) { $('pdZip').value = PAY.zip; $('pdRadius').value = PAY.radius || 25; }
+      if (PAY.spec) $('pdSpec').value = PAY.spec;
+      var ready = id === 'local' ? /^\d{5}$/.test(PAY.zip) : id === 'niche' ? !!$('pdSpec').value : (id === 'national' || !!PAY.states[0]);
+      if (ready) $('paidForm').onsubmit.call($('paidForm'), { preventDefault: function(){} });
+    }
   }
   function sub(id){
     var fb = $('fb-' + id), box = $('paypal-' + id), planId = (PLANS[id] || {})[billing];
