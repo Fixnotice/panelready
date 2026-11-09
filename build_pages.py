@@ -34,7 +34,7 @@ for cand in (ROOT, HERE):                            # pr/npi.py lives in the pr
 from pr import npi as N                              # noqa: E402
 
 SITE = "https://panelready.co"                       # the site's address, no trailing slash (the old github.io address redirects here)
-BUILD_VERSION = 23                                    # bump when the page layout changes, so the next run rewrites every page
+BUILD_VERSION = 24                                    # bump when the page layout changes, so the next run rewrites every page
 COMPANY = "Avery Data Co."
 PAYPAL_CLIENT_ID = "BAAQ4G4Hizw2wHo9EZQsTxcW_oBtYKOFEIoI41YQZJvC8ufp2vM9Z_lIU4ASqIUZvXAUrin0KLaYIpr8Js"   # the "PanelReady site" app on developer.paypal.com (Live); one-time orders
 PAYPAL_ME = ""                                       # optional plan B: a PayPal.me handle (e.g. "averydataco"); shown as a second way to pay $39
@@ -445,6 +445,7 @@ def shell(title: str, desc: str, path: str, body: str, jsonld: dict | None = Non
 {BRAND} · <a href="mailto:{MAIL}">{MAIL}</a> · an {COMPANY} product, New York<br>
 Source: NPPES weekly dissemination files published by CMS. Public data, provided as-is; not affiliated with CMS or any payer. Practice names are from the public registry; phone numbers are masked on this page and complete in the subscriber spreadsheet.</footer>
 </div>
+<script src="{root}chat.js" defer></script>
 </body>
 </html>
 """
@@ -1878,6 +1879,28 @@ LANDING_WORDING = [
 ]
 
 
+def specs_json() -> str | None:
+    """The specialty groups as [[key, label, category], ...] for the homepage's trial form and the help chat, from
+    pr/specialty.py (on the PC; the GitHub job has no specialty.py and leaves both lists as they are)."""
+    try:
+        from pr import specialty as SPC
+    except ImportError:
+        return None
+    return json.dumps([[g["key"], g["label"], g["category"]] for g in SPC.catalog()], ensure_ascii=False, separators=(",", ":"))
+
+
+def refresh_chat() -> bool:
+    """chat.js (the help chat on every page) carries the specialty list; rewrite it when pr/specialty.py changed."""
+    p, specs = HERE / "chat.js", specs_json()
+    if specs is None or not p.exists():
+        return False
+    s = p.read_text(encoding="utf-8")
+    new = re.sub(r"var SPECS = /\*SPECS\*/\[.*?\];", lambda m: f"var SPECS = /*SPECS*/{specs};", s, count=1, flags=re.S)
+    if new != s:
+        p.write_text(new, encoding="utf-8")
+    return new != s
+
+
 def refresh_landing(data: dict) -> list[str]:
     """Update the numbers baked into index.html (state picker, stats, dates). Each edit is skipped if its anchor isn't found."""
     p = HERE / "index.html"
@@ -1909,6 +1932,9 @@ def refresh_landing(data: dict) -> list[str]:
     s = re.sub(r'(<span class="wkiso">)\d{4}-\d{2}-\d{2}', lambda m: m.group(1) + latest, s)
     sub("mail card count", r'(- NY, Behavioral Health: <b>)[\d,]+', lambda m: m.group(1) + fmt(ny[0]))
     s = re.sub(r'(<span class="wklong">)[^<]+', lambda m: m.group(1) + long_date(latest), s)
+    specs = specs_json()
+    if specs:                                             # the trial form's specialty list follows pr/specialty.py
+        s = re.sub(r"(  var SPECS = )\[\[.*?\]\];", lambda m: m.group(1) + specs + ";", s, count=1)
     wk = dt.date.fromisoformat(latest)
     s = re.sub(r"(PanelReady_NY_week_of_)[A-Z][a-z]{2}_\d{1,2}_\d{4}(\.xlsx)", lambda m: f"{m.group(1)}{wk:%b}_{wk.day}_{wk.year}{m.group(2)}", s)
     if data.get("feed"):                                  # the hero's live feed: real organizations from the newest week
@@ -2015,6 +2041,7 @@ def main():
     copy_pr()
     paths = build(data)
     miss = refresh_landing(data)
+    refresh_chat()
     if moved or data.get("sample"):
         data["site"], data["build"] = SITE, BUILD_VERSION
         save(data)
