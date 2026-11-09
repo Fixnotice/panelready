@@ -164,7 +164,7 @@
      a: "Across the country, about 4,000 to 5,000 practices and sole proprietors a week after filtering; a big state like New York or Texas has a couple hundred. Ask me for a state or specialty (\"how many new PT practices in Florida?\") and I'll look up the latest week.",
      r: ["states"], go: "counts"},
     {id: "contact", t: "How do I contact you?", k: ["contact", "talk to", "speak to", "human", "real person", "phone number for you", "call you", "email you", "support", "help me", "matt"],
-     a: "Email " + '<a href="mailto:' + MAIL + '">' + MAIL + "</a>, or type your question here and I'll pass it to Matt; he replies by email.",
+     a: "Email " + '<a href="mailto:' + MAIL + '">' + MAIL + "</a>, or type your question here and I'll pass it to Matt, PanelReady's founder; he replies by email.",
      r: [], go: "ask"},
   ];
   var BY = {};
@@ -318,7 +318,7 @@
     launch.type = "button"; launch.setAttribute("aria-label", "Open the PanelReady help chat"); launch.setAttribute("aria-expanded", "false");
     panel = el("div", "prc-panel");
     panel.setAttribute("role", "dialog"); panel.setAttribute("aria-label", "PanelReady help"); panel.setAttribute("aria-modal", "false");
-    var head = el("div", "prc-head", LOGO + '<div><b>PanelReady help</b><span>Answers right away · Matt replies by email</span></div>');
+    var head = el("div", "prc-head", LOGO + '<div><b>PanelReady help</b><span>Instant answers · A real person replies by email</span></div>');
     var x = el("button", "prc-x", "&times;"); x.type = "button"; x.setAttribute("aria-label", "Close the help chat");
     head.appendChild(x);
     log = el("div", "prc-log"); log.setAttribute("aria-live", "polite");
@@ -329,7 +329,7 @@
     var hp = el("input", "prc-hp"); hp.name = "website"; hp.tabIndex = -1; hp.setAttribute("autocomplete", "off"); hp.setAttribute("aria-hidden", "true");
     form.appendChild(hp); form.appendChild(input); form.appendChild(send);
     panel.appendChild(head); panel.appendChild(log); panel.appendChild(form);
-    panel.appendChild(el("div", "prc-note", "Questions you send to Matt go by email. " + '<a href="' + ROOT + 'privacy/" style="color:inherit">Privacy</a>'));
+    panel.appendChild(el("div", "prc-note", "Questions you send here are answered by email. " + '<a href="' + ROOT + 'privacy/" style="color:inherit">Privacy</a>'));
     root.appendChild(panel); root.appendChild(launch);
     document.body.appendChild(root);
 
@@ -385,10 +385,10 @@
     return [chip("How does it work?", function () { answer(BY.how); }), chip("Pricing", function () { answer(BY.pricing); }),
       chip("Start my free trial", startTrial), chip("What's in a list?", function () { answer(BY.inlist); }),
       chip("Live counts", function () { startCounts(""); }), chip("Email me my account link", startLink),
-      chip("Ask Matt a question", function () { startAsk(""); })];
+      chip("Talk to a person", function () { startAsk(""); })];
   };
   function greet() {
-    say("Hi! I can answer questions about PanelReady's weekly lists, plans and your account, start your two free lists, look up how many new practices registered, or pass a question to Matt. What can I help with?", MENU(), 350);
+    say("Hi! I can answer questions about PanelReady's weekly lists, plans and your account, start your two free lists, look up how many new practices registered, or connect you with a person. What can I help with?", MENU(), 350);
   }
 
   function setPlaceholder(t) { input.placeholder = t || "Type your question…"; }
@@ -400,7 +400,7 @@
     if (e.go === "trial") chips.unshift(chip("Start my free trial", startTrial));
     if (e.go === "link") chips.unshift(chip("Email me my account link", startLink));
     if (e.go === "counts") chips.unshift(chip("Look up counts", function () { startCounts(""); }));
-    if (e.go === "ask") chips.unshift(chip("Ask Matt a question", function () { startAsk(""); }));
+    if (e.go === "ask") chips.unshift(chip("Talk to a person", function () { startAsk(""); }));
     else if (e.id !== "trial" && e.id !== "pricing") chips.push(chip("Something else", function () { say("Sure: type your question, or pick one:", MENU()); }, true));
     return say(e.a, chips.slice(0, 5));
   }
@@ -436,15 +436,15 @@
       var e = b[0].e;
       if (b[0].s < 5 && words(text).length >= 6)           // a long question that only half matches: offer Matt too
         return answer(e).then(function () {
-          return say("Not quite what you asked?", [chip("Send my question to Matt", function () { startAsk(text); })], 200);
+          return say("Not quite what you asked?", [chip("Send it to a person", function () { startAsk(text); })], 200);
         });
       return answer(e).then(function () {
         if (b[1] && b[1].s >= 3 && b[1].s >= b[0].s - 1 && b[1].e.id !== e.id && (e.r || []).indexOf(b[1].e.id) < 0)
           return say("You might also mean:", [chip(b[1].e.t, function () { answer(b[1].e); })], 200);
       });
     }
-    return say("I don't have a written answer for that one. Want me to send it to Matt? He'll reply by email.",
-      [chip("Yes, send it to Matt", function () { startAsk(text); }), chip("Show me the menu", function () { say("Here's what I can help with:", MENU()); }, true)]);
+    return say("I don't have an answer for that one yet. Want me to pass it to Matt, PanelReady's founder? He'll reply by email.",
+      [chip("Yes, pass it on", function () { startAsk(text); }), chip("Show me the menu", function () { say("Here's what I can help with:", MENU()); }, true)]);
   }
 
   // ------------------------------------------------------------------ flows
@@ -560,15 +560,15 @@
       busy = false; flow = null; setPlaceholder();
       if (!j.ok) return say(esc(j.error || "That didn't go through.") + " You can also use the " + L("account/", "account page") + ".", MENU());
       return say("Done. If <b>" + esc(text.toLowerCase()) + "</b> has a PanelReady subscription, a sign-in link is on its way (within the hour). " +
-        "On the free trial? Your lists come by email; the account page opens once you subscribe.", [chip("Pricing", function () { answer(BY.pricing); }), chip("Ask Matt a question", function () { startAsk(""); }, true)]);
+        "On the free trial? Your lists come by email; the account page opens once you subscribe.", [chip("Pricing", function () { answer(BY.pricing); }), chip("Talk to a person", function () { startAsk(""); }, true)]);
     }).catch(function () { busy = false; flow = null; setPlaceholder(); return say("I couldn't reach the server. Try the " + L("account/", "account page") + ", or email " + MAIL + "."); });
   }
 
   // a question for Matt: the question, their email, then POST /ask (or a ready-made email if that fails)
   function startAsk(q) {
     flow = {type: "ask", d: {question: q || ""}, step: q ? "email" : "question"};
-    setPlaceholder(q ? "you@yourcompany.com" : "Your question for Matt");
-    return say(q ? "Sure. What email should Matt reply to?" : "Sure: what would you like to ask Matt? Type it in your own words.", [cancelChip()]);
+    setPlaceholder(q ? "you@yourcompany.com" : "Your question");
+    return say(q ? "Sure. What email should Matt reply to?" : "Sure: what would you like to ask? Matt, PanelReady's founder, will reply by email.", [cancelChip()]);
   }
   function askStep(f, text, honey) {
     if (f.step === "question") {
