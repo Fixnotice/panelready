@@ -6,7 +6,6 @@
   <url><loc>https://panelready.co/states/alabama/</loc><lastmod>2026-11-08</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
   <url><loc>https://panelready.co/states/alabama/behavioral-health/</loc><lastmod>2026-11-08</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
   <url><loc>https://panelready.co/states/alabama/medical-practices/</loc><lastmod>2026-11-08</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
-  <url><loc>https://panelready.co/states/alabama/therapy-rehab/</loc><lastmod>2026-11-08</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
   <url><loc>https://panelready.co/states/alaska/</loc><lastmod>2026-11-08</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
   <url><loc>https://panelready.co/states/arizona/</loc><lastmod>2026-11-08</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
   <url><loc>https://panelready.co/states/arizona/behavioral-health/</loc><lastmod>2026-11-08</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
@@ -17,6 +16,7 @@
   <url><loc>https://panelready.co/states/arkansas/</loc><lastmod>2026-11-08</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
   <url><loc>https://panelready.co/states/arkansas/behavioral-health/</loc><lastmod>2026-11-08</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
   <url><loc>https://panelready.co/states/arkansas/medical-practices/</loc><lastmod>2026-11-08</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://panelready.co/states/arkansas/therapy-rehab/</loc><lastmod>2026-11-08</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
   <url><loc>https://panelready.co/states/california/</loc><lastmod>2026-11-08</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
   <url><loc>https://panelready.co/states/california/behavioral-health/</loc><lastmod>2026-11-08</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
   <url><loc>https://panelready.co/states/california/medical-practices/</loc><lastmod>2026-11-08</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
@@ -32,7 +32,6 @@
   <url><loc>https://panelready.co/states/colorado/dme-pharmacy-transport/</loc><lastmod>2026-11-08</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
   <url><loc>https://panelready.co/states/connecticut/</loc><lastmod>2026-11-08</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
   <url><loc>https://panelready.co/states/connecticut/behavioral-health/</loc><lastmod>2026-11-08</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
-  <url><loc>https://panelready.co/states/connecticut/therapy-rehab/</loc><lastmod>2026-11-08</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
   <url><loc>https://panelready.co/states/delaware/</loc><lastmod>2026-11-08</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
   <url><loc>https://panelready.co/states/washington-dc/</loc><lastmod>2026-11-08</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
   <url><loc>https://panelready.co/states/washington-dc/behavioral-health/</loc><lastmod>2026-11-08</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
@@ -56,13 +55,15 @@
   <url><loc>https://panelready.co/states/illinois/</loc><lastmod>2026-11-08</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
   <url><loc>https://panelready.co/states/illinois/behavioral-health/</loc><lastmod>2026-11-08</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
   <url><loc>https://panelready.co/states/illinois/medical-practices/</loc><lastmod>2026-11-08</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
-  <url><loc>https://panelready.co/states/illinois/dental/</loc><lastmod>2026-11-08</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
   <url><loc>https://panelready.co/states/illinois/therapy-rehab/</loc><lastmod>2026-11-08</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
   <url><loc>https://panelready.co/states/illinois/home-care-senior-living/</loc><lastmod>2026-11-08</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
   <url><loc>https://panelready.co/states/illinois/dme-pharmacy-transport/</loc><lastmod>2026-11-08</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
   <url><loc>https://panelready.co/states/indiana/</loc><lastmod>2026-11-08</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
   <url><loc>https://panelready.co/states/indiana/behavioral-health/</loc><lastmod>2026-11-08</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
   <url><loc>https://panelready.co/states/indiana/medical-practices/</loc><lastmod>2026-11-08</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://panelready.co/states/indiana/therapy-rehab/</loc><lastmod>2026-11-08</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://panelready.co/states/indiana/home-care-senior-living/</loc><lastmod>2026-11-08</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://panelready.co/states/indiana/dme-pharmacy-transport/</loc><lastmod>2026-11-08</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
   <url><loc>https://panelready.co/states/iowa/</loc><lastmod>2026-11-08</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
   <url><loc>https://panelready.co/states/iowa/behavioral-health/</loc><lastmod>2026-11-08</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
   <url><loc>https://panelready.co/states/iowa/home-care-senior-living/</loc><lastmod>2026-11-08</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
@@ -74,7 +75,6 @@
   <url><loc>https://panelready.co/states/louisiana/</loc><lastmod>2026-11-08</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
   <url><loc>https://panelready.co/states/louisiana/behavioral-health/</loc><lastmod>2026-11-08</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
   <url><loc>https://panelready.co/states/louisiana/medical-practices/</loc><lastmod>2026-11-08</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
-  <url><loc>https://panelready.co/states/louisiana/home-care-senior-living/</loc><lastmod>2026-11-08</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
   <url><loc>https://panelready.co/states/louisiana/dme-pharmacy-transport/</loc><lastmod>2026-11-08</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
   <url><loc>https://panelready.co/states/maine/</loc><lastmod>2026-11-08</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
   <url><loc>https://panelready.co/states/maryland/</loc><lastmod>2026-11-08</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
@@ -96,16 +96,13 @@
   <url><loc>https://panelready.co/states/michigan/dme-pharmacy-transport/</loc><lastmod>2026-11-08</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
   <url><loc>https://panelready.co/states/minnesota/</loc><lastmod>2026-11-08</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
   <url><loc>https://panelready.co/states/minnesota/behavioral-health/</loc><lastmod>2026-11-08</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
-  <url><loc>https://panelready.co/states/minnesota/medical-practices/</loc><lastmod>2026-11-08</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
-  <url><loc>https://panelready.co/states/minnesota/therapy-rehab/</loc><lastmod>2026-11-08</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
   <url><loc>https://panelready.co/states/minnesota/home-care-senior-living/</loc><lastmod>2026-11-08</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
   <url><loc>https://panelready.co/states/mississippi/</loc><lastmod>2026-11-08</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
   <url><loc>https://panelready.co/states/missouri/</loc><lastmod>2026-11-08</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
   <url><loc>https://panelready.co/states/missouri/behavioral-health/</loc><lastmod>2026-11-08</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
   <url><loc>https://panelready.co/states/missouri/medical-practices/</loc><lastmod>2026-11-08</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
-  <url><loc>https://panelready.co/states/missouri/home-care-senior-living/</loc><lastmod>2026-11-08</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://panelready.co/states/missouri/therapy-rehab/</loc><lastmod>2026-11-08</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
   <url><loc>https://panelready.co/states/montana/</loc><lastmod>2026-11-08</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://panelready.co/states/montana/behavioral-health/</loc><lastmod>2026-11-08</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
   <url><loc>https://panelready.co/states/nebraska/</loc><lastmod>2026-11-08</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
   <url><loc>https://panelready.co/states/nebraska/behavioral-health/</loc><lastmod>2026-11-08</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
   <url><loc>https://panelready.co/states/nebraska/home-care-senior-living/</loc><lastmod>2026-11-08</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
@@ -123,11 +120,9 @@
   <url><loc>https://panelready.co/states/new-jersey/dme-pharmacy-transport/</loc><lastmod>2026-11-08</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
   <url><loc>https://panelready.co/states/new-mexico/</loc><lastmod>2026-11-08</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
   <url><loc>https://panelready.co/states/new-mexico/behavioral-health/</loc><lastmod>2026-11-08</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
-  <url><loc>https://panelready.co/states/new-mexico/therapy-rehab/</loc><lastmod>2026-11-08</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
   <url><loc>https://panelready.co/states/new-york/</loc><lastmod>2026-11-08</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
   <url><loc>https://panelready.co/states/new-york/behavioral-health/</loc><lastmod>2026-11-08</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
   <url><loc>https://panelready.co/states/new-york/medical-practices/</loc><lastmod>2026-11-08</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
-  <url><loc>https://panelready.co/states/new-york/dental/</loc><lastmod>2026-11-08</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
   <url><loc>https://panelready.co/states/new-york/therapy-rehab/</loc><lastmod>2026-11-08</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
   <url><loc>https://panelready.co/states/new-york/home-care-senior-living/</loc><lastmod>2026-11-08</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
   <url><loc>https://panelready.co/states/new-york/dme-pharmacy-transport/</loc><lastmod>2026-11-08</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
@@ -148,9 +143,9 @@
   <url><loc>https://panelready.co/states/ohio/dme-pharmacy-transport/</loc><lastmod>2026-11-08</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
   <url><loc>https://panelready.co/states/oklahoma/</loc><lastmod>2026-11-08</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
   <url><loc>https://panelready.co/states/oklahoma/behavioral-health/</loc><lastmod>2026-11-08</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://panelready.co/states/oklahoma/medical-practices/</loc><lastmod>2026-11-08</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
   <url><loc>https://panelready.co/states/oregon/</loc><lastmod>2026-11-08</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
   <url><loc>https://panelready.co/states/oregon/behavioral-health/</loc><lastmod>2026-11-08</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
-  <url><loc>https://panelready.co/states/oregon/medical-practices/</loc><lastmod>2026-11-08</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
   <url><loc>https://panelready.co/states/oregon/therapy-rehab/</loc><lastmod>2026-11-08</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
   <url><loc>https://panelready.co/states/oregon/home-care-senior-living/</loc><lastmod>2026-11-08</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
   <url><loc>https://panelready.co/states/pennsylvania/</loc><lastmod>2026-11-08</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
@@ -160,13 +155,13 @@
   <url><loc>https://panelready.co/states/pennsylvania/home-care-senior-living/</loc><lastmod>2026-11-08</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
   <url><loc>https://panelready.co/states/pennsylvania/dme-pharmacy-transport/</loc><lastmod>2026-11-08</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
   <url><loc>https://panelready.co/states/puerto-rico/</loc><lastmod>2026-11-08</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://panelready.co/states/puerto-rico/behavioral-health/</loc><lastmod>2026-11-08</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
   <url><loc>https://panelready.co/states/puerto-rico/medical-practices/</loc><lastmod>2026-11-08</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
   <url><loc>https://panelready.co/states/rhode-island/</loc><lastmod>2026-11-08</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
   <url><loc>https://panelready.co/states/south-carolina/</loc><lastmod>2026-11-08</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
   <url><loc>https://panelready.co/states/south-carolina/behavioral-health/</loc><lastmod>2026-11-08</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
   <url><loc>https://panelready.co/states/south-carolina/medical-practices/</loc><lastmod>2026-11-08</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
   <url><loc>https://panelready.co/states/south-carolina/therapy-rehab/</loc><lastmod>2026-11-08</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
-  <url><loc>https://panelready.co/states/south-carolina/dme-pharmacy-transport/</loc><lastmod>2026-11-08</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
   <url><loc>https://panelready.co/states/south-dakota/</loc><lastmod>2026-11-08</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
   <url><loc>https://panelready.co/states/tennessee/</loc><lastmod>2026-11-08</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
   <url><loc>https://panelready.co/states/tennessee/behavioral-health/</loc><lastmod>2026-11-08</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
@@ -191,14 +186,15 @@
   <url><loc>https://panelready.co/states/washington/</loc><lastmod>2026-11-08</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
   <url><loc>https://panelready.co/states/washington/behavioral-health/</loc><lastmod>2026-11-08</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
   <url><loc>https://panelready.co/states/washington/medical-practices/</loc><lastmod>2026-11-08</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
-  <url><loc>https://panelready.co/states/washington/dental/</loc><lastmod>2026-11-08</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
   <url><loc>https://panelready.co/states/washington/therapy-rehab/</loc><lastmod>2026-11-08</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
   <url><loc>https://panelready.co/states/washington/home-care-senior-living/</loc><lastmod>2026-11-08</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
   <url><loc>https://panelready.co/states/west-virginia/</loc><lastmod>2026-11-08</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://panelready.co/states/west-virginia/behavioral-health/</loc><lastmod>2026-11-08</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://panelready.co/states/west-virginia/medical-practices/</loc><lastmod>2026-11-08</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
   <url><loc>https://panelready.co/states/west-virginia/home-care-senior-living/</loc><lastmod>2026-11-08</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
   <url><loc>https://panelready.co/states/wisconsin/</loc><lastmod>2026-11-08</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
   <url><loc>https://panelready.co/states/wisconsin/behavioral-health/</loc><lastmod>2026-11-08</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://panelready.co/states/wisconsin/therapy-rehab/</loc><lastmod>2026-11-08</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://panelready.co/states/wisconsin/home-care-senior-living/</loc><lastmod>2026-11-08</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
   <url><loc>https://panelready.co/states/wisconsin/dme-pharmacy-transport/</loc><lastmod>2026-11-08</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
   <url><loc>https://panelready.co/states/wyoming/</loc><lastmod>2026-11-08</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
   <url><loc>https://panelready.co/states/wyoming/home-care-senior-living/</loc><lastmod>2026-11-08</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>

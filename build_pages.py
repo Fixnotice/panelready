@@ -34,7 +34,7 @@ for cand in (ROOT, HERE):                            # pr/npi.py lives in the pr
 from pr import npi as N                              # noqa: E402
 
 SITE = "https://panelready.co"                       # the site's address, no trailing slash (the old github.io address redirects here)
-BUILD_VERSION = 24                                    # bump when the page layout changes, so the next run rewrites every page
+BUILD_VERSION = 25                                    # bump when the page layout changes, so the next run rewrites every page
 COMPANY = "Avery Data Co."
 PAYPAL_CLIENT_ID = "BAAQ4G4Hizw2wHo9EZQsTxcW_oBtYKOFEIoI41YQZJvC8ufp2vM9Z_lIU4ASqIUZvXAUrin0KLaYIpr8Js"   # the "PanelReady site" app on developer.paypal.com (Live); one-time orders
 PAYPAL_ME = ""                                       # optional plan B: a PayPal.me handle (e.g. "averydataco"); shown as a second way to pay $39
@@ -44,7 +44,10 @@ LOCAL_PRICE, CAT_PRICE, ALL_PRICE, MULTI_PRICE, NATIONAL_PRICE = 49, 89, 149, 19
 SAMPLE_STATES = ["VT", "DE", "RI", "AK", "WY", "ND", "SD", "MT", "ME", "NH"]   # the free sample: the first of these with 8-25 rows this week
 BRAND, MAIL = "PanelReady", "matt@panelready.co"
 WEEKS = HERE / "data" / "weeks.json"
-CAT_PAGE_MIN = 8                                     # a category page needs at least this many rows in the newest week
+CAT_PAGE_MIN = 8                                     # a category page appears once a category has this many rows in a week
+CAT_INDEX_MIN = 30                                   # ... and is offered to Google while its last 4 weeks add up to this many
+# (Nov 10, 2026: pages used to be deleted the week a category dipped under 8, so Google kept finding 404s. Now a
+# category page stays once it exists; a thin one carries noindex and leaves the sitemap until it picks up again.)
 TREND_WEEKS = 12
 CATS = N.CATEGORIES
 CAT_TITLE = {"behavioral": "Behavioral health", "medical": "Medical practices & clinics", "dental": "Dental",
@@ -85,6 +88,103 @@ NEIGHBORS = {"AL": "FL GA MS TN", "AK": "WA HI OR", "AZ": "CA CO NM NV UT", "AR"
              "WI": "IL IA MI MN", "WY": "CO ID MT NE SD UT"}
 # resident population (millions, 2023 Census Bureau estimates) and the name the state's Medicaid program goes by:
 # the per-100,000 rate and the program name are what make each state's page say something no other state's page says
+# The Medicaid managed care plans a new practice in each state will want contracts with: the largest plans by 2024
+# enrollment, from KFF's "Medicaid MCO Enrollment by Plan and Parent Firm, 2024" (state-indicator/medicaid-enrollment-by-mco).
+# (plan, parent firm or "", enrollment). States not listed have no comprehensive Medicaid managed care plans in that data.
+MCO_SOURCE = "https://www.kff.org/medicaid/state-indicator/medicaid-enrollment-by-mco/"
+MCO_YEAR = 2024
+MCO = {
+    "AZ": [("UnitedHealthcare", "UnitedHealth Group", 418206), ("Mercy Care", "", 404903), ("Arizona Complete Health - Complete Care Plan", "Centene", 362536),
+           ("Banner University Family Care", "", 276963), ("Health Choice Arizona", "", 208447), ("Care 1st", "Centene", 78820)],
+    "AR": [("Empower Healthcare Solutions", "", 15895), ("Summit Community Care", "Elevance Health", 14657), ("Arkansas Total Care", "Centene", 13394),
+           ("CareSource", "CareSource", 3923)],
+    "CA": [("L.A. Care Health Plan", "", 2359500), ("Health Net Community Solutions", "Centene", 1582968), ("Inland Empire Health Plan", "", 1492702),
+           ("Kaiser Permanente", "Kaiser Permanente", 1415236), ("Anthem Blue Cross Partnership Plan", "Elevance Health", 925408),
+           ("Partnership HealthPlan of California", "", 900076)],
+    "CO": [("Denver Health Medicaid Choice", "", 69431), ("Rocky Mountain Health Plans PRIME", "UnitedHealth Group", 34166)],
+    "DE": [("Highmark Health Options of Delaware", "Highmark", 119253), ("AmeriHealth Caritas of Delaware", "Independence Health Group", 70089),
+           ("Delaware First Health", "Centene", 29825)],
+    "DC": [("AmeriHealth Caritas District of Columbia", "Independence Health Group", 106839), ("MedStar Family Choice District of Columbia", "MedStar Health", 56860),
+           ("Amerigroup District of Columbia", "Elevance Health", 56651), ("UnitedHealthcare Community Plan of District of Columbia", "UnitedHealth Group", 12914),
+           ("Health Services for Children with Special Needs", "", 4895)],
+    "FL": [("Sunshine State Health Plan", "Centene", 1197452), ("Simply Healthcare Plans", "Elevance Health", 550076), ("Humana Medical Plan", "Humana", 547549),
+           ("UnitedHealthcare of Florida", "UnitedHealth Group", 271904), ("Aetna Better Health", "CVS Health", 139257), ("Molina Healthcare of Florida", "Molina", 113466)],
+    "GA": [("Peach State Health Plan", "Centene", 729962), ("Amerigroup Community Care", "Elevance Health", 485998), ("CareSource Georgia", "CareSource", 378135)],
+    "HI": [("Hawaii Medical Service Association (HMSA)", "", 214870), ("AlohaCare", "", 75936), ("UnitedHealthcare Community Plan", "UnitedHealth Group", 54646),
+           ("Kaiser Permanente", "Kaiser Permanente", 50757), ("Ohana Health Plan", "Centene", 35916)],
+    "ID": [("Blue Cross of Idaho", "", 12314), ("Molina of Idaho", "Molina", 8942)],
+    "IL": [("Meridian Health (including YouthCare)", "Centene", 782227), ("Blue Cross Community Health Plans", "Health Care Service Corporation", 712533),
+           ("CountyCare Health Plan", "", 424747), ("Aetna Better Health", "CVS Health", 362690), ("Molina Healthcare", "Molina", 302773)],
+    "IN": [("Anthem Blue Cross and Blue Shield", "Elevance Health", 704906), ("MDwise", "McLaren Health Care", 344534), ("Managed Health Services", "Centene", 326999),
+           ("CareSource Indiana", "CareSource", 154765), ("UnitedHealthcare Community Plan", "UnitedHealth Group", 42346),
+           ("Humana Healthy Horizons of Indiana", "Humana", 35443)],
+    "IA": [("Wellpoint Iowa", "Elevance Health", 222782), ("Iowa Total Care", "Centene", 203393), ("Molina Healthcare", "Molina", 177800)],
+    "KS": [("UnitedHealthcare Community Plan of Kansas", "UnitedHealth Group", 127984), ("Sunflower State Health Plan", "Centene", 118053),
+           ("Aetna Better Health of Kansas", "CVS Health", 112495)],
+    "KY": [("Wellcare of Kentucky", "Centene", 419036), ("Passport by Molina", "Molina", 280749), ("Aetna Better Health of Kentucky", "CVS Health", 222208),
+           ("Anthem Blue Cross Blue Shield", "Elevance Health", 157364), ("Humana Healthy Horizons", "Humana", 142985),
+           ("UnitedHealthcare Community Plan", "UnitedHealth Group", 81613)],
+    "LA": [("Louisiana Healthcare Connections", "Centene", 400299), ("UnitedHealthcare Community Plan", "UnitedHealth Group", 343798),
+           ("Healthy Blue", "Elevance Health", 253620), ("AmeriHealth Caritas Louisiana", "Independence Health Group", 153970),
+           ("Aetna Better Health of Louisiana", "CVS Health", 131535), ("Humana Healthy Horizons", "Humana", 119887)],
+    "MD": [("Priority Partners", "", 384354), ("Wellpoint Maryland", "Elevance Health", 350641), ("Maryland Physicians Care", "", 266727),
+           ("UnitedHealthcare Community Plan", "UnitedHealth Group", 187674), ("Kaiser Permanente", "Kaiser Permanente", 138432),
+           ("MedStar Family Choice", "MedStar Health", 115530)],
+    "MA": [("Mass General Brigham Health Plan with Mass General Brigham ACO", "", 132115), ("WellSense Community Alliance", "Boston Medical Center Health Plan", 126901),
+           ("WellSense Boston Children's ACO", "Boston Medical Center Health Plan", 106816),
+           ("WellSense Beth Israel Lahey Health Performance Network ACO", "Boston Medical Center Health Plan", 61075),
+           ("WellSense Care Alliance", "Boston Medical Center Health Plan", 50270), ("BeHealthy Partnership Plan", "", 45272)],
+    "MI": [("Meridian Health Plan of Michigan", "Centene", 512473), ("Molina Healthcare of Michigan", "Molina", 407229),
+           ("Blue Cross Complete of Michigan", "Independence Health Group", 389926), ("UnitedHealthcare Community Plan", "UnitedHealth Group", 329443),
+           ("McLaren Health Plan", "McLaren Health Care", 287449), ("Priority Health Choice", "", 279115)],
+    "MN": [("UCare", "", 382233), ("Blue Plus", "", 293880), ("Health Partners", "", 160156), ("Prime West Health", "", 47848), ("Medica", "", 35739),
+           ("UnitedHealthcare", "UnitedHealth Group", 28489)],
+    "MS": [("Magnolia Health Plan", "Centene", 193826), ("UnitedHealthcare Community Plan", "UnitedHealth Group", 186115), ("Molina Healthcare", "Molina", 98805)],
+    "MO": [("Home State Health", "Centene", 362159), ("Healthy Blue", "Elevance Health", 357698), ("UnitedHealthcare", "UnitedHealth Group", 302089)],
+    "NE": [("Nebraska Total Care", "Centene", 118214), ("Molina Healthcare of Nebraska", "Molina", 116309),
+           ("UnitedHealthcare Community Plan of Nebraska", "UnitedHealth Group", 115714)],
+    "NV": [("UnitedHealthcare Health Plan of Nevada", "UnitedHealth Group", 209874), ("Anthem Blue Cross and Blue Shield Healthcare Solutions", "Elevance Health", 200552),
+           ("SilverSummit Health Plan", "Centene", 106497), ("Molina Healthcare of Nevada", "Molina", 96375)],
+    "NH": [("WellSense Health Plan", "Boston Medical Center Health Plan", 72612), ("New Hampshire Healthy Families", "Centene", 69519),
+           ("AmeriHealth Caritas of New Hampshire", "Independence Health Group", 39545)],
+    "NJ": [("Horizon NJ Health", "", 879632), ("UnitedHealthcare Community Plan", "UnitedHealth Group", 313807), ("Wellpoint", "Elevance Health", 180181),
+           ("Aetna Better Health NJ", "CVS Health", 100624), ("Fidelis Care/Wellcare", "Centene", 80981)],
+    "NM": [("Presbyterian Health Plan", "", 376377), ("Blue Cross Blue Shield of NM", "Health Care Service Corporation", 274706), ("Molina Healthcare", "Molina", 42304),
+           ("UnitedHealthcare Community Plan", "UnitedHealth Group", 41784)],
+    "NY": [("Fidelis Care", "Centene", 1532160), ("Healthfirst Health Plan", "", 1165758), ("MetroPlus Health Plan", "", 424733), ("HealthPlus", "Elevance Health", 356234),
+           ("UnitedHealthcare", "UnitedHealth Group", 277423), ("Molina Healthcare of New York", "Molina", 248939)],
+    "NC": [("Healthy Blue of North Carolina", "", 592325), ("WellCare", "Centene", 481884), ("UnitedHealthcare", "UnitedHealth Group", 461957),
+           ("AmeriHealth Caritas", "Independence Health Group", 387174), ("Carolina Complete Health", "Centene", 274181), ("Trillium Health Resources", "", 77746)],
+    "ND": [("North Dakota Medicaid Expansion (Blue Cross Blue Shield of North Dakota)", "", 24356)],
+    "OH": [("CareSource", "CareSource", 1209278), ("Buckeye Health Plan", "Centene", 379811), ("UnitedHealthcare Community Plan of Ohio", "UnitedHealth Group", 317718),
+           ("Molina Healthcare of Ohio", "Molina", 288399), ("Anthem Blue Cross and Blue Shield", "Elevance Health", 209166), ("Humana", "Humana", 155380)],
+    "OK": [("Oklahoma Complete Health", "Centene", 191381), ("Humana Healthy Horizons of Oklahoma", "Humana", 190134), ("Aetna Better Health of Oklahoma", "CVS Health", 186183)],
+    "OR": [("HealthShare of Oregon", "", 433927), ("PacificSource Community Solutions - Marion Polk", "", 143135), ("PacificSource Community Solutions - Lane", "", 93578),
+           ("InterCommunity Health Network", "", 83620), ("PacificSource Community Solutions - Central Oregon", "", 75250), ("Eastern Oregon CCO", "", 74566)],
+    "PA": [("Vista Health Plan (AmeriHealth Caritas Pennsylvania and Keystone First)", "Independence Health Group", 990564), ("UPMC Health Plan", "", 713760),
+           ("Geisinger Health Plan", "", 428376), ("Health Partners Plan", "", 310182), ("Highmark Wholecare", "Highmark", 121751),
+           ("UnitedHealthcare Community Plan", "UnitedHealth Group", 95611)],
+    "RI": [("Neighborhood Health Plan of Rhode Island", "", 169483), ("UnitedHealthcare of Rhode Island Community Plan", "UnitedHealth Group", 81964),
+           ("Tufts Health Public Plans", "Point32Health", 15755)],
+    "SC": [("First Choice by Select Health of South Carolina", "Independence Health Group", 323781), ("Absolute Total Care", "Centene", 167573),
+           ("Healthy Blue by Blue Choice", "", 150728), ("Molina Healthcare of South Carolina", "Molina", 140589), ("Humana Healthy Horizons", "Humana", 29918)],
+    "TN": [("Volunteer State Health Plan (BlueCare and TennCare Select)", "", 577577), ("UnitedHealthcare Community Plan", "UnitedHealth Group", 429505),
+           ("Wellpoint", "Elevance Health", 429231)],
+    "TX": [("Superior HealthPlan", "Centene", 950499), ("Wellpoint", "Elevance Health", 684884), ("Texas Children's Health Plan", "", 417218),
+           ("UnitedHealthcare Community Plan", "UnitedHealth Group", 335670), ("Community Health Choice Texas", "", 264093),
+           ("Molina Healthcare of Texas", "Molina", 223832)],
+    "UT": [("Select Health", "", 104458), ("University of Utah Health Plans (Healthy U, HOME)", "", 62072), ("Molina", "Molina", 61210), ("Health Choice", "", 32518)],
+    "VA": [("Sentara Health Plans", "", 624067), ("Anthem Healthkeepers", "Elevance Health", 543748), ("Aetna Better Health of Virginia", "CVS Health", 271844),
+           ("UnitedHealthcare", "UnitedHealth Group", 233958), ("Molina Healthcare of Virginia", "Molina", 136424)],
+    "WA": [("Molina Healthcare of Washington", "Molina", 837457), ("Community Health Plan of Washington", "", 252143), ("UnitedHealthcare", "UnitedHealth Group", 208078),
+           ("Coordinated Care of Washington", "Centene", 196657), ("Wellpoint Washington", "Elevance Health", 166570)],
+    "WV": [("Aetna Better Health of West Virginia", "CVS Health", 164545), ("UniCare Health Plan of West Virginia", "Elevance Health", 145177),
+           ("The Health Plan of West Virginia", "", 97594)],
+    "WI": [("UnitedHealthcare Community Plan", "UnitedHealth Group", 217773), ("Anthem Blue Cross Blue Shield", "Elevance Health", 128246),
+           ("Chorus Community Health Plans", "", 120491), ("Molina Healthcare of Wisconsin", "Molina", 77246), ("Security Health Plan of Wisconsin", "", 63945),
+           ("MHS Health Wisconsin", "Centene", 52337)],
+}
+
 STATE_FACTS = {
     "AL": (5.1, "Alabama Medicaid"), "AK": (0.7, "Alaska Medicaid"), "AZ": (7.4, "AHCCCS"), "AR": (3.1, "Arkansas Medicaid"),
     "CA": (39.0, "Medi-Cal"), "CO": (5.9, "Health First Colorado"), "CT": (3.6, "HUSKY Health"), "DE": (1.0, "Delaware Medicaid"),
@@ -413,8 +513,9 @@ def can_book() -> bool:
 SAMPLE_FILE = "panelready-sample.csv"                 # becomes panelready-sample.xlsx when the build can write it
 
 
-def shell(title: str, desc: str, path: str, body: str, jsonld: dict | None = None) -> str:
+def shell(title: str, desc: str, path: str, body: str, jsonld: dict | None = None, noindex: bool = False) -> str:
     url = f"{SITE}/{path}" if path else f"{SITE}/"
+    robots = '\n<meta name="robots" content="noindex, follow">' if noindex else ""
     root = "../" * path.count("/")
     ld = f'<script type="application/ld+json">{json.dumps(jsonld, separators=(",", ":"))}</script>' if jsonld else ""
     return f"""<!doctype html>
@@ -424,7 +525,7 @@ def shell(title: str, desc: str, path: str, body: str, jsonld: dict | None = Non
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{esc(title)}</title>
 <meta name="description" content="{esc(desc)}">
-<link rel="canonical" href="{url}">
+<link rel="canonical" href="{url}">{robots}
 <meta property="og:title" content="{esc(title)}"><meta property="og:description" content="{esc(desc)}"><meta property="og:url" content="{url}"><meta property="og:type" content="website">
 <meta property="og:image" content="{SITE}/og-image.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:site_name" content="PanelReady"><meta name="twitter:card" content="summary_large_image">
 <meta name="theme-color" content="#f6f8fb">
@@ -543,13 +644,13 @@ def offer(state_name: str, st: str, cat: str | None, root: str, latest: str = ""
     plan = f"${CAT_PRICE}/month" if cat else f"${ALL_PRICE}/month"
     sub = "one spreadsheet every Monday" if cat else "every category, one spreadsheet every Monday"
     which = f"the {CAT_TITLE[cat].lower()} category" if cat else "all categories"
-    q = f"?state={st}&cat={cat or 'all'}" if st else ""
+    q = f"?state={st}&cat={cat or 'all'}" if st else ""      # goes after the #anchor: "#free?state=TX&cat=all"
     where = f"in {esc(state_name)}" if st else "in your state"
     week = week_box(state_name, st, latest, total, avg) if st and latest and (total or avg) else ""
     return (f'<section class="offer"><h2>Get every new {esc(what)} {where}, the week they register.</h2>'
             f'<p>This page shows a sample. Subscribers get the complete {esc(state_name) if st else "state"} list as a spreadsheet, {sub}, sorted best-first: the top 25 marked, a score and a ready-to-say opener for every practice, the owner\'s direct line where the registry lists it, phone, address and NPI, websites, emails and practice software for organizations where we can find them, an OIG exclusion check, and the practices that moved or added a specialty that week. Once a month: practices due for Medicare revalidation and practices that look stuck in credentialing. Your first paid list includes the last 90 days, teammates get copies, Roster Watch checks your own clients every week, and a webhook sends each list to your CRM. Backed by a 90-day guarantee. '
             f'{plan} per state through PayPal (or ${LOCAL_PRICE}/month for just your local area, ${MULTI_PRICE}/month for three states, ${NATIONAL_PRICE}/month for every state, 2 months free yearly; the charge shows as {COMPANY}, {BRAND}\'s parent company); cancel any time. Try two lists free first, no card needed: the first arrives within minutes.</p>'
-            f'<div class="btns"><a class="cta" href="{root}{q}#free">Get two free {esc(state_name) if st else ""} lists</a><a class="cta ghost" href="{root}{q}#pricing">Subscribe · {plan}</a></div>{week}</section>')
+            f'<div class="btns"><a class="cta" href="{root}#free{q}">Get two free {esc(state_name) if st else ""} lists</a><a class="cta ghost" href="{root}#pricing{q}">Subscribe · {plan}</a></div>{week}</section>')
 
 
 def links_row(items: list[tuple[str, str]]) -> str:
@@ -571,6 +672,97 @@ def rank_of(data: dict, st: str) -> tuple[int, int]:
     week = data["counts"][data["latest"]]
     order = sorted(week, key=lambda k: -sum(week[k]))
     return (order.index(st) + 1 if st in order else len(order), len(order))
+
+
+def cat_pages_of(data: dict, st: str) -> dict[str, bool]:
+    """{category: offered to Google} for every category page {st} has: a page exists once its category has had
+    CAT_PAGE_MIN+ new practices in any week on file (or its folder is already there), and it stays, so a link Google
+    found never turns into a 404. It's indexable while its last 4 weeks add up to CAT_INDEX_MIN or more."""
+    out = {}
+    for i, c in enumerate(CATS):
+        ever = any(data["counts"][w].get(st, [0] * len(CATS))[i] >= CAT_PAGE_MIN for w in data["weeks"])
+        if ever or (HERE / "states" / SLUG[st] / CAT_SLUG[c] / "index.html").exists():
+            last4 = sum(data["counts"][w].get(st, [0] * len(CATS))[i] for w in data["weeks"][-4:])
+            out[c] = last4 >= CAT_INDEX_MIN
+    return out
+
+
+def monthly_counts(data: dict) -> bool:
+    """On the PC: this month's practices that look stuck in credentialing and those due for Medicare revalidation,
+    per state and category, from output\\stuck and output\\reval. Kept in weeks.json so the GitHub job reuses them."""
+    changed = False
+    for kind in ("stuck", "reval"):
+        base = ROOT / "output" / kind
+        months = sorted((p for p in base.iterdir() if p.is_dir() and re.fullmatch(r"\d{4}-\d{2}", p.name)), reverse=True) if base.exists() else []
+        f = next((m / f"{kind}_US_all.csv" for m in months if (m / f"{kind}_US_all.csv").exists()), None)
+        if f is None:
+            continue
+        stamp = f"{f.parent.name}:{f.stat().st_size}"
+        if (data.get("monthly") or {}).get(kind, {}).get("stamp") == stamp:
+            continue
+        counts: dict[str, list[int]] = defaultdict(lambda: [0] * len(CATS))
+        with open(f, encoding="utf-8-sig", newline="") as fh:
+            for r in csv.DictReader(fh):
+                st, c = (r.get("state") or "").strip().upper(), r.get("category") or ""
+                if st in STATES and c in CATS:
+                    counts[st][CATS.index(c)] += 1
+        data.setdefault("monthly", {})[kind] = {"month": f.parent.name, "stamp": stamp, "counts": dict(counts)}
+        changed = True
+    return changed
+
+
+def month_name(ym: str) -> str:
+    try:
+        return dt.date.fromisoformat(ym + "-01").strftime("%B %Y")
+    except ValueError:
+        return ym
+
+
+def plans_section(st: str, n_show: int = 6, compact: bool = False) -> str:
+    """The Medicaid managed care plans a new practice in this state will want contracts with (KFF, 2024)."""
+    name, medicaid = STATES[st], STATE_FACTS.get(st, (0, "the state Medicaid program"))[1]
+    plans = MCO.get(st, [])
+    src = f'<p class="note">Source: KFF, <a href="{MCO_SOURCE}" rel="nofollow">Medicaid MCO Enrollment by Plan and Parent Firm, {MCO_YEAR}</a>. Members are total enrollment as KFF reports it.</p>'
+    if not plans:
+        return (f'<section><h2>Medicaid plans in {esc(name)}</h2><p>KFF\'s {MCO_YEAR} data lists no comprehensive Medicaid managed care plans in {esc(name)}, '
+                f'so a new practice that wants Medicaid patients enrolls with {esc(medicaid)} directly; the commercial and Medicare Advantage plans it '
+                f'adds after that are where most of the credentialing work goes.</p>{src}</section>')
+    total = sum(k for _, _, k in plans)
+    rows = "".join(f'<tr><td class="n">{esc(pl)}</td>' + ("" if compact else f'<td style="color:var(--muted)">{esc(par) or "independent / local"}</td>')
+                   + f'<td class="r">{fmt(k)}</td></tr>' for pl, par, k in plans[:n_show])
+    head = '<tr><th>Plan</th>' + ("" if compact else "<th>Parent company</th>") + '<th class="r">Members</th></tr>'
+    lead = (f"A new {esc(name)} practice that wants Medicaid patients enrolls with {esc(medicaid)} and then, for patients in managed care, needs a contract "
+            f"and credentialing with each plan they use. The {'largest ' if len(plans) > n_show else ''}{min(n_show, len(plans))} plan"
+            f"{'s' if min(n_show, len(plans)) != 1 else ''} below cover{'s' if min(n_show, len(plans)) == 1 else ''} about {fmt(sum(k for _, _, k in plans[:n_show]))} members"
+            f"{f' of the {fmt(total)} in the plans KFF lists' if len(plans) > n_show else ''}: the credentialing applications a billing company files first.")
+    return (f'<section><h2>Medicaid plans a new {esc(name)} practice credentials with</h2><p>{lead}</p>'
+            f'<div class="tscroll"><table><thead>{head}</thead><tbody>{rows}</tbody></table></div>{src}</section>')
+
+
+def paperwork_section(data: dict, st: str, cat: str | None = None) -> str:
+    """Established practices in this state with credentialing work due: this month's stuck and revalidation counts."""
+    m = data.get("monthly") or {}
+    stuck, reval = m.get("stuck"), m.get("reval")
+    if not stuck and not reval:
+        return ""
+    name, i = STATES[st], (CATS.index(cat) if cat else None)
+    def n(block):
+        v = (block or {}).get("counts", {}).get(st)
+        return 0 if not v else (v[i] if i is not None else sum(v))
+    what = f"{CAT_TITLE[cat].lower()} " if cat else ""
+    bits = []
+    if stuck and n(stuck):
+        bits.append(f"<b>{fmt(n(stuck))}</b> {what}practices in {esc(name)} registered 2 to 12 months ago, in specialties where most new practices enroll "
+                    f"with Medicare, and still weren't on Medicare's enrollment list as of {month_name(stuck['month'])}: credentialing that hasn't started "
+                    f"or has stalled.")
+    if reval and n(reval):
+        bits.append(f"<b>{fmt(n(reval))}</b> {what}practices in {esc(name)} are due for Medicare revalidation within six months or already overdue "
+                    f"({month_name(reval['month'])} list), each one a deadline for an established practice that already bills.")
+    if not bits:
+        return ""
+    return (f'<section><h2>{esc(name)} practices with paperwork due</h2>' + "".join(f"<p>{b}</p>" for b in bits) +
+            f'<p class="note">Subscribers get both lists once a month with names, phones and owners. Counts by county and city are on the '
+            f'<a href="{"../../../" if cat else "../../"}search/">live search</a>.</p></section>')
 
 
 def avg4(series: dict[str, int]) -> float:
@@ -669,7 +861,7 @@ def state_page(data: dict, st: str) -> str:
     specs = data["specialties"].get(st, {}).get("all", [])
     month = total * 52 / 12
     root = "../../"
-    cat_pages = {c: f"{CAT_SLUG[c]}/" for c in CATS if v[CATS.index(c)] >= CAT_PAGE_MIN}
+    cat_pages = {c: f"{CAT_SLUG[c]}/" for c in cat_pages_of(data, st)}
 
     # headline paragraph, written from the numbers
     lead_bits = [f"<b>{fmt(total)}</b> healthcare practices and sole proprietors registered for an NPI in {name} in the week ending {long_date(latest)}"]
@@ -701,6 +893,10 @@ def state_page(data: dict, st: str) -> str:
 
 {state_context(data, st, v, series)}
 
+{plans_section(st)}
+
+{paperwork_section(data, st)}
+
 <section class="grid2">
   <div class="card"><h2>By category this week</h2>{bars([(CAT_TITLE[c], v[CATS.index(c)], cat_pages.get(c), CAT_COLOR[c]) for c in CATS])}
     <p class="note">Each practice is filed by the specialty code it registered under. Categories with a link have their own weekly page.</p></div>
@@ -718,7 +914,7 @@ def state_page(data: dict, st: str) -> str:
 {offer(name, st, None, root, latest, total, avg4(series))}
 
 <section><h2>{esc(name)} by category</h2>
-<p class="lead" style="font-size:16px">One state, one category is ${CAT_PRICE}/month; every category is ${ALL_PRICE}/month; three states are ${MULTI_PRICE}/month; every state is ${NATIONAL_PRICE}/month; just your local area (a ZIP code and a radius) is ${LOCAL_PRICE}/month. {('Weekly pages for: ' + ', '.join(f'<a href="{cat_pages[c]}">{esc(CAT_TITLE[c])}</a>' for c in CATS if c in cat_pages) + '.') if cat_pages else 'Category pages appear once a category has ' + str(CAT_PAGE_MIN) + '+ new practices in a week.'}</p>
+<p class="lead" style="font-size:16px">One state, one category is ${CAT_PRICE}/month; every category is ${ALL_PRICE}/month; three states are ${MULTI_PRICE}/month; every state is ${NATIONAL_PRICE}/month; just your local area (a ZIP code and a radius) is ${LOCAL_PRICE}/month. {('Weekly pages for: ' + ', '.join(f'<a href="{cat_pages[c]}">{esc(CAT_TITLE[c])}</a>' for c in CATS if c in cat_pages) + '.') if cat_pages else 'A category gets its own page once it has ' + str(CAT_PAGE_MIN) + '+ new practices in a week.'}</p>
 <div class="tscroll"><table><thead><tr><th>Category</th><th class="who">Who is in it</th><th class="r">This week</th><th class="r">4-wk avg</th></tr></thead><tbody>
 {''.join(cat_row(data, st, c, v, cat_pages) for c in CATS)}
 </tbody></table></div></section>
@@ -781,8 +977,11 @@ def cat_page(data: dict, st: str, cat: str) -> str:
     nat = data["national"]["cats"][ci] or 1
     ct = CAT_TITLE[cat]
     root = "../../../"
+    last4 = sum(series[w] for w in sorted(series)[-4:])
     p1 = (f"<b>{fmt(n)}</b> {ct.lower()} practices and sole proprietors registered for an NPI in {name} in the week ending {long_date(latest)}, "
-          f"{n / max(total, 1) * 100:.0f}% of the state's {fmt(total)} new registrations and {n / nat * 100:.1f}% of the {fmt(nat)} {ct.lower()} registrations nationwide.")
+          f"{n / max(total, 1) * 100:.0f}% of the state's {fmt(total)} new registrations and {n / nat * 100:.1f}% of the {fmt(nat)} {ct.lower()} registrations nationwide."
+          if n else f"No new {ct.lower()} practices registered in {name} in the week ending {long_date(latest)}; {fmt(last4)} did over the last "
+          f"{min(4, len(series))} weeks tracked. Smaller categories come in bursts, so this page keeps the recent weeks.")
     p2 = f"This category covers {CAT_WHO[cat]}. " + (f"The most common specialties this week were {', '.join(f'{esc(s)} ({k})' for s, k in specs[:3])}. " if specs else "") + \
          f"At this pace {name} adds about {fmt(n * 52 / 12)} new {ct.lower()} practices a month, each of which will need payer credentialing and a billing setup before it can collect on a claim."
     body = f"""
@@ -803,9 +1002,11 @@ def cat_page(data: dict, st: str, cat: str) -> str:
 </section>
 <section><h2>A sample of this week's {esc(name)} {esc(ct.lower())} list</h2>
 {sample_table(rows, f"leads_{st}_{cat}.csv · week ending {short_date(latest)} · {fmt(n)} rows · organizations first")}</section>
+{paperwork_section(data, st, cat)}
+{plans_section(st, 4, compact=True)}
 {offer(name, st, cat, root, latest, total, avg4(state_series(data, st)))}
-<section><h2>Other {esc(name)} categories</h2>{links_row([(CAT_TITLE[c], f"../{CAT_SLUG[c]}/") for c in CATS if c != cat and v[CATS.index(c)] >= CAT_PAGE_MIN] + [(f"All of {name}", "../")])}</section>
-<section><h2>{esc(ct)} in nearby states</h2>{links_row([(STATES[k], f"../../{SLUG[k]}/{CAT_SLUG[cat]}/") for k in NEIGHBORS.get(st, "").split() if k in STATES and data["counts"][latest].get(k, [0] * 6)[ci] >= CAT_PAGE_MIN] + [("All states", "../../")])}</section>
+<section><h2>Other {esc(name)} categories</h2>{links_row([(CAT_TITLE[c], f"../{CAT_SLUG[c]}/") for c in cat_pages_of(data, st) if c != cat] + [(f"All of {name}", "../")])}</section>
+<section><h2>{esc(ct)} in nearby states</h2>{links_row([(STATES[k], f"../../{SLUG[k]}/{CAT_SLUG[cat]}/") for k in NEIGHBORS.get(st, "").split() if k in STATES and cat in cat_pages_of(data, k)] + [("All states", "../../")])}</section>
 """
     title = f"{name} {CAT_LEAD[cat]} Leads for Credentialing & Billing | {BRAND}"
     desc = (f"{fmt(n)} new {CAT_NOUN[cat]} registered in {name} the week ending {short_date(latest)}: weekly leads for credentialing "
@@ -815,7 +1016,7 @@ def cat_page(data: dict, st: str, cat: str) -> str:
           "isBasedOn": "https://download.cms.gov/nppes/NPI_Files.html", "temporalCoverage": f"{data['weeks'][0]}/{latest}", "dateModified": latest,
           "spatialCoverage": {"@type": "Place", "name": f"{name}, United States"},
           "license": "https://www.usa.gov/government-works", "isAccessibleForFree": True}
-    return shell(title, desc, f"states/{slug}/{CAT_SLUG[cat]}/", body, ld)
+    return shell(title, desc, f"states/{slug}/{CAT_SLUG[cat]}/", body, ld, noindex=not cat_pages_of(data, st).get(cat, True))
 
 
 def hub_page(data: dict) -> str:
@@ -1983,6 +2184,7 @@ def build(data: dict) -> list[str]:
     out.mkdir(exist_ok=True)
     (out / "index.html").write_text(hub_page(data), encoding="utf-8")
     paths.append("states/")
+    hidden = []                                       # thin category pages: written (noindex), left out of the sitemap
     for st in STATES:
         if st not in week:
             continue
@@ -1990,25 +2192,40 @@ def build(data: dict) -> list[str]:
         d.mkdir(exist_ok=True)
         (d / "index.html").write_text(state_page(data, st), encoding="utf-8")
         paths.append(f"states/{SLUG[st]}/")
-        for c in CATS:
+        for c, indexable in cat_pages_of(data, st).items():   # once a category page exists it stays (no 404s for Google)
             cd = d / CAT_SLUG[c]
-            if week[st][CATS.index(c)] >= CAT_PAGE_MIN:
-                cd.mkdir(exist_ok=True)
-                (cd / "index.html").write_text(cat_page(data, st, c), encoding="utf-8")
-                paths.append(f"states/{SLUG[st]}/{CAT_SLUG[c]}/")
-            elif cd.exists():
-                shutil.rmtree(cd)                        # a category page that no longer has enough rows goes away (sitemap drops it)
+            cd.mkdir(exist_ok=True)
+            (cd / "index.html").write_text(cat_page(data, st, c), encoding="utf-8")
+            (paths if indexable else hidden).append(f"states/{SLUG[st]}/{CAT_SLUG[c]}/")
     info = info_pages(data)
+    write_redirects()                                 # old addresses Google knows (e.g. /signup) land on the right page
     write_account()                                   # not in the sitemap: private, opened from the link in each email
     write_search()
     urls = [f"  <url><loc>{SITE}/</loc><lastmod>{latest}</lastmod><changefreq>weekly</changefreq><priority>1.0</priority></url>"]
     urls += [f"  <url><loc>{SITE}/search/</loc><lastmod>{latest}</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>"]
     urls += [f"  <url><loc>{SITE}/{p}</loc><lastmod>{latest}</lastmod><changefreq>weekly</changefreq><priority>{'0.8' if p.count('/') < 3 else '0.6'}</priority></url>" for p in paths]
     urls += [f"  <url><loc>{SITE}/{p}</loc><lastmod>{latest}</lastmod><changefreq>monthly</changefreq><priority>0.4</priority></url>" for p in info]
-    paths = paths + info + ["search/"]
+    paths = paths + info + ["search/"] + hidden
     (HERE / "sitemap.xml").write_text('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + "\n".join(urls) + "\n</urlset>\n", encoding="utf-8")
     (HERE / "robots.txt").write_text(f"User-agent: *\nAllow: /\nDisallow: /account/\nSitemap: {SITE}/sitemap.xml\n", encoding="utf-8")
     return paths
+
+
+REDIRECTS = {"signup": "#free"}                      # old paths -> where they live now (GitHub Pages has no server redirects)
+
+
+def write_redirects():
+    for path, target in REDIRECTS.items():
+        d = HERE / path
+        d.mkdir(exist_ok=True)
+        url = f"{SITE}/{target}"
+        (d / "index.html").write_text(f"""<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>{BRAND}</title>
+<meta name="robots" content="noindex"><link rel="canonical" href="{SITE}/">
+<meta http-equiv="refresh" content="0; url={url}">
+<script>location.replace({json.dumps(url)});</script></head>
+<body><p><a href="{url}">Continue to {BRAND}</a></p></body></html>
+""", encoding="utf-8")
 
 
 def copy_pr():
@@ -2032,7 +2249,7 @@ def main():
     data = load()
     say(f"{BRAND} pages: {len(data['weeks'])} week(s) on file" + (f", newest {data['latest']}" if data["latest"] else ""))
     new = fetch_weeks(data) if args.fetch else local_weeks(data)
-    if new:
+    if monthly_counts(data) or new:                   # (the monthly counts alone don't rewrite the pages; the next build uses them)
         save(data)
     moved = data.get("site") != SITE or data.get("build") != BUILD_VERSION   # address or layout changed: every page must be rewritten
     if not new and not moved and not args.rebuild and (HERE / "states" / "index.html").exists():
