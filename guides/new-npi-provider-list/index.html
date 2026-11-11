@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How to Get a List of Newly Registered NPI Providers (Updated Weekly) | PanelReady</title>
+<meta name="description" content="Where new NPI registrations are published (the free NPPES weekly file), how to filter it to new practices by state and specialty, and what each record contains. 4,952 new practices registered the week ending Nov 8.">
+<link rel="canonical" href="https://panelready.co/guides/new-npi-provider-list/">
+<meta property="og:title" content="How to Get a List of Newly Registered NPI Providers (Updated Weekly) | PanelReady"><meta property="og:description" content="Where new NPI registrations are published (the free NPPES weekly file), how to filter it to new practices by state and specialty, and what each record contains. 4,952 new practices registered the week ending Nov 8."><meta property="og:url" content="https://panelready.co/guides/new-npi-provider-list/"><meta property="og:type" content="website">
+<meta property="og:image" content="https://panelready.co/og-image.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:site_name" content="PanelReady"><meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#f6f8fb">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="icon" href="../../favicon-32.png" sizes="32x32" type="image/png"><link rel="apple-touch-icon" href="../../apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,600;0,8..60,700;1,8..60,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+.week{margin-top:22px;padding:18px 20px;border:1px dashed rgba(14,124,123,.5);border-radius:14px;background:rgba(14,124,123,.06)}
+.week h3{margin:0 0 6px;font-size:18px}.week p{margin:0 0 12px}.week .paybox{max-width:320px}.week .note{min-height:1em}
+:root{--bg:#f6f8fb;--bg2:#eef2f7;--card:#ffffff;--card2:#f3f6fa;--line:#e3e8ef;--line2:#cdd5e0;--ink:#0f2340;--body:#334155;--muted:#5b6b82;--dim:#8a97a9;--teal:#0e7c7b;--green:#15803d;--shadow:0 1px 2px rgba(15,35,64,.05),0 12px 32px -12px rgba(15,35,64,.14)}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--body);font:16px/1.65 Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-smoothing:antialiased}
+h1,h2,h3{font-family:"Source Serif 4",Georgia,"Times New Roman",serif;color:var(--ink);letter-spacing:-.01em;line-height:1.15;margin:0 0 10px;font-weight:600}
+h1{font-size:clamp(30px,4.4vw,46px);line-height:1.08}h2{font-size:clamp(21px,2.6vw,28px);margin-top:0}
+h1 em{font-style:italic;color:var(--teal)}
+a{color:var(--teal)}p{margin:0 0 14px}
+.wrap{max-width:1040px;margin:0 auto;padding:0 20px}@media(max-width:600px){.wrap{padding:0 16px}}
+.nav{position:sticky;top:0;z-index:5;backdrop-filter:blur(14px);background:rgba(255,255,255,.88);border-bottom:1px solid var(--line)}
+.nav .wrap{display:flex;align-items:center;justify-content:space-between;height:62px;gap:12px}
+.logo{display:flex;align-items:center;gap:9px;font-family:"Source Serif 4",Georgia,serif;font-weight:700;font-size:21px;color:var(--ink);text-decoration:none}
+.logo svg{width:28px;height:28px;border-radius:7px}
+.nav nav{display:flex;gap:18px;align-items:center}.nav nav a{color:var(--muted);text-decoration:none;font-size:14px;font-weight:600}.nav nav a:hover{color:var(--ink)}
+.nav nav a.mini{background:var(--ink);color:#fff;padding:9px 14px;border-radius:8px}
+@media(max-width:700px){.nav nav a:not(.mini):not(.signin){display:none}.nav nav{gap:14px}.nav nav a{white-space:nowrap}}
+@media(max-width:420px){.logo{font-size:18px;gap:7px}.logo svg{width:25px;height:25px}.nav nav{gap:10px}.nav nav a.signin{font-size:13px}.nav nav a.mini{padding:7px 10px;font-size:13px}}
+@media(max-width:360px){.logo{font-size:16px;gap:6px}.logo svg{width:22px;height:22px}.nav nav{gap:8px}.nav nav a.signin{font-size:12px}.nav nav a.mini{padding:6px 8px;font-size:12px}}
+.crumbs{font-size:13px;color:var(--dim);margin:18px 0 6px}.crumbs a{color:var(--muted);text-decoration:none}
+.kicker{display:inline-block;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--teal);margin-bottom:10px}
+.lead{font-size:18px;color:var(--muted);max-width:760px}.lead b{color:var(--ink)}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:26px 0}
+@media(max-width:760px){.stats{grid-template-columns:repeat(2,1fr)}}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 16px 14px;box-shadow:var(--shadow)}
+.stat b{display:block;font-family:"Source Serif 4",Georgia,serif;font-size:32px;font-weight:600;line-height:1.1;color:var(--ink)}.stat b small{font-size:14px;color:var(--muted);font-weight:600;font-family:Inter,sans-serif}
+.stat span{display:block;color:var(--muted);font-size:13px;margin-top:6px;line-height:1.4}
+section{margin:34px 0}
+.grid2{display:grid;grid-template-columns:1.1fr .9fr;gap:22px}@media(max-width:800px){.grid2{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;box-shadow:var(--shadow)}
+.bar{display:grid;grid-template-columns:150px 1fr 44px;gap:10px;align-items:center;margin:9px 0;font-size:14px}
+.bar .trk{height:12px;background:var(--bg2);border-radius:99px;overflow:hidden}.bar .fill{height:100%;border-radius:99px;min-width:3px}
+.bar .v{text-align:right;font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums}.bar a{color:var(--ink);text-decoration:none}.bar a:hover{color:var(--teal)}
+@media(max-width:480px){.bar{grid-template-columns:110px 1fr 40px;font-size:13px}}
+.trend{display:flex;align-items:flex-end;gap:6px;height:150px;padding:10px 0 0}
+.trend div{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;font-size:11px;color:var(--dim);gap:4px;min-width:0}
+.trend i{display:block;width:100%;max-width:56px;background:linear-gradient(180deg,#14b8a6,var(--teal));border-radius:6px 6px 2px 2px}
+.trend b{color:var(--ink);font-size:12px}.trend span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+table{width:100%;border-collapse:collapse;font-size:14px}th{text-align:left;color:var(--dim);font-size:12px;text-transform:uppercase;letter-spacing:.06em;padding:8px 10px;border-bottom:1px solid var(--line)}
+td{padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}td:first-child,td:nth-child(5){white-space:nowrap}tr:last-child td{border-bottom:0}td.n{font-weight:600;color:var(--ink)}td.r,th.r{text-align:right;font-variant-numeric:tabular-nums}
+.tscroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.who-m{display:none}@media (max-width:600px){th.who,td.who{display:none}.who-m{display:block;white-space:normal;margin-top:3px;color:var(--muted);font-size:12.5px;font-weight:400;line-height:1.45}}
+.pill{display:inline-block;font-size:11px;font-weight:700;padding:3px 8px;border-radius:999px;background:var(--bg2);white-space:nowrap}
+.cta{display:inline-block;background:var(--ink);color:#fff;font-weight:600;padding:13px 22px;border-radius:10px;text-decoration:none;font-size:15px;box-shadow:0 8px 24px -8px rgba(15,35,64,.45)}
+.cta:hover{background:#1a365d}
+.cta.ghost{background:#fff;color:var(--ink);border:1px solid var(--line2);box-shadow:none}.cta.ghost:hover{border-color:var(--teal);background:#fff}
+.btns{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+.offer{background:linear-gradient(135deg,rgba(14,124,123,.08),rgba(37,99,235,.04));border:1px solid rgba(14,124,123,.35);border-radius:18px;padding:26px}
+.offer h2{margin-top:0}.offer p{color:var(--muted)}
+.links{display:flex;flex-wrap:wrap;gap:8px}.links a{background:var(--card);border:1px solid var(--line);border-radius:999px;padding:7px 13px;text-decoration:none;color:var(--ink);font-size:14px}.links a:hover{border-color:var(--teal)}
+details{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 16px;margin:8px 0}summary{cursor:pointer;font-weight:600;color:var(--ink)}details p{margin:10px 0 0;color:var(--muted)}
+.note{color:var(--dim);font-size:13px;margin-top:10px}
+footer{color:var(--dim);font-size:13px;padding:30px 0 40px;border-top:1px solid var(--line);margin-top:40px}footer a{color:var(--muted)}
+.flinks{display:flex;flex-wrap:wrap;gap:6px 18px;margin-bottom:10px}.flinks a{text-decoration:none;font-weight:600}.flinks a:hover{color:var(--ink)}
+.prose{max-width:760px}.prose h2{margin-top:30px}.prose p,.prose li{color:var(--muted)}.prose li{margin:6px 0}.prose b{color:var(--ink)}
+.answer{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--teal);border-radius:12px;padding:16px 20px;margin:18px 0 8px;max-width:800px;box-shadow:var(--shadow)}.answer p{margin:0;color:var(--body);font-size:17px}.answer b{color:var(--ink)}
+.byline{font-size:13px;color:var(--dim);margin:2px 0 0}.prose code{font-size:14px;background:var(--bg2);padding:1px 6px;border-radius:5px}.steps li{margin:8px 0}
+table.wraptab td{white-space:normal}@media(max-width:600px){table.stack thead{display:none}table.stack tr{display:block;border-bottom:1px solid var(--line);padding:10px 0}table.stack tr:last-child{border-bottom:0}table.stack td{display:block;border:0;padding:3px 0}table.stack td.n{font-size:15px}table.stack td[data-l]:before{content:attr(data-l) ": ";font-weight:600;color:var(--ink)}}table.wraptab td.n{min-width:120px}.prose .tscroll{margin:12px 0 18px}.prose table{font-size:14px}.prose td{color:var(--body)}
+.gcards{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin:26px 0}@media(max-width:700px){.gcards{grid-template-columns:1fr}}
+.gcard{display:block;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;text-decoration:none;box-shadow:var(--shadow)}.gcard:hover{border-color:var(--teal)}.gcard b{display:block;font-family:"Source Serif 4",Georgia,serif;font-size:19px;font-weight:600;color:var(--ink);line-height:1.25;margin-bottom:6px}.gcard span{color:var(--muted);font-size:14px}
+.all{columns:3;column-gap:20px}.all a{display:block;padding:5px 0;color:var(--ink);text-decoration:none;font-size:15px;break-inside:avoid}.all a small{color:var(--dim);margin-left:6px}
+@media(max-width:700px){.all{columns:2}}
+</style>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Article","headline":"How to get a list of newly registered NPI providers","description":"Where new NPI registrations are published (the free NPPES weekly file), how to filter it to new practices by state and specialty, and what each record contains. 4,952 new practices registered the week ending Nov 8.","url":"https://panelready.co/guides/new-npi-provider-list/","mainEntityOfPage":"https://panelready.co/guides/new-npi-provider-list/","datePublished":"2026-11-11","dateModified":"2026-11-11","image":"https://panelready.co/og-image.png","author":{"@type":"Person","name":"Matt","jobTitle":"Founder, PanelReady","worksFor":{"@id":"https://panelready.co/#org"}},"publisher":{"@type":"Organization","@id":"https://panelready.co/#org","name":"PanelReady","url":"https://panelready.co/","logo":"https://panelready.co/icon-512.png"}},{"@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is NPPES data free to use?","acceptedAnswer":{"@type":"Answer","text":"Yes. CMS publishes the NPPES registry as public data that anyone can download free from download.cms.gov/nppes. It includes names, addresses, phone numbers and specialties, but no email addresses."}},{"@type":"Question","name":"How often is the NPPES file updated?","acceptedAnswer":{"@type":"Answer","text":"CMS posts a Weekly Update file every week, the full registry once a month, and a monthly file of deactivated NPIs."}},{"@type":"Question","name":"How soon after registering does a new practice appear in the file?","acceptedAnswer":{"@type":"Answer","text":"Usually one to two weeks. CMS posts each week's file a few days after the week ends, and most registrations in it are less than a week old."}},{"@type":"Question","name":"Can I search the NPI Registry by registration date?","acceptedAnswer":{"@type":"Answer","text":"No. The NPI Registry website and API search by name, NPI, location and specialty, not by enumeration date. To find new registrations you need the weekly download file."}},{"@type":"Question","name":"Does the NPI registry include email addresses?","acceptedAnswer":{"@type":"Answer","text":"No. Records have addresses and phone numbers but no email or website. PanelReady looks up websites, emails and Google ratings for new organizations from public sources."}}]},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"PanelReady","item":"https://panelready.co/"},{"@type":"ListItem","position":2,"name":"Guides","item":"https://panelready.co/guides/"},{"@type":"ListItem","position":3,"name":"How to get a list of newly registered NPI providers","item":"https://panelready.co/guides/new-npi-provider-list/"}]}]}</script>
+</head>
+<body>
+<div class="nav"><div class="wrap">
+  <a class="logo" href="../../"><svg viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="15" fill="#0f2340"/><rect x="18" y="17" width="28" height="32" rx="4" fill="none" stroke="#ffffff" stroke-width="4.5" stroke-linejoin="round"/><rect x="25" y="13" width="14" height="8" rx="2.5" fill="#ffffff"/><path d="M25 34l5.5 5.5L40 29" fill="none" stroke="#2dd4bf" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg>PanelReady</a>
+  <nav><a href="../../search/">Live search</a><a href="../../states/">All states</a><a href="../../#how">How it works</a><a href="../../#pricing">Pricing</a><a class="signin" href="../../account/">Account</a><a class="mini" href="../../#free">Get 2 lists free</a></nav>
+</div></div>
+<div class="wrap">
+
+<div class="crumbs"><a href="../../">PanelReady</a> › <a href="../">Guides</a> › How to get a list of newly registered NPI providers</div>
+<span class="kicker">Guide for credentialing &amp; billing companies</span>
+<h1>How to get a list of <em>newly registered</em> NPI providers</h1>
+<p class="byline">By Matt, PanelReady's founder · Numbers from the week ending November 8, 2026</p>
+<div class="answer"><p><b>Short answer:</b> CMS publishes every new NPI registration in a free weekly file, the NPPES <i>Weekly Update</i> on <a href="https://download.cms.gov/nppes/NPI_Files.html" rel="nofollow">download.cms.gov</a>. Download the ZIP, keep the records whose <b>Provider Enumeration Date</b> falls in that week, keep organizations and sole proprietors, then filter by practice-location state and taxonomy code. That's the list. PanelReady does it every week and emails it as a spreadsheet: the week ending November 8, 2026 had <b>4,952</b> new practices and sole proprietors nationwide, <b>2,599</b> of them organizations.</p></div>
+<div class="prose">
+<h2>Where new NPI registrations are published</h2>
+<p>The National Plan and Provider Enumeration System (NPPES), run by CMS, issues every National Provider Identifier and publishes the registry as public data in three downloads on its <a href="https://download.cms.gov/nppes/NPI_Files.html" rel="nofollow">NPI files page</a>:</p>
+<ul>
+<li><b>Weekly Update</b> (the weekly incremental file): every NPI record created or changed that week, a few megabytes zipped. This is the one you want for new registrations.</li>
+<li><b>Monthly file</b>: the entire registry, every NPI ever issued. Over 1 GB zipped and many times that unzipped, far too big for Excel.</li>
+<li><b>Monthly deactivation file</b>: the NPIs deactivated that month.</li>
+</ul>
+<p>The <a href="https://npiregistry.cms.hhs.gov/api-page" rel="nofollow">NPI Registry search and API</a> are built for looking up a provider you already know. They search by name, number, location and specialty but not by registration date, so they can't tell you who registered last week, and a single search returns at most 1,200 results.</p>
+<h2>How to turn the weekly file into a list of new practices</h2>
+<ol class="steps">
+<li>Download the newest <b>Weekly Update</b> ZIP (Version 2) and open the main <code>npidata_pfile</code> CSV: one row per NPI, more than 300 columns.</li>
+<li>Keep rows whose <b>Provider Enumeration Date</b> falls inside the week. The others are existing NPIs that changed something (an address, a specialty). Those are useful in their own right, but they aren't new.</li>
+<li>Keep <b>Entity Type Code</b> 2 (organizations: practices, clinics, agencies, suppliers) and individuals whose <b>Is Sole Proprietor</b> is Y. Other individuals are mostly employees registering for a new job; they don't buy credentialing or billing themselves. Roughly one new NPI in three survives this step.</li>
+<li>Filter on <b>Provider Business Practice Location Address State Name</b> for your territory. The mailing address is often a home or a billing company.</li>
+<li>Take the specialty from the <b>Healthcare Provider Taxonomy Code</b> whose <b>Primary Taxonomy Switch</b> is Y and translate it with the <a href="https://www.nucc.org/index.php/code-sets-mainmenu-41/provider-taxonomy-mainmenu-40" rel="nofollow">NUCC taxonomy list</a> (101YM0800X, for example, is a mental health counselor).</li>
+<li>Drop any row with an <b>NPI Deactivation Date</b>.</li>
+</ol>
+<h2>What a new-registration record contains, and what it doesn't</h2>
+<p>Each record has the legal name, the practice-location and mailing addresses, the practice phone (often a fax too), the taxonomy codes and license numbers, the enumeration date and, for organizations, the <b>authorized official's</b> name, title and phone: usually the owner or administrator. It has <b>no email address and no website</b>; those you have to find yourself.</p>
+<p>A practice usually shows up one to two weeks after it registered: CMS posts each week's file a few days after the week ends. That is typically before it has finished enrolling with Medicare, Medicaid or commercial plans, which is why credentialing and billing companies watch this file.</p>
+<h2>How many new practices register each week</h2>
+<p>Counting only organizations and sole proprietors, across every state and territory:</p>
+<div class="tscroll"><table><thead><tr><th>Week ending</th><th class="r">New practices &amp; sole proprietors</th></tr></thead><tbody><tr><td class="n">November 8, 2026</td><td class="r">4,952</td></tr><tr><td class="n">November 1, 2026</td><td class="r">4,632</td></tr><tr><td class="n">October 25, 2026</td><td class="r">4,935</td></tr><tr><td class="n">October 18, 2026</td><td class="r">4,695</td></tr><tr><td class="n">October 11, 2026</td><td class="r">4,841</td></tr></tbody></table></div>
+<p>By category, the week ending November 8, 2026:</p>
+<div class="tscroll"><table class="wraptab"><thead><tr><th>Category</th><th class="r">Last week</th><th class="r">Share</th><th class="who">Who's in it</th></tr></thead><tbody><tr><td class="n">Behavioral health<small class="who-m">counselors, social workers, psychologists, psychiatry and psychiatric NPs, ABA providers, residential treatment, substance-use programs and peer specialists</small></td><td class="r">1,906</td><td class="r">38%</td><td class="who" style="color:var(--muted)">counselors, social workers, psychologists, psychiatry and psychiatric NPs, ABA providers, residential treatment, substance-use programs and peer specialists</td></tr><tr><td class="n">Medical practices &amp; clinics<small class="who-m">physicians, nurse practitioners, PAs, midwives, primary care and specialty clinics, community health centers (FQHCs) and rural health clinics, urgent care, surgery centers and medical groups</small></td><td class="r">884</td><td class="r">18%</td><td class="who" style="color:var(--muted)">physicians, nurse practitioners, PAs, midwives, primary care and specialty clinics, community health centers (FQHCs) and rural health clinics, urgent care, surgery centers and medical groups</td></tr><tr><td class="n">Home care &amp; senior living<small class="who-m">home health agencies, in-home and companion care, assisted living, nursing facilities, hospice, IDD group homes, day habilitation and case management</small></td><td class="r">837</td><td class="r">17%</td><td class="who" style="color:var(--muted)">home health agencies, in-home and companion care, assisted living, nursing facilities, hospice, IDD group homes, day habilitation and case management</td></tr><tr><td class="n">Therapy &amp; rehab<small class="who-m">physical, occupational and speech therapy, chiropractic, podiatry, optometry, acupuncture and dietitians</small></td><td class="r">627</td><td class="r">13%</td><td class="who" style="color:var(--muted)">physical, occupational and speech therapy, chiropractic, podiatry, optometry, acupuncture and dietitians</td></tr><tr><td class="n">DME, pharmacy &amp; transport<small class="who-m">durable medical equipment suppliers, orthotics and prosthetics (O&amp;P), pharmacies, non-emergency medical transport and ambulance services</small></td><td class="r">546</td><td class="r">11%</td><td class="who" style="color:var(--muted)">durable medical equipment suppliers, orthotics and prosthetics (O&amp;P), pharmacies, non-emergency medical transport and ambulance services</td></tr><tr><td class="n">Dental<small class="who-m">general dentists, dental specialists, hygienists, dental groups and clinics</small></td><td class="r">152</td><td class="r">3%</td><td class="who" style="color:var(--muted)">general dentists, dental specialists, hygienists, dental groups and clinics</td></tr></tbody></table></div>
+<p>The most that week were in <a href="../../states/florida/">Florida</a> (544), <a href="../../states/california/">California</a> (537), <a href="../../states/texas/">Texas</a> (408), <a href="../../states/ohio/">Ohio</a> (278), <a href="../../states/new-york/">New York</a> (238). Every state's count, trend, top cities and specialties are on <a href="../../states/">the state pages</a>.</p>
+<h2>The shortcut</h2>
+<p>PanelReady runs these steps every week and emails each subscriber the result for their states and categories, sorted best-first with the top 25 marked, the owner's direct line where the registry lists it, and websites, emails and Google ratings looked up for organizations. Plans start at $49 a month for a local area, and two lists are free with no card. <a href="../../#free">Get two free lists</a>, or read <a href="../nppes-download-vs-panelready/">how the two compare</a>.</p>
+
+<h2>Questions</h2>
+<details><summary>Is NPPES data free to use?</summary><p>Yes. CMS publishes the NPPES registry as public data that anyone can download free from download.cms.gov/nppes. It includes names, addresses, phone numbers and specialties, but no email addresses.</p></details><details><summary>How often is the NPPES file updated?</summary><p>CMS posts a Weekly Update file every week, the full registry once a month, and a monthly file of deactivated NPIs.</p></details><details><summary>How soon after registering does a new practice appear in the file?</summary><p>Usually one to two weeks. CMS posts each week&#x27;s file a few days after the week ends, and most registrations in it are less than a week old.</p></details><details><summary>Can I search the NPI Registry by registration date?</summary><p>No. The NPI Registry website and API search by name, NPI, location and specialty, not by enumeration date. To find new registrations you need the weekly download file.</p></details><details><summary>Does the NPI registry include email addresses?</summary><p>No. Records have addresses and phone numbers but no email or website. PanelReady looks up websites, emails and Google ratings for new organizations from public sources.</p></details>
+</div>
+<section><h2>More guides</h2><div class="links"><a href="../credentialing-company-leads/">How Credentialing Companies Find New Clients</a><a href="../medical-billing-company-leads/">How Medical Billing Companies Find New Practices Before They Pick a Biller</a><a href="../nppes-download-vs-panelready/">NPPES Download vs. PanelReady</a><a href="../medicare-revalidation-due-list/">Medicare Revalidation Due Date List</a><a href="../../states/">New practices by state</a></div></section>
+<section class="offer"><h2>Get every new practice in your state, the week they register.</h2><p>Subscribers get the complete state list as a spreadsheet, every category, one spreadsheet every Monday, sorted best-first: the top 25 marked, a score and a ready-to-say opener for every practice, the owner's direct line where the registry lists it, phone, address and NPI, websites, emails and practice software for organizations where we can find them, an OIG exclusion check, and the practices that moved or added a specialty that week. Once a month: practices due for Medicare revalidation and practices that look stuck in credentialing. Your first paid list includes the last 90 days, teammates get copies, Roster Watch checks your own clients every week, and a webhook sends each list to your CRM. Backed by a 90-day guarantee. $149/month per state through PayPal (or $49/month for just your local area, $199/month for three states, $499/month for every state, 2 months free yearly; the charge shows as Avery Data Co., PanelReady's parent company); cancel any time. Try two lists free first, no card needed: the first arrives within minutes.</p><div class="btns"><a class="cta" href="../../#free">Get two free lists</a><a class="cta ghost" href="../../#pricing">Subscribe · $149/month</a></div></section>
+
+<footer><div class="flinks"><a href="../../search/">Live search</a><a href="../../states/">New practices by state</a><a href="../../guides/">Guides</a><a href="../../about/">About</a><a href="../../contact/">Contact</a><a href="../../privacy/">Privacy</a><a href="../../terms/">Terms</a><a href="../../sample/panelready-sample.xlsx">Sample spreadsheet</a></div>
+PanelReady · <a href="mailto:matt@panelready.co">matt@panelready.co</a> · an Avery Data Co. product, New York<br>
+Source: NPPES weekly dissemination files published by CMS. Public data, provided as-is; not affiliated with CMS or any payer. Practice names are from the public registry; phone numbers are masked on this page and complete in the subscriber spreadsheet.</footer>
+</div>
+<script src="../../chat.js" defer></script>
+</body>
+</html>

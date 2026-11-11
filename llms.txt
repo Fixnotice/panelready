@@ -1,0 +1,30 @@
+# PanelReady
+
+> PanelReady sends weekly lists of newly registered U.S. healthcare practices (organizations and sole proprietors from the federal NPPES / NPI registry), by state, specialty or distance from a ZIP code, to credentialing and medical billing companies. Made by Avery Data Co., New York. Contact: matt@panelready.co.
+
+## Key facts
+- Source: CMS's NPPES Weekly Update file (public data), records unaltered. A practice appears one to two weeks after it registers.
+- Week ending November 8, 2026: 4,952 new practices and sole proprietors nationwide, 2,599 of them organizations.
+- Monthly, November 2026: 20,640 practices that registered 2-12 months ago and still aren't on Medicare's enrollment list (stuck in credentialing).
+- Monthly, November 2026: 53,257 practices due for Medicare revalidation within six months or overdue.
+- Each list: sorted best-first with the top 25 marked, phone, address, NPI, the owner's direct line where the registry lists it, websites, emails and Google ratings for organizations where found, an OIG exclusion check, and practices that moved that week.
+- Six categories: behavioral health; medical practices & clinics; dental; therapy & rehab; home care & senior living; DME, pharmacy & transport. Fifty specialty groups within them.
+- Prices (monthly, PayPal): local area $49; one state + one category $89; one state, every category $149; three states $199; every state $499. Yearly = 10 months. Two lists free, no card. 90-day guarantee.
+
+## Main pages
+- [Home](https://panelready.co/): what's in the list, a sample, pricing and the free-trial form
+- [New practices by state](https://panelready.co/states/): this week's counts, trends, cities and specialties for every state
+- [Live search](https://panelready.co/search/): search and filter the newest practices
+
+## Guides
+- [How to Get a List of Newly Registered NPI Providers (Updated Weekly)](https://panelready.co/guides/new-npi-provider-list/): Where CMS publishes every new NPI, and how to filter the weekly file down to new practices in your state and specialties.
+- [How Credentialing Companies Find New Clients: 4 Free CMS Lists](https://panelready.co/guides/credentialing-company-leads/): The four moments a practice needs credentialing, where each one is published for free, and how many practices each turns up.
+- [How Medical Billing Companies Find New Practices Before They Pick a Biller](https://panelready.co/guides/medical-billing-company-leads/): The earliest public sign of a new practice, which new practices to call first, and where they registered last week.
+- [NPPES Download vs. PanelReady: Build Your Own New-Practice List or Get It Weekly](https://panelready.co/guides/nppes-download-vs-panelready/): An honest comparison of filtering the free NPPES file yourself and getting the finished list every week.
+- [Medicare Revalidation Due Date List: Find Practices Due to Revalidate](https://panelready.co/guides/medicare-revalidation-due-list/): What CMS's revalidation list contains, how often providers revalidate, and how to turn it into a call list.
+
+## Company
+- [About](https://panelready.co/about/)
+- [Contact](https://panelready.co/contact/)
+- [Terms](https://panelready.co/terms/)
+- [Privacy](https://panelready.co/privacy/)

@@ -34,7 +34,7 @@ for cand in (ROOT, HERE):                            # pr/npi.py lives in the pr
 from pr import npi as N                              # noqa: E402
 
 SITE = "https://panelready.co"                       # the site's address, no trailing slash (the old github.io address redirects here)
-BUILD_VERSION = 25                                    # bump when the page layout changes, so the next run rewrites every page
+BUILD_VERSION = 26                                    # bump when the page layout changes, so the next run rewrites every page
 COMPANY = "Avery Data Co."
 PAYPAL_CLIENT_ID = "BAAQ4G4Hizw2wHo9EZQsTxcW_oBtYKOFEIoI41YQZJvC8ufp2vM9Z_lIU4ASqIUZvXAUrin0KLaYIpr8Js"   # the "PanelReady site" app on developer.paypal.com (Live); one-time orders
 PAYPAL_ME = ""                                       # optional plan B: a PayPal.me handle (e.g. "averydataco"); shown as a second way to pay $39
@@ -495,6 +495,11 @@ details{background:var(--card);border:1px solid var(--line);border-radius:12px;p
 footer{color:var(--dim);font-size:13px;padding:30px 0 40px;border-top:1px solid var(--line);margin-top:40px}footer a{color:var(--muted)}
 .flinks{display:flex;flex-wrap:wrap;gap:6px 18px;margin-bottom:10px}.flinks a{text-decoration:none;font-weight:600}.flinks a:hover{color:var(--ink)}
 .prose{max-width:760px}.prose h2{margin-top:30px}.prose p,.prose li{color:var(--muted)}.prose li{margin:6px 0}.prose b{color:var(--ink)}
+.answer{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--teal);border-radius:12px;padding:16px 20px;margin:18px 0 8px;max-width:800px;box-shadow:var(--shadow)}.answer p{margin:0;color:var(--body);font-size:17px}.answer b{color:var(--ink)}
+.byline{font-size:13px;color:var(--dim);margin:2px 0 0}.prose code{font-size:14px;background:var(--bg2);padding:1px 6px;border-radius:5px}.steps li{margin:8px 0}
+table.wraptab td{white-space:normal}@media(max-width:600px){table.stack thead{display:none}table.stack tr{display:block;border-bottom:1px solid var(--line);padding:10px 0}table.stack tr:last-child{border-bottom:0}table.stack td{display:block;border:0;padding:3px 0}table.stack td.n{font-size:15px}table.stack td[data-l]:before{content:attr(data-l) ": ";font-weight:600;color:var(--ink)}}table.wraptab td.n{min-width:120px}.prose .tscroll{margin:12px 0 18px}.prose table{font-size:14px}.prose td{color:var(--body)}
+.gcards{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin:26px 0}@media(max-width:700px){.gcards{grid-template-columns:1fr}}
+.gcard{display:block;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;text-decoration:none;box-shadow:var(--shadow)}.gcard:hover{border-color:var(--teal)}.gcard b{display:block;font-family:"Source Serif 4",Georgia,serif;font-size:19px;font-weight:600;color:var(--ink);line-height:1.25;margin-bottom:6px}.gcard span{color:var(--muted);font-size:14px}
 .all{columns:3;column-gap:20px}.all a{display:block;padding:5px 0;color:var(--ink);text-decoration:none;font-size:15px;break-inside:avoid}.all a small{color:var(--dim);margin-left:6px}
 @media(max-width:700px){.all{columns:2}}
 """
@@ -542,7 +547,7 @@ def shell(title: str, desc: str, path: str, body: str, jsonld: dict | None = Non
 </div></div>
 <div class="wrap">
 {body}
-<footer><div class="flinks"><a href="{root}search/">Live search</a><a href="{root}states/">New practices by state</a><a href="{root}about/">About</a><a href="{root}contact/">Contact</a><a href="{root}privacy/">Privacy</a><a href="{root}terms/">Terms</a><a href="{root}sample/{SAMPLE_FILE}">Sample spreadsheet</a></div>
+<footer><div class="flinks"><a href="{root}search/">Live search</a><a href="{root}states/">New practices by state</a><a href="{root}guides/">Guides</a><a href="{root}about/">About</a><a href="{root}contact/">Contact</a><a href="{root}privacy/">Privacy</a><a href="{root}terms/">Terms</a><a href="{root}sample/{SAMPLE_FILE}">Sample spreadsheet</a></div>
 {BRAND} · <a href="mailto:{MAIL}">{MAIL}</a> · an {COMPANY} product, New York<br>
 Source: NPPES weekly dissemination files published by CMS. Public data, provided as-is; not affiliated with CMS or any payer. Practice names are from the public registry; phone numbers are masked on this page and complete in the subscriber spreadsheet.</footer>
 </div>
@@ -638,7 +643,7 @@ def week_box(state_name: str, st: str, latest: str, total: int, avg: float = 0.0
 </script>"""
 
 
-def offer(state_name: str, st: str, cat: str | None, root: str, latest: str = "", total: int = 0, avg: float = 0.0) -> str:
+def offer(state_name: str, st: str, cat: str | None, root: str, latest: str = "", total: int = 0, avg: float = 0.0, sample: bool = True) -> str:
     """The subscribe block. st="" makes the generic version for the hub."""
     what = f"{CAT_TITLE[cat].lower()} practice" if cat else "practice"
     plan = f"${CAT_PRICE}/month" if cat else f"${ALL_PRICE}/month"
@@ -648,9 +653,9 @@ def offer(state_name: str, st: str, cat: str | None, root: str, latest: str = ""
     where = f"in {esc(state_name)}" if st else "in your state"
     week = week_box(state_name, st, latest, total, avg) if st and latest and (total or avg) else ""
     return (f'<section class="offer"><h2>Get every new {esc(what)} {where}, the week they register.</h2>'
-            f'<p>This page shows a sample. Subscribers get the complete {esc(state_name) if st else "state"} list as a spreadsheet, {sub}, sorted best-first: the top 25 marked, a score and a ready-to-say opener for every practice, the owner\'s direct line where the registry lists it, phone, address and NPI, websites, emails and practice software for organizations where we can find them, an OIG exclusion check, and the practices that moved or added a specialty that week. Once a month: practices due for Medicare revalidation and practices that look stuck in credentialing. Your first paid list includes the last 90 days, teammates get copies, Roster Watch checks your own clients every week, and a webhook sends each list to your CRM. Backed by a 90-day guarantee. '
+            f'<p>{"This page shows a sample. " if sample else ""}Subscribers get the complete {esc(state_name) if st else "state"} list as a spreadsheet, {sub}, sorted best-first: the top 25 marked, a score and a ready-to-say opener for every practice, the owner\'s direct line where the registry lists it, phone, address and NPI, websites, emails and practice software for organizations where we can find them, an OIG exclusion check, and the practices that moved or added a specialty that week. Once a month: practices due for Medicare revalidation and practices that look stuck in credentialing. Your first paid list includes the last 90 days, teammates get copies, Roster Watch checks your own clients every week, and a webhook sends each list to your CRM. Backed by a 90-day guarantee. '
             f'{plan} per state through PayPal (or ${LOCAL_PRICE}/month for just your local area, ${MULTI_PRICE}/month for three states, ${NATIONAL_PRICE}/month for every state, 2 months free yearly; the charge shows as {COMPANY}, {BRAND}\'s parent company); cancel any time. Try two lists free first, no card needed: the first arrives within minutes.</p>'
-            f'<div class="btns"><a class="cta" href="{root}#free{q}">Get two free {esc(state_name) if st else ""} lists</a><a class="cta ghost" href="{root}#pricing{q}">Subscribe · {plan}</a></div>{week}</section>')
+            f'<div class="btns"><a class="cta" href="{root}#free{q}">Get two free {esc(state_name) + " " if st else ""}lists</a><a class="cta ghost" href="{root}#pricing{q}">Subscribe · {plan}</a></div>{week}</section>')
 
 
 def links_row(items: list[tuple[str, str]]) -> str:
@@ -1158,6 +1163,486 @@ def info_pages(data: dict) -> list[str]:
         (d / "index.html").write_text(shell(f"{title} — {BRAND}", desc, f"{slug}/", body), encoding="utf-8")
         out.append(f"{slug}/")
     return out
+
+
+# ------------------------------------------------------------------ guides: answer-first pages for the questions buyers ask Google and AI assistants
+
+# Nov 11, 2026: two trials in a row arrived from ChatGPT. AI search reads a page in short chunks from the top and cites
+# pages that answer the question straight away, so each guide opens with a two-to-three-sentence answer, then the
+# detail, then a short FAQ (also as FAQPage data). The numbers are this week's, rewritten with every build.
+GUIDES_PUBLISHED = "2026-11-11"
+NPPES_FILES = "https://download.cms.gov/nppes/NPI_Files.html"
+NPI_API = "https://npiregistry.cms.hhs.gov/api-page"
+NUCC_URL = "https://www.nucc.org/index.php/code-sets-mainmenu-41/provider-taxonomy-mainmenu-40"
+PPEF_URL = "https://data.cms.gov/provider-characteristics/medicare-provider-supplier-enrollment/medicare-fee-for-service-public-provider-enrollment"
+REVAL_URL = "https://data.cms.gov/provider-characteristics/medicare-provider-supplier-enrollment/revalidation-due-date-list"
+
+
+def guide_facts(data: dict) -> dict:
+    """This week's numbers for the guides: national totals, recent weeks, categories, top states, this month's lists."""
+    latest, nat = data["latest"], data["national"]
+    week = data["counts"][latest]
+    totals = data.get("totals") or {}
+    recent = [(w, totals[w]) for w in sorted(totals)][-6:]
+    last4 = [n for _, n in recent][-4:]
+    m = data.get("monthly") or {}
+
+    def monthly(kind):
+        b = m.get(kind)
+        if not b or not b.get("counts"):
+            return None
+        cats = [sum(v[i] for v in b["counts"].values()) for i in range(len(CATS))]
+        states = sorted(((st, sum(v)) for st, v in b["counts"].items() if st in STATES and sum(v)), key=lambda x: (-x[1], x[0]))
+        return {"month": month_name(b["month"]), "total": sum(cats), "cats": cats, "states": states} if sum(cats) else None
+    order = sorted(range(len(CATS)), key=lambda i: -nat["cats"][i])
+    top = sorted((k for k in week if k in STATES), key=lambda k: (-sum(week[k]), k))
+    return {"latest": latest, "date": long_date(latest), "short": short_date(latest), "total": nat["total"], "orgs": nat["orgs"],
+            "cats": nat["cats"], "order": order, "recent": recent, "avg": round(sum(last4) / len(last4)) if last4 else nat["total"],
+            "top": [(k, sum(week[k])) for k in top[:10]], "stuck": monthly("stuck"), "reval": monthly("reval")}
+
+
+def _cat_table(f: dict, counts: list[int] | None = None, label: str = "") -> str:
+    counts = counts or f["cats"]
+    total = sum(counts) or 1
+    rows = "".join(f'<tr><td class="n">{esc(CAT_TITLE[CATS[i]])}<small class="who-m">{esc(CAT_WHO[CATS[i]])}</small></td>'
+                   f'<td class="r">{fmt(counts[i])}</td><td class="r">{pct(counts[i], total):.0f}%</td>'
+                   f'<td class="who" style="color:var(--muted)">{esc(CAT_WHO[CATS[i]])}</td></tr>'
+                   for i in sorted(range(len(CATS)), key=lambda i: -counts[i]) if counts[i])
+    return (f'<div class="tscroll"><table class="wraptab"><thead><tr><th>Category</th><th class="r">{esc(label or "Last week")}</th><th class="r">Share</th>'
+            f'<th class="who">Who\'s in it</th></tr></thead><tbody>{rows}</tbody></table></div>')
+
+
+def _state_list(items: list[tuple[str, int]], root: str, n: int = 5) -> str:
+    return ", ".join(f'<a href="{root}states/{SLUG[st]}/">{esc(STATES[st])}</a> ({fmt(k)})' for st, k in items[:n])
+
+
+def _faq_html(faqs: list[tuple[str, str]]) -> str:
+    return "".join(f"<details><summary>{esc(q)}</summary><p>{esc(a)}</p></details>" for q, a in faqs)
+
+
+def _g_npi_list(f: dict, root: str) -> dict:
+    weeks = "".join(f'<tr><td class="n">{esc(long_date(w))}</td><td class="r">{fmt(n)}</td></tr>' for w, n in reversed(f["recent"]))
+    return {
+        "slug": "new-npi-provider-list",
+        "title": "How to Get a List of Newly Registered NPI Providers (Updated Weekly)",
+        "h1": "How to get a list of <em>newly registered</em> NPI providers",
+        "card": "Where CMS publishes every new NPI, and how to filter the weekly file down to new practices in your state and specialties.",
+        "desc": (f"Where new NPI registrations are published (the free NPPES weekly file), how to filter it to new practices by state and "
+                 f"specialty, and what each record contains. {fmt(f['total'])} new practices registered the week ending {f['short']}."),
+        "answer": (f'CMS publishes every new NPI registration in a free weekly file, the NPPES <i>Weekly Update</i> on '
+                   f'<a href="{NPPES_FILES}" rel="nofollow">download.cms.gov</a>. Download the ZIP, keep the records whose <b>Provider Enumeration '
+                   f'Date</b> falls in that week, keep organizations and sole proprietors, then filter by practice-location state and taxonomy code. '
+                   f'That\'s the list. {BRAND} does it every week and emails it as a spreadsheet: the week ending {f["date"]} had '
+                   f'<b>{fmt(f["total"])}</b> new practices and sole proprietors nationwide, <b>{fmt(f["orgs"])}</b> of them organizations.'),
+        "body": f"""
+<h2>Where new NPI registrations are published</h2>
+<p>The National Plan and Provider Enumeration System (NPPES), run by CMS, issues every National Provider Identifier and publishes the registry as public data in three downloads on its <a href="{NPPES_FILES}" rel="nofollow">NPI files page</a>:</p>
+<ul>
+<li><b>Weekly Update</b> (the weekly incremental file): every NPI record created or changed that week, a few megabytes zipped. This is the one you want for new registrations.</li>
+<li><b>Monthly file</b>: the entire registry, every NPI ever issued. Over 1 GB zipped and many times that unzipped, far too big for Excel.</li>
+<li><b>Monthly deactivation file</b>: the NPIs deactivated that month.</li>
+</ul>
+<p>The <a href="{NPI_API}" rel="nofollow">NPI Registry search and API</a> are built for looking up a provider you already know. They search by name, number, location and specialty but not by registration date, so they can't tell you who registered last week, and a single search returns at most 1,200 results.</p>
+<h2>How to turn the weekly file into a list of new practices</h2>
+<ol class="steps">
+<li>Download the newest <b>Weekly Update</b> ZIP (Version 2) and open the main <code>npidata_pfile</code> CSV: one row per NPI, more than 300 columns.</li>
+<li>Keep rows whose <b>Provider Enumeration Date</b> falls inside the week. The others are existing NPIs that changed something (an address, a specialty). Those are useful in their own right, but they aren't new.</li>
+<li>Keep <b>Entity Type Code</b> 2 (organizations: practices, clinics, agencies, suppliers) and individuals whose <b>Is Sole Proprietor</b> is Y. Other individuals are mostly employees registering for a new job; they don't buy credentialing or billing themselves. Roughly one new NPI in three survives this step.</li>
+<li>Filter on <b>Provider Business Practice Location Address State Name</b> for your territory. The mailing address is often a home or a billing company.</li>
+<li>Take the specialty from the <b>Healthcare Provider Taxonomy Code</b> whose <b>Primary Taxonomy Switch</b> is Y and translate it with the <a href="{NUCC_URL}" rel="nofollow">NUCC taxonomy list</a> (101YM0800X, for example, is a mental health counselor).</li>
+<li>Drop any row with an <b>NPI Deactivation Date</b>.</li>
+</ol>
+<h2>What a new-registration record contains, and what it doesn't</h2>
+<p>Each record has the legal name, the practice-location and mailing addresses, the practice phone (often a fax too), the taxonomy codes and license numbers, the enumeration date and, for organizations, the <b>authorized official's</b> name, title and phone: usually the owner or administrator. It has <b>no email address and no website</b>; those you have to find yourself.</p>
+<p>A practice usually shows up one to two weeks after it registered: CMS posts each week's file a few days after the week ends. That is typically before it has finished enrolling with Medicare, Medicaid or commercial plans, which is why credentialing and billing companies watch this file.</p>
+<h2>How many new practices register each week</h2>
+<p>Counting only organizations and sole proprietors, across every state and territory:</p>
+<div class="tscroll"><table><thead><tr><th>Week ending</th><th class="r">New practices &amp; sole proprietors</th></tr></thead><tbody>{weeks}</tbody></table></div>
+<p>By category, the week ending {f["date"]}:</p>
+{_cat_table(f)}
+<p>The most that week were in {_state_list(f["top"], root)}. Every state's count, trend, top cities and specialties are on <a href="{root}states/">the state pages</a>.</p>
+<h2>The shortcut</h2>
+<p>{BRAND} runs these steps every week and emails each subscriber the result for their states and categories, sorted best-first with the top 25 marked, the owner's direct line where the registry lists it, and websites, emails and Google ratings looked up for organizations. Plans start at ${LOCAL_PRICE} a month for a local area, and two lists are free with no card. <a href="{root}#free">Get two free lists</a>, or read <a href="../nppes-download-vs-panelready/">how the two compare</a>.</p>
+""",
+        "faqs": [
+            ("Is NPPES data free to use?", "Yes. CMS publishes the NPPES registry as public data that anyone can download free from download.cms.gov/nppes. "
+             "It includes names, addresses, phone numbers and specialties, but no email addresses."),
+            ("How often is the NPPES file updated?", "CMS posts a Weekly Update file every week, the full registry once a month, and a monthly file of "
+             "deactivated NPIs."),
+            ("How soon after registering does a new practice appear in the file?", "Usually one to two weeks. CMS posts each week's file a few days "
+             "after the week ends, and most registrations in it are less than a week old."),
+            ("Can I search the NPI Registry by registration date?", "No. The NPI Registry website and API search by name, NPI, location and "
+             "specialty, not by enumeration date. To find new registrations you need the weekly download file."),
+            ("Does the NPI registry include email addresses?", "No. Records have addresses and phone numbers but no email or website. PanelReady "
+             "looks up websites, emails and Google ratings for new organizations from public sources."),
+        ],
+    }
+
+
+def _g_credentialing(f: dict, root: str) -> dict:
+    st, rv = f["stuck"], f["reval"]
+    stuck_n = f'<b>{fmt(st["total"])}</b> on the {st["month"]} list' if st else "Monthly"
+    reval_n = f'<b>{fmt(rv["total"])}</b> due within six months or overdue ({rv["month"]})' if rv else "Monthly"
+    nums = (f'Nationally that\'s about <b>{fmt(f["avg"])}</b> new practices a week'
+            + (f', <b>{fmt(st["total"])}</b> that look stuck' if st else "")
+            + (f' and <b>{fmt(rv["total"])}</b> due for revalidation' if rv else "")
+            + (f' on this month\'s lists.' if st or rv else "."))
+    stuck_states = f' The most are in {_state_list(st["states"], root)}.' if st else ""
+    return {
+        "slug": "credentialing-company-leads",
+        "title": "How Credentialing Companies Find New Clients: 4 Free CMS Lists",
+        "h1": "How credentialing companies <em>find new clients</em> in public CMS data",
+        "card": "The four moments a practice needs credentialing, where each one is published for free, and how many practices each turns up.",
+        "desc": ("The four signals that a practice needs credentialing (a new NPI, stuck enrollment, a revalidation deadline, a move), where each "
+                 "is published free by CMS, and how many practices each turns up nationally."),
+        "answer": ('Look for practices at the four moments credentialing becomes urgent: <b>a brand-new NPI</b> (nothing enrolled yet), '
+                   '<b>registered months ago but still not on Medicare\'s enrollment list</b> (stuck), <b>a Medicare revalidation deadline</b>, and '
+                   '<b>a new practice address</b> (every payer has to be updated). All four are in free public CMS data. ' + nums),
+        "body": f"""
+<h2>The four signals, where they're published, and how many there are</h2>
+<div class="tscroll"><table class="wraptab stack"><thead><tr><th>Signal</th><th>Public source</th><th>Updated</th><th>Nationally</th><th>Why they need you</th></tr></thead><tbody>
+<tr><td class="n">New NPI registration</td><td data-l="Source"><a href="{NPPES_FILES}" rel="nofollow">NPPES Weekly Update</a></td><td data-l="Updated">Weekly</td><td data-l="Nationally"><b>{fmt(f["total"])}</b> the week ending {esc(f["short"])}</td><td data-l="Why">Not enrolled anywhere yet: Medicare, Medicaid and every commercial plan are still ahead of them.</td></tr>
+<tr><td class="n">Registered 2&ndash;12 months ago, not on Medicare's enrollment list</td><td data-l="Source">NPPES monthly file + <a href="{PPEF_URL}" rel="nofollow">Medicare Fee-For-Service Public Provider Enrollment</a></td><td data-l="Updated">Monthly / quarterly</td><td data-l="Nationally">{stuck_n}</td><td data-l="Why">Months in and still can't bill Medicare: credentialing hasn't started or has stalled.</td></tr>
+<tr><td class="n">Medicare revalidation due</td><td data-l="Source"><a href="{REVAL_URL}" rel="nofollow">Revalidation Due Date List</a></td><td data-l="Updated">Monthly</td><td data-l="Nationally">{reval_n}</td><td data-l="Why">Must revalidate every five years (DMEPOS suppliers every three) or Medicare can deactivate their billing.</td></tr>
+<tr><td class="n">Practice location changed</td><td data-l="Source">NPPES Weekly Update</td><td data-l="Updated">Weekly</td><td data-l="Nationally">Every week</td><td data-l="Why">A new address has to be reported to Medicare and updated with every plan they're in network with.</td></tr>
+</tbody></table></div>
+<h2>1. New NPI registrations: the earliest signal</h2>
+<p>A practice needs an NPI before it can enroll with any payer, so the registration is the first public sign that it exists, usually weeks before it has a website or a Google listing. The weekly NPPES file has every one, and for organizations it names the authorized official (usually the owner or administrator) with a phone number. Here's <a href="../new-npi-provider-list/">how to pull them from the weekly file</a>.</p>
+<p>Not every new NPI is a prospect: keep organizations and sole proprietors and drop employees who registered to take a job. That left {fmt(f["total"])} the week ending {f["date"]}:</p>
+{_cat_table(f)}
+<h2>2. Practices stuck in credentialing</h2>
+<p>Take the practices that registered 2 to 12 months ago in specialties where most new practices enroll with Medicare (nurse practitioners, physical therapists, physicians and the like), and check each NPI against CMS's quarterly <a href="{PPEF_URL}" rel="nofollow">Medicare Fee-For-Service Public Provider Enrollment</a> file, which lists every provider approved to bill Medicare. The ones still missing can't bill Medicare months after opening, which usually means credentialing hasn't started or has stalled. Some skip Medicare on purpose (cash-only therapists, for example), so treat it as likely, not certain.{stuck_states}</p>
+<h2>3. Medicare revalidation deadlines</h2>
+<p>Every Medicare-enrolled provider has to revalidate its enrollment: every five years for most, every three for DMEPOS suppliers. CMS publishes the due dates about six to seven months ahead in the <a href="{REVAL_URL}" rel="nofollow">Revalidation Due Date List</a>, and a provider that misses its date can have its Medicare billing deactivated. These are established practices that already bill, and plenty would rather pay someone than do the paperwork. More on <a href="../medicare-revalidation-due-list/">using the revalidation list</a>.</p>
+<h2>4. Practices that moved</h2>
+<p>When a practice changes its practice-location address in NPPES, the change appears in the weekly file. The move has to be reported to Medicare (within 30 days for physicians and other practitioners) and updated with every plan the practice is in network with: credentialing paperwork with a deadline attached.</p>
+<h2>Who to call first</h2>
+<ul>
+<li><b>Organizations before sole proprietors.</b> A new clinic or group has more providers to enroll and a budget to do it. {fmt(f["orgs"])} of last week's {fmt(f["total"])} were organizations.</li>
+<li><b>The authorized official.</b> The person who signed the NPI application is usually the owner or administrator: the decision-maker, with a phone number in the registry.</li>
+<li><b>Fastest first.</b> A new practice decides who handles enrollment in its first month. After that, the stuck list finds the ones whose first plan didn't work.</li>
+</ul>
+<p>{BRAND} sends all four: the new practices and the ones that moved every week, the stuck and revalidation lists once a month, for your states, sorted best-first with a ready opener for each. <a href="{root}#free">Two weekly lists are free</a>.</p>
+""",
+        "faqs": [
+            ("Where can I find newly enrolled healthcare providers?", "New NPI registrations are in CMS's free NPPES Weekly Update file. Providers "
+             "newly approved to bill Medicare appear in the quarterly Medicare Fee-For-Service Public Provider Enrollment file on data.cms.gov. "
+             "PanelReady turns both into weekly and monthly lists by state."),
+            ("How can I tell whether a practice is enrolled in Medicare?", "Look its NPI up in CMS's Medicare Fee-For-Service Public Provider "
+             "Enrollment dataset on data.cms.gov, which lists every provider approved to bill Medicare and is updated quarterly."),
+            ("How often do Medicare providers have to revalidate?", "Every five years for most providers and suppliers, and every three years for "
+             "DMEPOS suppliers. CMS publishes upcoming due dates in its Revalidation Due Date List."),
+            ("Which practices are the best leads for a credentialing company?", "Practices that just registered for an NPI, because they have to "
+             "enroll with every payer from scratch. Next come practices still missing from Medicare's enrollment list months after registering, "
+             "practices with a Medicare revalidation deadline, and practices that moved. All four come from public CMS data."),
+        ],
+    }
+
+
+def _g_billing(f: dict, root: str) -> dict:
+    o = f["order"]
+    big, second = o[0], o[1]
+    big_name, second_name = CAT_TITLE[CATS[big]], CAT_TITLE[CATS[second]]
+    states = "".join(f'<tr><td class="n"><a href="{root}states/{SLUG[s]}/">{esc(STATES[s])}</a></td><td class="r">{fmt(k)}</td></tr>' for s, k in f["top"])
+    extra = []
+    if f["reval"]:
+        extra.append(f'due for <a href="../medicare-revalidation-due-list/">Medicare revalidation</a> ({fmt(f["reval"]["total"])} on the {f["reval"]["month"]} list)')
+    if f["stuck"]:
+        extra.append(f'new practices still missing from Medicare\'s enrollment list months after registering ({fmt(f["stuck"]["total"])}), which means they '
+                     f'can\'t bill Medicare yet')
+    monthly = (" Each month CMS's lists also show practices " + " and ".join(extra) + ".") if extra else ""
+    return {
+        "slug": "medical-billing-company-leads",
+        "title": "How Medical Billing Companies Find New Practices Before They Pick a Biller",
+        "h1": "How medical billing companies find new practices <em>before they pick a biller</em>",
+        "card": "The earliest public sign of a new practice, which new practices to call first, and where they registered last week.",
+        "desc": (f"The earliest public sign of a new practice is its NPI registration. Where to find new practices by state and specialty each "
+                 f"week, which to call first, and how many registered the week ending {f['short']}."),
+        "answer": (f'A new practice settles how it will handle billing in its first weeks, often before it sees a patient, and the earliest public '
+                   f'sign that it exists is its NPI registration. CMS publishes every new registration in a free weekly file: filter it to '
+                   f'organizations and sole proprietors in your state and specialties, and call in the first month. The week ending {f["date"]} '
+                   f'had <b>{fmt(f["total"])}</b> new practices nationwide, <b>{fmt(f["cats"][big])}</b> of them in {esc(big_name.lower())}.'),
+        "body": f"""
+<h2>Why the NPI registration comes first</h2>
+<p>A practice can't bill any insurer without an NPI, so it registers before it enrolls with payers, before its website is live and usually before it shows up on Google. That makes CMS's weekly NPPES file the earliest list of practices that will need billing set up. By the time a practice has reviews and a finished website, it has often already decided who does its billing.</p>
+<h2>Which new practices to call first</h2>
+<ul>
+<li><b>Solo and small practices.</b> A sole proprietor or a two-provider group often has nobody on staff to do billing: the natural buyer of outsourced billing.</li>
+<li><b>Organizations with an authorized official listed.</b> The registry names the person who signed the NPI application, usually the owner or administrator, with a phone number.</li>
+<li><b>Your specialties.</b> Behavioral health, therapy, home health and DME each bill under their own rules, so most billing companies do best in a few. Filter to the ones you already know.</li>
+<li><b>Early.</b> The first month after registering is when the decision gets made.</li>
+</ul>
+<h2>What registered last week, by category</h2>
+<p>{esc(big_name)} was the largest category the week ending {f["date"]}, followed by {esc(second_name.lower())}:</p>
+{_cat_table(f)}
+<h2>Where new practices registered last week</h2>
+<div class="tscroll"><table><thead><tr><th>State</th><th class="r">New practices</th></tr></thead><tbody>{states}</tbody></table></div>
+<p>Every state's weekly count, busiest cities and top specialties are on <a href="{root}states/">the state pages</a>.</p>
+<h2>Established practices are worth a call too</h2>
+<p>New practices aren't the only ones changing how they bill. Every weekly file also shows practices that moved, and a move means a new address to update with every payer.{monthly}</p>
+<h2>Build the list yourself, or get it</h2>
+<p>The weekly file is free: here's <a href="../new-npi-provider-list/">how to filter it</a>. If you'd rather have the result, {BRAND} sends it every week for your state and categories (or everything within a set distance of your ZIP code), sorted best-first, with websites, emails and Google ratings for organizations. See <a href="../nppes-download-vs-panelready/">how the two compare</a>, or <a href="{root}#free">get two lists free</a>.</p>
+""",
+        "faqs": [
+            ("How do medical billing companies find new clients?", "Mostly through referrals, partnerships and outreach. For outreach, the most "
+             "timely list is newly registered practices from CMS's weekly NPPES file, because a new practice decides how to handle billing in its "
+             "first weeks."),
+            ("How can I find new medical practices in my area?", "Filter CMS's NPPES Weekly Update to new organizations and sole proprietors whose "
+             f"practice location is in your state or near your ZIP code. PanelReady sends that list weekly, by state or by distance from a ZIP code, "
+             f"from ${LOCAL_PRICE} a month."),
+            ("Which specialties register the most new practices?", f"In the week ending {f['date']}, {big_name.lower()} was the largest category "
+             f"with {fmt(f['cats'][big])} of {fmt(f['total'])} new practices, followed by {second_name.lower()} with {fmt(f['cats'][second])}."),
+        ],
+    }
+
+
+def _g_compare(f: dict, root: str) -> dict:
+    rows = [
+        ("Cost", "Free", f"${LOCAL_PRICE} to ${NATIONAL_PRICE} a month; two lists free, no card"),
+        ("Source", "CMS NPPES Weekly Update", "The same file, records unaltered"),
+        ("New practices only", "You filter by enumeration date and entity type", "Done: organizations and sole proprietors, employees dropped"),
+        ("Your territory", "You filter by state and taxonomy code", "By state and category, by specialty, or by miles from a ZIP code"),
+        ("Specialty", "Taxonomy codes to look up", "Plain-English specialty in six categories"),
+        ("Website, email, Google rating", "Not in the registry", "Looked up for organizations from public sources"),
+        ("Who to call first", "Your call", "Scored best-first, top 25 marked, an opener for each"),
+        ("OIG exclusion check", "Download the LEIE and match it yourself", "Every name checked"),
+        ("Medicare signals", "Join more CMS files yourself", "Monthly stuck-in-credentialing and revalidation lists, a Medicare-pending flag"),
+        ("Practices that moved", "Compare records yourself", "Included every week"),
+        ("Delivery", "You download and filter each week", "Spreadsheet and CRM import by email, an account page, a webhook"),
+        ("Your time each week", "Minutes with a script you've built, longer by hand", "None"),
+    ]
+    table = "".join(f'<tr><td class="n">{esc(a)}</td><td data-l="NPPES">{esc(b)}</td><td data-l="{BRAND}">{esc(c)}</td></tr>' for a, b, c in rows)
+    return {
+        "slug": "nppes-download-vs-panelready",
+        "title": "NPPES Download vs. PanelReady: Build Your Own New-Practice List or Get It Weekly",
+        "h1": "NPPES download vs. PanelReady: <em>build it or get it</em>",
+        "card": "An honest comparison of filtering the free NPPES file yourself and getting the finished list every week.",
+        "desc": ("An honest comparison of filtering the free NPPES weekly file yourself and getting PanelReady's weekly new-practice list: cost, "
+                 "time, filtering, contact details and Medicare checks."),
+        "answer": (f'Both start from the same free CMS file. If you\'re comfortable with a 300-column CSV (or a script) and want every field, '
+                   f'download the NPPES weekly file and filter it yourself: it costs nothing. If you want the finished list every week, filtered '
+                   f'to your territory, sorted best-first and with websites and emails for organizations, {BRAND} costs ${LOCAL_PRICE} to '
+                   f'${NATIONAL_PRICE} a month, and two lists are free to try.'),
+        "body": f"""
+<h2>Side by side</h2>
+<div class="tscroll"><table class="wraptab stack"><thead><tr><th></th><th>NPPES download (do it yourself)</th><th>{BRAND}</th></tr></thead><tbody>{table}</tbody></table></div>
+<h2>When doing it yourself makes sense</h2>
+<ul>
+<li>You need fields {BRAND} doesn't include, or every state at once for research.</li>
+<li>Someone on your team writes scripts and can spend a few hours building the filter once (<a href="../new-npi-provider-list/">the steps are here</a>).</li>
+<li>You only need a list now and then.</li>
+</ul>
+<h2>When {BRAND} makes sense</h2>
+<ul>
+<li>You want to call the right practices every week without building or maintaining anything.</li>
+<li>You want contact details beyond the registry's phone number.</li>
+<li>You sell credentialing and want the Medicare lists (stuck in credentialing, revalidation due) that take several more CMS files to build. See <a href="../credentialing-company-leads/">the four signals</a>.</li>
+</ul>
+<h2>Other options</h2>
+<p>The <a href="{NPI_API}" rel="nofollow">NPI Registry search and API</a> are free for looking up providers you already know, but they can't filter by registration date. Commercial healthcare provider databases are built for breadth across established providers rather than for the week a practice registers.</p>
+<p>Last week's file had {fmt(f["total"])} new practices and sole proprietors nationwide; see any state's count on <a href="{root}states/">the state pages</a>, or <a href="{root}#free">get two lists free</a>.</p>
+""",
+        "faqs": [
+            ("Is PanelReady's data different from NPPES?", "No. PanelReady uses CMS's NPPES weekly file as published and doesn't alter records. "
+             "It filters and sorts them and adds lookups (websites, emails, Google ratings, an OIG exclusion check) on top."),
+            ("How much does PanelReady cost?", f"${LOCAL_PRICE} a month for a local area, ${CAT_PRICE} for one state and one category, ${ALL_PRICE} "
+             f"for one state with every category, ${MULTI_PRICE} for three states and ${NATIONAL_PRICE} for every state. Yearly billing is the "
+             "price of ten months, and two lists are free with no card."),
+            ("Can I open the NPPES weekly file in Excel?", "Yes, but it's a ZIP of large CSV files with more than 300 columns, so filtering it by "
+             "hand takes a while. The monthly full file is too big for Excel."),
+        ],
+    }
+
+
+def _g_reval(f: dict, root: str) -> dict:
+    rv = f["reval"]
+    if rv:
+        nums = f'{BRAND}\'s {rv["month"]} list has <b>{fmt(rv["total"])}</b> of them nationwide.'
+        table = (f'<h2>How many are due, by category</h2><p>Practices due within six months or up to 90 days overdue on the {rv["month"]} list, '
+                 f'one row per NPI, hospitals left out:</p>{_cat_table(f, rv["cats"], "Due")}'
+                 f'<p>The most are in {_state_list(rv["states"], root)}. Each state page shows its own count.</p>')
+    else:
+        nums, table = "", ""
+    return {
+        "slug": "medicare-revalidation-due-list",
+        "title": "Medicare Revalidation Due Date List: Find Practices Due to Revalidate",
+        "h1": "The Medicare revalidation due date list, <em>and how to use it</em>",
+        "card": "What CMS's revalidation list contains, how often providers revalidate, and how to turn it into a call list.",
+        "desc": ("What CMS's Revalidation Due Date List is, how often Medicare providers revalidate, what happens if they miss it, and how to turn "
+                 "the list into practices with a deadline" + (f": {fmt(rv['total'])} are due on the {rv['month']} list." if rv else ".")),
+        "answer": (f'CMS publishes the <a href="{REVAL_URL}" rel="nofollow">Revalidation Due Date List</a> on data.cms.gov, with each Medicare-enrolled '
+                   f'provider\'s next revalidation due date. Due dates appear about six to seven months ahead (providers further out show TBD). '
+                   f'Most providers revalidate every five years and DMEPOS suppliers every three, and missing the date can get Medicare billing '
+                   f'deactivated. Filter the list by state and a due date in the next six months to get practices with a deadline. {nums}'),
+        "body": f"""
+<h2>What's on the list</h2>
+<p>One row per Medicare enrollment: the provider's name and NPI, the enrollment state, the provider type and specialty, the <b>revalidation due date</b> (and an adjusted due date when CMS moved it), and reassignment counts: how many groups an individual bills through, or how many providers bill through a group. It has no phone number or address; those come from the provider's NPPES record. CMS updates it monthly.</p>
+<h2>Who has to revalidate, and when</h2>
+<p>Every provider and supplier enrolled in Medicare: every five years for most, every three years for DMEPOS suppliers, and off-cycle whenever CMS asks. CMS sets each due date at the end of a month and lists it about six to seven months ahead. A provider that doesn't revalidate on time can have its payments held and its enrollment deactivated, and services during a deactivation may not be payable.</p>
+<h2>How to turn it into a call list</h2>
+<ol class="steps">
+<li>Download the newest <a href="{REVAL_URL}" rel="nofollow">Revalidation Due Date List</a> from data.cms.gov (or query it through CMS's data API).</li>
+<li>Keep enrollments in your state with a due date between today and six months out (the adjusted date when there is one), plus the recently overdue.</li>
+<li>Keep one row per NPI. Individuals often have several enrollments; keep the soonest date.</li>
+<li>Leave out hospitals and large systems with their own credentialing staff. A high reassignment count is a good tell.</li>
+<li>Match each NPI to its NPPES record for the phone, the address and, for organizations, the authorized official.</li>
+<li>Call soonest-due first and mention the date: it's public, it's specific, and it's the reason you're calling.</li>
+</ol>
+{table}
+<h2>Done for you</h2>
+<p>{BRAND} subscribers get this list for their states once a month, matched to NPPES with phones and owners, scored, with an opener that mentions the due date, alongside the weekly new-practice list and the monthly <a href="../credentialing-company-leads/">stuck-in-credentialing list</a>. Plans start at ${LOCAL_PRICE} a month; <a href="{root}#free">the weekly list is free to try twice</a>.</p>
+""",
+        "faqs": [
+            ("How often do Medicare providers need to revalidate?", "Every five years for most providers and suppliers, and every three years for "
+             "DMEPOS suppliers. CMS can also ask for an off-cycle revalidation."),
+            ("Where can I find a provider's Medicare revalidation due date?", "In CMS's Revalidation Due Date List on data.cms.gov, searchable by "
+             "NPI or name. A due date of TBD means CMS hasn't set one yet, usually because it's more than about seven months away."),
+            ("What happens if a provider misses its revalidation date?", "Medicare can hold its payments and deactivate its enrollment. It then has "
+             "to submit a complete revalidation to be reactivated, and services during the deactivation may not be payable."),
+            ("Is the Medicare revalidation list public?", "Yes. CMS publishes it as open data on data.cms.gov, updated monthly and free to download."),
+        ],
+    }
+
+
+GUIDES = [_g_npi_list, _g_credentialing, _g_billing, _g_compare, _g_reval]
+
+
+def _plain(s: str) -> str:
+    return re.sub(r"\s+", " ", html.unescape(re.sub(r"<[^>]+>", "", s))).strip()
+
+
+def guide_page(g: dict, f: dict, others: list[dict]) -> str:
+    path, root = f"guides/{g['slug']}/", "../../"
+    url = f"{SITE}/{path}"
+    updated = max(GUIDES_PUBLISHED, f["latest"])
+    related = links_row([(o["title"].split(":")[0], f"../{o['slug']}/") for o in others] + [("New practices by state", f"{root}states/")])
+    body = f"""
+<div class="crumbs"><a href="{root}">{BRAND}</a> › <a href="../">Guides</a> › {esc(_plain(g["h1"]))}</div>
+<span class="kicker">Guide for {esc(BUYERS)}</span>
+<h1>{g["h1"]}</h1>
+<p class="byline">By Matt, {BRAND}'s founder · Numbers from the week ending {esc(f["date"])}</p>
+<div class="answer"><p><b>Short answer:</b> {g["answer"]}</p></div>
+<div class="prose">{g["body"]}
+<h2>Questions</h2>
+{_faq_html(g["faqs"])}
+</div>
+<section><h2>More guides</h2>{related}</section>
+{offer("", "", None, root, sample=False)}
+"""
+    org = {"@type": "Organization", "@id": f"{SITE}/#org", "name": BRAND, "url": f"{SITE}/", "logo": f"{SITE}/icon-512.png"}
+    ld = {"@context": "https://schema.org", "@graph": [
+        {"@type": "Article", "headline": _plain(g["h1"]), "description": g["desc"], "url": url, "mainEntityOfPage": url,
+         "datePublished": GUIDES_PUBLISHED, "dateModified": updated, "image": f"{SITE}/og-image.png",
+         "author": {"@type": "Person", "name": "Matt", "jobTitle": f"Founder, {BRAND}", "worksFor": {"@id": f"{SITE}/#org"}},
+         "publisher": org},
+        {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": q, "acceptedAnswer": {"@type": "Answer", "text": a}} for q, a in g["faqs"]]},
+        {"@type": "BreadcrumbList", "itemListElement": [
+            {"@type": "ListItem", "position": 1, "name": BRAND, "item": f"{SITE}/"},
+            {"@type": "ListItem", "position": 2, "name": "Guides", "item": f"{SITE}/guides/"},
+            {"@type": "ListItem", "position": 3, "name": _plain(g["h1"]), "item": url}]}]}
+    return shell(f"{g['title']} | {BRAND}", g["desc"], path, body, ld)
+
+
+def guides_index(gs: list[dict], f: dict) -> str:
+    cards = "".join(f'<a class="gcard" href="{g["slug"]}/"><b>{esc(g["title"])}</b><span>{esc(g["card"])}</span></a>' for g in gs)
+    body = f"""
+<div class="crumbs"><a href="../">{BRAND}</a> › Guides</div>
+<span class="kicker">Guides for {esc(BUYERS)}</span>
+<h1>Finding the practices that <em>need you</em>, in public data</h1>
+<p class="lead">Short, practical answers to the questions credentialing and medical billing companies ask about provider data: where it's published, how to filter it, and who to call first. Every number is from the week ending {esc(f["date"])}, when {fmt(f["total"])} new practices registered across the U.S.</p>
+<div class="gcards">{cards}</div>
+{offer("", "", None, "../", sample=False)}
+"""
+    desc = ("Guides for credentialing and medical billing companies: where new NPI registrations are published, how to find new practices, "
+            "stuck credentialing and Medicare revalidation deadlines in free CMS data, and who to call first.")
+    ld = {"@context": "https://schema.org", "@type": "CollectionPage", "name": f"{BRAND} guides", "description": desc, "url": f"{SITE}/guides/",
+          "hasPart": [{"@type": "Article", "headline": g["title"], "url": f"{SITE}/guides/{g['slug']}/"} for g in gs]}
+    return shell(f"Guides for Credentialing & Medical Billing Companies | {BRAND}", desc, "guides/", body, ld)
+
+
+def guide_pages(data: dict) -> tuple[list[str], list[dict]]:
+    """Write guides/ and one page per guide. Returns (paths, the guides) so the sitemap and llms.txt can list them."""
+    f = guide_facts(data)
+    gs = [make(f, "../../") for make in GUIDES]
+    d = HERE / "guides"
+    d.mkdir(exist_ok=True)
+    (d / "index.html").write_text(guides_index(gs, f), encoding="utf-8")
+    paths = ["guides/"]
+    for g in gs:
+        gd = d / g["slug"]
+        gd.mkdir(exist_ok=True)
+        (gd / "index.html").write_text(guide_page(g, f, [o for o in gs if o is not g]), encoding="utf-8")
+        paths.append(f"guides/{g['slug']}/")
+    return paths, gs
+
+
+def write_llms(data: dict, gs: list[dict]):
+    """llms.txt: a plain-text summary for AI assistants (an informal convention; harmless if nothing reads it)."""
+    f = guide_facts(data)
+    extra = []
+    if f["stuck"]:
+        extra.append(f"- Monthly, {f['stuck']['month']}: {fmt(f['stuck']['total'])} practices that registered 2-12 months ago and still aren't on Medicare's enrollment list (stuck in credentialing).")
+    if f["reval"]:
+        extra.append(f"- Monthly, {f['reval']['month']}: {fmt(f['reval']['total'])} practices due for Medicare revalidation within six months or overdue.")
+    lines = [
+        f"# {BRAND}",
+        "",
+        f"> {BRAND} sends weekly lists of newly registered U.S. healthcare practices (organizations and sole proprietors from the federal "
+        f"NPPES / NPI registry), by state, specialty or distance from a ZIP code, to credentialing and medical billing companies. "
+        f"Made by {COMPANY}, New York. Contact: {MAIL}.",
+        "",
+        "## Key facts",
+        f"- Source: CMS's NPPES Weekly Update file (public data), records unaltered. A practice appears one to two weeks after it registers.",
+        f"- Week ending {f['date']}: {fmt(f['total'])} new practices and sole proprietors nationwide, {fmt(f['orgs'])} of them organizations.",
+        *extra,
+        "- Each list: sorted best-first with the top 25 marked, phone, address, NPI, the owner's direct line where the registry lists it, "
+        "websites, emails and Google ratings for organizations where found, an OIG exclusion check, and practices that moved that week.",
+        "- Six categories: behavioral health; medical practices & clinics; dental; therapy & rehab; home care & senior living; DME, pharmacy & transport. "
+        "Fifty specialty groups within them.",
+        f"- Prices (monthly, PayPal): local area ${LOCAL_PRICE}; one state + one category ${CAT_PRICE}; one state, every category ${ALL_PRICE}; "
+        f"three states ${MULTI_PRICE}; every state ${NATIONAL_PRICE}. Yearly = 10 months. Two lists free, no card. 90-day guarantee.",
+        "",
+        "## Main pages",
+        f"- [Home]({SITE}/): what's in the list, a sample, pricing and the free-trial form",
+        f"- [New practices by state]({SITE}/states/): this week's counts, trends, cities and specialties for every state",
+        f"- [Live search]({SITE}/search/): search and filter the newest practices",
+        "",
+        "## Guides",
+        *[f"- [{g['title']}]({SITE}/guides/{g['slug']}/): {g['card']}" for g in gs],
+        "",
+        "## Company",
+        f"- [About]({SITE}/about/)",
+        f"- [Contact]({SITE}/contact/)",
+        f"- [Terms]({SITE}/terms/)",
+        f"- [Privacy]({SITE}/privacy/)",
+        "",
+    ]
+    (HERE / "llms.txt").write_text("\n".join(lines), encoding="utf-8")
+
+
+AI_BOTS = ["OAI-SearchBot", "ChatGPT-User", "GPTBot", "PerplexityBot", "Perplexity-User", "Claude-SearchBot", "Claude-User", "ClaudeBot",
+           "Google-Extended", "Applebot-Extended", "bingbot"]
+
+
+def robots_txt() -> str:
+    """Everyone may crawl everything but the private account page. The AI search crawlers are named too, so it's explicit
+    that ChatGPT, Perplexity, Claude, Gemini and Copilot may read and cite the site."""
+    ai = "".join(f"User-agent: {b}\n" for b in AI_BOTS)
+    return (f"User-agent: *\nAllow: /\nDisallow: /account/\n\n# AI search and assistants: welcome\n{ai}Allow: /\nDisallow: /account/\n\n"
+            f"Sitemap: {SITE}/sitemap.xml\n")
+
+
+def faq_jsonld(s: str) -> str | None:
+    """FAQPage structured data built from the homepage's own FAQ section, so the two never disagree."""
+    m = re.search(r'<section class="faq" id="faq">(.*?)</section>', s, re.S)
+    if not m:
+        return None
+    qa = re.findall(r"<details[^>]*>\s*<summary>(.*?)</summary>(.*?)</details>", m.group(1), re.S)
+    if not qa:
+        return None
+    ld = {"@context": "https://schema.org", "@type": "FAQPage",
+          "mainEntity": [{"@type": "Question", "name": _plain(q), "acceptedAnswer": {"@type": "Answer", "text": _plain(a)}} for q, a in qa]}
+    return json.dumps(ld, ensure_ascii=False, separators=(",", ":")).replace("<", "\\u003c")
 
 
 # ------------------------------------------------------------------ the subscriber account page (panelready.co/account/#t=TOKEN)
@@ -2163,6 +2648,15 @@ def refresh_landing(data: dict) -> list[str]:
         sub("preselect", r"sel\.value = 'NY'; sel\.onchange = function\(\)\{ setState\(sel\.value\); \}; setState\('NY'\);",
             "var fromQuery = (location.search.match(/[?&]state=([A-Za-z]{2})/) || [])[1]; fromQuery = fromQuery && NAMES[fromQuery.toUpperCase()] ? fromQuery.toUpperCase() : 'NY';\n"
             "  sel.value = fromQuery; sel.onchange = function(){ setState(sel.value); }; setState(fromQuery);")
+    faq = faq_jsonld(s)                                 # FAQPage data from the FAQ section itself (AI assistants and Google read it)
+    if faq:
+        tag = f'<script type="application/ld+json" id="faq-ld">{faq}</script>'
+        if 'id="faq-ld"' in s:
+            s = re.sub(r'<script type="application/ld\+json" id="faq-ld">.*?</script>', lambda m: tag, s, count=1, flags=re.S)
+        else:
+            sub("faq ld", r'(<script type="application/ld\+json">.*?</script>)', lambda m: m.group(1) + "\n" + tag, re.S)
+    if 'href="guides/"' not in s:                         # one-time: the guides in the homepage footer
+        sub("footer guides", r'(<a href="states/">New practices by state</a>)', lambda m: m.group(1) + '<a href="guides/">Guides</a>')
     p.write_text(s, encoding="utf-8")
     return miss
 
@@ -2198,16 +2692,19 @@ def build(data: dict) -> list[str]:
             (cd / "index.html").write_text(cat_page(data, st, c), encoding="utf-8")
             (paths if indexable else hidden).append(f"states/{SLUG[st]}/{CAT_SLUG[c]}/")
     info = info_pages(data)
+    guides, gs = guide_pages(data)                    # answer-first guides (Nov 11: ChatGPT had started sending trials)
+    write_llms(data, gs)
     write_redirects()                                 # old addresses Google knows (e.g. /signup) land on the right page
     write_account()                                   # not in the sitemap: private, opened from the link in each email
     write_search()
     urls = [f"  <url><loc>{SITE}/</loc><lastmod>{latest}</lastmod><changefreq>weekly</changefreq><priority>1.0</priority></url>"]
     urls += [f"  <url><loc>{SITE}/search/</loc><lastmod>{latest}</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>"]
     urls += [f"  <url><loc>{SITE}/{p}</loc><lastmod>{latest}</lastmod><changefreq>weekly</changefreq><priority>{'0.8' if p.count('/') < 3 else '0.6'}</priority></url>" for p in paths]
+    urls += [f"  <url><loc>{SITE}/{p}</loc><lastmod>{max(GUIDES_PUBLISHED, latest)}</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>" for p in guides]
     urls += [f"  <url><loc>{SITE}/{p}</loc><lastmod>{latest}</lastmod><changefreq>monthly</changefreq><priority>0.4</priority></url>" for p in info]
-    paths = paths + info + ["search/"] + hidden
+    paths = paths + guides + info + ["search/"] + hidden
     (HERE / "sitemap.xml").write_text('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + "\n".join(urls) + "\n</urlset>\n", encoding="utf-8")
-    (HERE / "robots.txt").write_text(f"User-agent: *\nAllow: /\nDisallow: /account/\nSitemap: {SITE}/sitemap.xml\n", encoding="utf-8")
+    (HERE / "robots.txt").write_text(robots_txt(), encoding="utf-8")
     return paths
 
 
