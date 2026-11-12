@@ -34,7 +34,7 @@ for cand in (ROOT, HERE):                            # pr/npi.py lives in the pr
 from pr import npi as N                              # noqa: E402
 
 SITE = "https://panelready.co"                       # the site's address, no trailing slash (the old github.io address redirects here)
-BUILD_VERSION = 26                                    # bump when the page layout changes, so the next run rewrites every page
+BUILD_VERSION = 27                                    # bump when the page layout changes, so the next run rewrites every page
 COMPANY = "Avery Data Co."
 PAYPAL_CLIENT_ID = "BAAQ4G4Hizw2wHo9EZQsTxcW_oBtYKOFEIoI41YQZJvC8ufp2vM9Z_lIU4ASqIUZvXAUrin0KLaYIpr8Js"   # the "PanelReady site" app on developer.paypal.com (Live); one-time orders
 PAYPAL_ME = ""                                       # optional plan B: a PayPal.me handle (e.g. "averydataco"); shown as a second way to pay $39
@@ -551,7 +551,7 @@ def shell(title: str, desc: str, path: str, body: str, jsonld: dict | None = Non
 {BRAND} · <a href="mailto:{MAIL}">{MAIL}</a> · an {COMPANY} product, New York<br>
 Source: NPPES weekly dissemination files published by CMS. Public data, provided as-is; not affiliated with CMS or any payer. Practice names are from the public registry; phone numbers are masked on this page and complete in the subscriber spreadsheet.</footer>
 </div>
-<script src="{root}chat.js" defer></script>
+<script src="{root}chat.js" defer></script>{"" if path.startswith("account/") else beacon()}
 </body>
 </html>
 """
@@ -1115,7 +1115,7 @@ def info_pages(data: dict) -> list[str]:
 <li><b>When you ask for lists or subscribe:</b> your email address, company name, the state and category you chose, and, for paid plans, the PayPal subscription ID. PayPal handles the payment itself; we never see your card or bank details.</li>
 <li><b>If you use your account page or reply with settings:</b> the teammates' email addresses you add (they receive copies of your lists), the provider NPIs you add to Roster Watch, and a webhook address if you set one. Your account page's contents (your settings and recent lists) are stored with Cloudflare so the page can show them; files are deleted after about 8 weeks.</li>
 <li><b>When you email us:</b> the email and anything you put in it.</li>
-<li><b>When you visit the site:</b> nothing we keep. The site has no analytics, no advertising pixels and sets no cookies of its own. It is hosted on GitHub Pages, whose servers keep standard access logs (IP address, pages requested) under <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement">GitHub's privacy statement</a>. Fonts load from Google Fonts, which sees your IP address when it serves them.</li>
+<li><b>When you visit the site:</b> we count visits with <a href="https://www.cloudflare.com/web-analytics/">Cloudflare Web Analytics</a>. It sets no cookies, stores nothing in your browser and doesn't follow you from site to site; it tells us, in totals, which pages were viewed, which site sent the visit (a search engine or an AI assistant, for example), the country, and the kind of device and browser. Cloudflare processes that under <a href="https://www.cloudflare.com/privacypolicy/">its privacy policy</a>. Your account page isn't counted. The site has no advertising pixels and sets no cookies of its own. It is hosted on GitHub Pages, whose servers keep standard access logs (IP address, pages requested) under <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement">GitHub's privacy statement</a>. Fonts load from Google Fonts, which sees your IP address when it serves them.</li>
 </ul>
 <h2>What we do with it</h2>
 <p>We use your details to send you the lists you asked for, confirmations, and replies to your messages. We don't sell, rent or share them with anyone except the services that make the product work: PayPal for payments, our email provider for sending, and Cloudflare, which receives form submissions before we collect them and hosts your account page's data. If you set a webhook, each list is also sent to the address you gave. We don't use your data for advertising.</p>
@@ -1648,6 +1648,15 @@ def faq_jsonld(s: str) -> str | None:
 # ------------------------------------------------------------------ the subscriber account page (panelready.co/account/#t=TOKEN)
 
 WORKER = "https://panelready-signup.matt-fixnotice.workers.dev"
+# Cloudflare Web Analytics (Nov 12, 2026): cookie-free visit counts, so we can see which sites send visitors (search
+# engines, ChatGPT and other AI assistants). The token is public by design: it is in every page's source. Empty = off.
+CF_BEACON = "3820e008cec644c484dd40c3ebb2fc24"
+BEACON_SRC = "https://static.cloudflareinsights.com/beacon.min.js"
+
+
+def beacon() -> str:
+    return (f"<script type=\"module\" src=\"{BEACON_SRC}\" data-cf-beacon='{{\"token\": \"{CF_BEACON}\"}}'></script>"
+            if CF_BEACON else "")
 
 ACCOUNT_CSS = """
 .acct{max-width:860px}.acct h1{margin-top:6px}
@@ -2655,6 +2664,12 @@ def refresh_landing(data: dict) -> list[str]:
             s = re.sub(r'<script type="application/ld\+json" id="faq-ld">.*?</script>', lambda m: tag, s, count=1, flags=re.S)
         else:
             sub("faq ld", r'(<script type="application/ld\+json">.*?</script>)', lambda m: m.group(1) + "\n" + tag, re.S)
+    if CF_BEACON:                                         # cookie-free visit counts (Cloudflare Web Analytics), as on every page
+        tag = beacon()
+        if BEACON_SRC in s:
+            s = re.sub(r"<script [^>]*src=\"" + re.escape(BEACON_SRC) + r"\"[^>]*></script>", lambda m: tag, s, count=1)
+        else:
+            sub("beacon", r'(<script src="chat\.js" defer></script>)', lambda m: m.group(1) + tag)
     if 'href="guides/"' not in s:                         # one-time: the guides in the homepage footer
         sub("footer guides", r'(<a href="states/">New practices by state</a>)', lambda m: m.group(1) + '<a href="guides/">Guides</a>')
     p.write_text(s, encoding="utf-8")
