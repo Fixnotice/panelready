@@ -777,7 +777,8 @@ def file_tag(states: list[str], area: str = "") -> str:
 def build_delivery(files: list[Path], out_dir: Path, *, week: str, states: list[str], cats: list[str],
                    area: str = "", name: str = "", status: str = "paid", n_list: int = 1, trial_lists: int = 2,
                    plans_url: str = f"{SITE}/#pricing", one_time: bool = False, sample: bool = False,
-                   note: str = "", fname: str = "", since: str = "", note_only: bool = False) -> Path:
+                   note: str = "", fname: str = "", since: str = "", note_only: bool = False,
+                   trial_kind: str = "", free_until: str = "", preview_full: int = 10) -> Path:
     """The workbook for one delivery. `files`: the upgraded CSVs (leads / moved / changes / history / reval / stuck),
     in any order; anything else (the CRM file, the kit) is ignored."""
     by_kind: dict[str, list[Path]] = {}
@@ -787,7 +788,9 @@ def build_delivery(files: list[Path], out_dir: Path, *, week: str, states: list[
     wk = as_date(week)
     where = territory_words(states, cats, area)
     label = "Sample list" if sample else ("One-time list" if one_time else
-                                          (f"Free list {n_list} of {trial_lists}" if status == "trial" else "Weekly list"))
+                                          ("Free preview" if trial_kind == "preview" else
+                                           "Weekly list · 14 free days" if trial_kind == "card" else
+                                           f"Free list {n_list} of {trial_lists}" if status == "trial" else "Weekly list"))
     override = fname
     fname = f"PanelReady_{file_tag(states, area)}_week_of_{wk:%b}_{wk.day}_{wk.year}.xlsx" if wk else "PanelReady_list.xlsx"
     if sample:
@@ -847,14 +850,27 @@ def build_delivery(files: list[Path], out_dir: Path, *, week: str, states: list[
             "tabs": tab_list}
     if sample and note_only:
         info["note"] = note
-        info["cta"] = ("Get 2 lists free", f"{SITE}/#free")
-        info["cta_note"] = "Your own state and specialties, two weekly lists free. No card, no call."
+        info["cta"] = ("Get a free preview", f"{SITE}/#free")
+        info["cta_note"] = "Your own state and specialties: a free preview of this week's list. No card, no call."
     elif sample:
         info["note"] = (note + " " if note else "") + ("This sample has a handful of practices from this week's lists. A subscriber's list has every "
                         "new practice in their territory, every week, with websites and emails we find for "
                         "organizations, plus the practices that moved or added a specialty.")
-        info["cta"] = ("Get 2 lists free", f"{SITE}/#free")
-        info["cta_note"] = "Tell us your states and specialties and your first two weekly lists are free. No card."
+        info["cta"] = ("Get a free preview", f"{SITE}/#free")
+        info["cta_note"] = "Tell us your state and specialties and this week's preview is free. No card."
+    elif trial_kind == "preview":
+        info["note"] = (f"Free preview. Every new practice is on the New practices tab: the best {preview_full} have their "
+                        f"contact details and an opener, the rest are named with their city, specialty and score. Any "
+                        f"plan brings every practice in full, every week, and starts with 14 days free.")
+        info["cta"] = ("Start 14 days free", plans_url)
+        info["cta_note"] = ("Full lists from the first minute. PayPal takes nothing for 14 days; cancel before then and "
+                            "you pay nothing.")
+    elif trial_kind == "card":
+        info["note"] = ("You're on your 14 free days" + (f" (until {free_until})" if free_until else "") + ". With your "
+                        "first payment you also get the last 90 days of new practices, two monthly lists (revalidation "
+                        "due, stuck in credentialing) and your account page.")
+        info["cta"] = ("See plans", plans_url)
+        info["cta_note"] = "Cancel any time from PayPal; before your first payment, you're never charged."
     elif status == "trial":
         info["note"] = (f"Free list {n_list} of {trial_lists}. Websites and emails are looked up for the Top 25 on free "
                         f"lists; subscribers get them for every organization we can find, plus the last 90 days of new "

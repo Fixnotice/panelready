@@ -119,7 +119,7 @@ table.wraptab td{white-space:normal}@media(max-width:600px){table.stack thead{di
 <body>
 <div class="nav"><div class="wrap">
   <a class="logo" href="../"><svg viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="15" fill="#0f2340"/><rect x="18" y="17" width="28" height="32" rx="4" fill="none" stroke="#ffffff" stroke-width="4.5" stroke-linejoin="round"/><rect x="25" y="13" width="14" height="8" rx="2.5" fill="#ffffff"/><path d="M25 34l5.5 5.5L40 29" fill="none" stroke="#2dd4bf" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg>PanelReady</a>
-  <nav><a href="../search/">Live search</a><a href="../states/">All states</a><a href="../#how">How it works</a><a href="../#pricing">Pricing</a><a class="signin" href="../account/">Account</a><a class="mini" href="../#free">Get 2 lists free</a></nav>
+  <nav><a href="../search/">Live search</a><a href="../states/">All states</a><a href="../#how">How it works</a><a href="../#pricing">Pricing</a><a class="signin" href="../account/">Account</a><a class="mini" href="../#free">Free preview</a></nav>
 </div></div>
 <div class="wrap">
 
@@ -145,7 +145,7 @@ table.wraptab td{white-space:normal}@media(max-width:600px){table.stack thead{di
   <form id="linkForm" novalidate><label for="lkEmail">Email</label><input type="email" id="lkEmail" placeholder="you@company.com" autocomplete="email" required>
   <input type="text" name="website" id="lkHp" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px" aria-hidden="true">
   <button class="cta" type="submit">Email me a sign-in link</button><div class="msg" id="linkMsg"></div></form>
-  <p class="help" style="margin-top:14px">Not a subscriber yet? <a href="../#pricing">See plans</a> or <a href="../#free">get two lists free</a>.</p>
+  <p class="help" style="margin-top:14px">Not a subscriber yet? <a href="../#pricing">See plans</a> (14 days free) or <a href="../#free">get a free preview</a>.</p>
 </div>
 
 <div class="card up hide" id="lockedBox"><h2>For subscribers</h2><p class="help" id="lockedText"></p><a class="cta" href="../#pricing">See plans</a></div>
@@ -254,8 +254,9 @@ table.wraptab td{white-space:normal}@media(max-width:600px){table.stack thead{di
     // trial, free digest, cancelled, unsubscribed and one-time buyers: no lists or settings here, just the way back in
     $('planline').textContent = 'Account pages are for active PanelReady subscribers.';
     var s = a.status || '', why;
-    if (s === 'trial') why = 'You\'re on the free trial: your two free lists come by email. Subscribe to open your account page, with past lists, Search & export, territory, teammates and Roster Watch.';
-    else if (s === 'free') why = 'Your free trial has ended. Subscribe to open your account page and get the full lists every week.';
+    if (s === 'trial' && a.trial_until) why = 'You\'re on your 14 free days: your full lists come by email. Your account page, with past lists, Search & export, territory, teammates and Roster Watch, opens with your first payment.';
+    else if (s === 'trial') why = 'You\'re on the free preview: it comes by email. Start a plan (14 days free) to get the full lists every week; your account page opens with your first payment.';
+    else if (s === 'free') why = 'You\'re on the free weekly digest. Start a plan (14 days free) to get the full lists every week; your account page opens with your first payment.';
     else if (s === 'week_sent' || s === 'week_pending') why = 'Your one-time list comes by email. Subscribe to open your account page and get the full lists every week.';
     else why = 'Your subscription has ended. Subscribe again with the same email to reopen your account page: your territory and teammates are kept.';
     $('lockedText').textContent = why;
@@ -285,7 +286,7 @@ table.wraptab td{white-space:normal}@media(max-width:600px){table.stack thead{di
     if (a.status !== 'paid') {
       show('upsell', true);
       var p = a.plans || {};
-      $('upsellText').textContent = (a.status === 'free' ? 'You\'re on the free weekly digest (the best new practices by name). ' : 'You\'re on the free trial. ')
+      $('upsellText').textContent = (a.status === 'free' ? 'You\'re on the free weekly digest (the best new practices by name). ' : a.trial_until ? 'You\'re on your 14 free days. ' : 'You\'re on the free preview. ')
         + 'Plans: $' + (p.local||{}).price + '/mo for a local area, $' + (p.cat||{}).price + ' for one state and category, $' + (p.all||{}).price
         + ' for every category in a state, $' + (p.multi||{}).price + ' for three states, $' + (p.niche||{}).price
         + ' for one specialty in every state, $' + (p.national||{}).price

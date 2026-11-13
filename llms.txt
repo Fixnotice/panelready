@@ -9,10 +9,10 @@
 - Monthly, November 2026: 53,257 practices due for Medicare revalidation within six months or overdue.
 - Each list: sorted best-first with the top 25 marked, phone, address, NPI, the owner's direct line where the registry lists it, websites, emails and Google ratings for organizations where found, an OIG exclusion check, and practices that moved that week.
 - Six categories: behavioral health; medical practices & clinics; dental; therapy & rehab; home care & senior living; DME, pharmacy & transport. Fifty specialty groups within them.
-- Prices (monthly, PayPal): local area $49; one state + one category $89; one state, every category $149; three states $199; every state $499. Yearly = 10 months. Two lists free, no card. 90-day guarantee.
+- Prices (monthly, PayPal): local area $49; one state + one category $89; one state, every category $149; three states $199; every state $499. Yearly = 10 months. Every plan starts with 14 days free (first payment on day 14; cancel before then and pay nothing). Free preview with no card: this week's list for one state, every practice named, the best 10 with full contact details. 90-day guarantee.
 
 ## Main pages
-- [Home](https://panelready.co/): what's in the list, a sample, pricing and the free-trial form
+- [Home](https://panelready.co/): what's in the list, a sample, pricing and the free-preview form
 - [New practices by state](https://panelready.co/states/): this week's counts, trends, cities and specialties for every state
 - [Live search](https://panelready.co/search/): search and filter the newest practices
 

@@ -34,7 +34,7 @@ for cand in (ROOT, HERE):                            # pr/npi.py lives in the pr
 from pr import npi as N                              # noqa: E402
 
 SITE = "https://panelready.co"                       # the site's address, no trailing slash (the old github.io address redirects here)
-BUILD_VERSION = 27                                    # bump when the page layout changes, so the next run rewrites every page
+BUILD_VERSION = 28                                    # bump when the page layout changes, so the next run rewrites every page
 COMPANY = "Avery Data Co."
 PAYPAL_CLIENT_ID = "BAAQ4G4Hizw2wHo9EZQsTxcW_oBtYKOFEIoI41YQZJvC8ufp2vM9Z_lIU4ASqIUZvXAUrin0KLaYIpr8Js"   # the "PanelReady site" app on developer.paypal.com (Live); one-time orders
 PAYPAL_ME = ""                                       # optional plan B: a PayPal.me handle (e.g. "averydataco"); shown as a second way to pay $39
@@ -543,7 +543,7 @@ def shell(title: str, desc: str, path: str, body: str, jsonld: dict | None = Non
 <body>
 <div class="nav"><div class="wrap">
   <a class="logo" href="{root}"><svg viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="15" fill="#0f2340"/><rect x="18" y="17" width="28" height="32" rx="4" fill="none" stroke="#ffffff" stroke-width="4.5" stroke-linejoin="round"/><rect x="25" y="13" width="14" height="8" rx="2.5" fill="#ffffff"/><path d="M25 34l5.5 5.5L40 29" fill="none" stroke="#2dd4bf" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg>{BRAND}</a>
-  <nav><a href="{root}search/">Live search</a><a href="{root}states/">All states</a><a href="{root}#how">How it works</a><a href="{root}#pricing">Pricing</a><a class="signin" href="{root}account/">Account</a><a class="mini" href="{root}#free">Get 2 lists free</a></nav>
+  <nav><a href="{root}search/">Live search</a><a href="{root}states/">All states</a><a href="{root}#how">How it works</a><a href="{root}#pricing">Pricing</a><a class="signin" href="{root}account/">Account</a><a class="mini" href="{root}#free">Free preview</a></nav>
 </div></div>
 <div class="wrap">
 {body}
@@ -654,8 +654,8 @@ def offer(state_name: str, st: str, cat: str | None, root: str, latest: str = ""
     week = week_box(state_name, st, latest, total, avg) if st and latest and (total or avg) else ""
     return (f'<section class="offer"><h2>Get every new {esc(what)} {where}, the week they register.</h2>'
             f'<p>{"This page shows a sample. " if sample else ""}Subscribers get the complete {esc(state_name) if st else "state"} list as a spreadsheet, {sub}, sorted best-first: the top 25 marked, a score and a ready-to-say opener for every practice, the owner\'s direct line where the registry lists it, phone, address and NPI, websites, emails and practice software for organizations where we can find them, an OIG exclusion check, and the practices that moved or added a specialty that week. Once a month: practices due for Medicare revalidation and practices that look stuck in credentialing. Your first paid list includes the last 90 days, teammates get copies, Roster Watch checks your own clients every week, and a webhook sends each list to your CRM. Backed by a 90-day guarantee. '
-            f'{plan} per state through PayPal (or ${LOCAL_PRICE}/month for just your local area, ${MULTI_PRICE}/month for three states, ${NATIONAL_PRICE}/month for every state, 2 months free yearly; the charge shows as {COMPANY}, {BRAND}\'s parent company); cancel any time. Try two lists free first, no card needed: the first arrives within minutes.</p>'
-            f'<div class="btns"><a class="cta" href="{root}#free{q}">Get two free {esc(state_name) + " " if st else ""}lists</a><a class="cta ghost" href="{root}#pricing{q}">Subscribe · {plan}</a></div>{week}</section>')
+            f'{plan} per state through PayPal (or ${LOCAL_PRICE}/month for just your local area, ${MULTI_PRICE}/month for three states, ${NATIONAL_PRICE}/month for every state, 2 months free yearly; the charge shows as {COMPANY}, {BRAND}\'s parent company); every plan starts with 14 days free, and you can cancel any time. Or see a free preview first, no card needed: every practice named, the best 10 in full, in your inbox within minutes.</p>'
+            f'<div class="btns"><a class="cta" href="{root}#free{q}">Preview {"the " + esc(state_name) + " list" if st else "your state"} free</a><a class="cta ghost" href="{root}#pricing{q}">14 days free, then {plan}</a></div>{week}</section>')
 
 
 def links_row(items: list[tuple[str, str]]) -> str:
@@ -1082,7 +1082,7 @@ def info_pages(data: dict) -> list[str]:
 </ul>
 <h2>What we don't do</h2>
 <p>We don't sell email addresses (the registry has none), we don't promise exclusivity (every subscriber to a state and category gets the same list), and we don't guarantee results. We send the list; what you do with it, and compliance with the rules that apply to your outreach, is yours.</p>
-<p>Tracking since {since}. <a href="{root}#free">Two lists are free</a> if you want to see it for yourself.</p>
+<p>Tracking since {since}. <a href="{root}#free">The preview is free</a> if you want to see it for yourself.</p>
 </div>
 """)
     pages["contact"] = ("Contact PanelReady", f"How to reach {BRAND} ({COMPANY}): email, what to include, and how fast you'll hear back.", f"""
@@ -1093,7 +1093,7 @@ def info_pages(data: dict) -> list[str]:
 <p class="lead"><a href="mailto:{MAIL}">{MAIL}</a>, any time. Replies usually come the same business day, from the person who runs {BRAND}.</p>
 <h2>Useful things to put in the email</h2>
 <ul>
-<li><b>Free lists:</b> the quickest way is <a href="{root}#free">the form</a>, but an email with your company, state and category works just as well.</li>
+<li><b>The free preview:</b> the quickest way is <a href="{root}#free">the form</a>, but an email with your company, state and category works just as well.</li>
 <li><b>Changing your list:</b> subscribers can reply to any {BRAND} email with the new state or category ("switch to dental", "add New Jersey") and the next list reflects it.</li>
 <li><b>Several states or an exclusive arrangement:</b> say which states and categories and we'll quote a bundle.</li>
 <li><b>Your account page:</b> subscribers can open it from <a href="{root}account/">Account</a> at the top of any page: enter your email and we send a sign-in link within the hour.</li>
@@ -1129,23 +1129,25 @@ def info_pages(data: dict) -> list[str]:
 <p>If this policy changes, the date at the top changes with it. Questions: <a href="mailto:{MAIL}">{MAIL}</a>.</p>
 </div>
 """)
-    pages["terms"] = ("Terms of service", f"The terms for {BRAND} subscriptions and free lists: what you get, what it costs, cancelling, and the limits of a public-data product.", f"""
+    pages["terms"] = ("Terms of service", f"The terms for {BRAND} subscriptions, the 14 free days and the free preview: what you get, what it costs, cancelling, and the limits of a public-data product.", f"""
 <div class="crumbs"><a href="{root}">{BRAND}</a> › Terms</div>
 <span class="kicker">Terms of service</span>
 <h1>Plain terms for a <em>plain product</em>.</h1>
 <div class="prose">
 <p class="lead">These terms apply to the {BRAND} lists and website, provided by {COMPANY} ("we"). By requesting lists or subscribing you agree to them. Last updated {long_date(latest)}.</p>
 <h2>The service</h2>
-<p>{BRAND} sends you a spreadsheet of healthcare practices and sole proprietors that registered for an NPI in the previous week, for the state(s) and category(ies) on your plan, on the morning CMS posts the weekly file (normally once a week; CMS occasionally skips or delays a week). Your first list goes out as soon as you sign up and we know your territory, usually within minutes, from the latest weekly file (if that file has nothing for your territory, with the next one). A subscription's first paid list goes out as soon as your payment comes through and we know your territory, usually within minutes, and also includes every new practice in your territory from the previous 90 days; after that, lists follow the weekly schedule above. The data comes from the public NPPES registry exactly as published. We sort it, score each practice and suggest an opener; for organizations we also look up websites, emails, Google ratings and the practice software their websites use, from public sources (Google and the practice's own website), and we check every name against the federal OIG exclusion list. Each week subscribers also get the practices whose registered location changed in the registry that week, and once a month two more lists: practices due (or overdue) for Medicare revalidation according to CMS's public Revalidation Due Date List, and practices that registered 2-12 months earlier and don't appear on Medicare's public enrollment list. A "Medicare pending" flag means the provider appears on CMS's public list of pending first-time applications. Scores, openers, practice-size counts and lookups are our best suggestions, not verified facts; dates and statuses are as CMS publishes them.</p>
+<p>{BRAND} sends you a spreadsheet of healthcare practices and sole proprietors that registered for an NPI in the previous week, for the state(s) and category(ies) on your plan, on the morning CMS posts the weekly file (normally once a week; CMS occasionally skips or delays a week). Your first list goes out as soon as you sign up and we know your territory, usually within minutes, from the latest weekly file (if that file has nothing for your territory, with the next one). A subscription's full weekly lists start as soon as you approve it at PayPal and we know your territory; the list that follows your first payment, usually within minutes of it, also includes every new practice in your territory from the previous 90 days. After that, lists follow the weekly schedule above. The data comes from the public NPPES registry exactly as published. We sort it, score each practice and suggest an opener; for organizations we also look up websites, emails, Google ratings and the practice software their websites use, from public sources (Google and the practice's own website), and we check every name against the federal OIG exclusion list. Each week subscribers also get the practices whose registered location changed in the registry that week, and once a month two more lists: practices due (or overdue) for Medicare revalidation according to CMS's public Revalidation Due Date List, and practices that registered 2-12 months earlier and don't appear on Medicare's public enrollment list. A "Medicare pending" flag means the provider appears on CMS's public list of pending first-time applications. Scores, openers, practice-size counts and lookups are our best suggestions, not verified facts; dates and statuses are as CMS publishes them.</p>
 <h2>The 90-day guarantee</h2>
 <p>If you don't sign at least one new client from your {BRAND} lists during your first 90 days as a paying subscriber, tell us by email within 30 days after that and your next three months are free: we pause your PayPal subscription for three months, then it resumes at your normal price. One guarantee per company; no proof required.</p>
-<h2>Free lists</h2>
-<p>New companies can receive two weekly lists free, no payment details required. Free lists contain the weekly spreadsheet (with website and email lookups for its top 25 practices), the practices that moved or changed that week, a CRM import file and the outreach kit; the 90-day history, the monthly lists, the account page and Search &amp; export come with a subscription. After the second list, unless you subscribe, you receive a short free weekly digest (the best new practices by name, without contact details) until you reply STOP. We may decline or limit free lists at our discretion, for example to one per company.</p>
+<h2>The free preview</h2>
+<p>A company can receive one free preview, no payment details required: that week's spreadsheet for one state (or local area) and category, naming every new practice with its city, specialty and score, with full contact details (phone, the owner's direct line where the registry lists it, the website and email where we find them, and an opener) for the 10 highest-scored practices and a CRM import file for those 10. After the preview, unless you subscribe, you receive a short free weekly digest (the best new practices by name, without contact details) until you reply STOP. The preview is one per company; we may decline or limit it at our discretion. Companies we invited by email before November 14, 2026 with an offer of two free lists receive those two lists in full.</p>
+<h2>The 14 free days</h2>
+<p>Every subscription starts with 14 free days. When you pick a plan you approve a PayPal subscription; PayPal takes the first payment 14 days later, and then every month (or every year on yearly billing) until you cancel. During the 14 days you receive your plan's full weekly lists. We email you three days before the first payment with the date and the amount. If you cancel in your PayPal account, or reply STOP to any of our emails, before the first payment, you are not charged. The 90-day history, the monthly lists, Roster Watch, teammates and your account page start with the first payment. The free days are one per company.</p>
 <h2>Plans and payment</h2>
 <ul>
 <li><b>Local area</b> (every new practice within 5 to 100 miles of one ZIP code, every category): ${LOCAL_PRICE} per month. <b>One state, one category:</b> ${CAT_PRICE} per month. <b>One state, every category:</b> ${ALL_PRICE} per month. <b>Three states, every category:</b> ${MULTI_PRICE} per month. Each plan can be billed yearly for the price of ten months. Subscriptions started at an earlier price keep that price.</li>
 <li>Plans include teammates who receive copies of each list (2, 3, 5 or 10 people in all, by plan), Roster Watch for your own providers (100, 100, 500 or 2,000 NPIs) and an optional webhook. Teammates must work at your company. Your account page is for active subscribers. It opens from the private link in your list emails, or from a sign-in link we email you when you enter your address on the account page; keep these links private, as anyone with one can see your lists and change your settings. When a subscription ends, the account page closes; subscribing again with the same email reopens it.</li>
-<li>Payment is by PayPal subscription, billed monthly or yearly in advance. Charges appear as <b>{COMPANY}</b>. Prices may change with at least 30 days' notice by email; your current month is never affected.</li>
+<li>Payment is by PayPal subscription, billed monthly or yearly in advance, starting 14 days after you approve it (see "The 14 free days"). Charges appear as <b>{COMPANY}</b>. Prices may change with at least 30 days' notice by email; your current month is never affected.</li>
 <li>You can cancel at any time from your PayPal account: your lists and account page continue to the end of the period already paid for (the month, or the year on yearly billing), and no further charges are made. Replying STOP to any email also cancels: our emails stop right away and we cancel your PayPal subscription so no further charges are made. Partial periods are not refunded, except that if your first paid list never arrives we'll refund the month in full.</li>
 </ul>
 <h2>What you may do with the lists</h2>
@@ -1262,7 +1264,7 @@ def _g_npi_list(f: dict, root: str) -> dict:
 {_cat_table(f)}
 <p>The most that week were in {_state_list(f["top"], root)}. Every state's count, trend, top cities and specialties are on <a href="{root}states/">the state pages</a>.</p>
 <h2>The shortcut</h2>
-<p>{BRAND} runs these steps every week and emails each subscriber the result for their states and categories, sorted best-first with the top 25 marked, the owner's direct line where the registry lists it, and websites, emails and Google ratings looked up for organizations. Plans start at ${LOCAL_PRICE} a month for a local area, and two lists are free with no card. <a href="{root}#free">Get two free lists</a>, or read <a href="../nppes-download-vs-panelready/">how the two compare</a>.</p>
+<p>{BRAND} runs these steps every week and emails each subscriber the result for their states and categories, sorted best-first with the top 25 marked, the owner's direct line where the registry lists it, and websites, emails and Google ratings looked up for organizations. Plans start at ${LOCAL_PRICE} a month for a local area and every plan starts with 14 days free; a preview of this week's list is free with no card. <a href="{root}#free">Get the free preview</a>, or read <a href="../nppes-download-vs-panelready/">how the two compare</a>.</p>
 """,
         "faqs": [
             ("Is NPPES data free to use?", "Yes. CMS publishes the NPPES registry as public data that anyone can download free from download.cms.gov/nppes. "
@@ -1322,7 +1324,7 @@ def _g_credentialing(f: dict, root: str) -> dict:
 <li><b>The authorized official.</b> The person who signed the NPI application is usually the owner or administrator: the decision-maker, with a phone number in the registry.</li>
 <li><b>Fastest first.</b> A new practice decides who handles enrollment in its first month. After that, the stuck list finds the ones whose first plan didn't work.</li>
 </ul>
-<p>{BRAND} sends all four: the new practices and the ones that moved every week, the stuck and revalidation lists once a month, for your states, sorted best-first with a ready opener for each. <a href="{root}#free">Two weekly lists are free</a>.</p>
+<p>{BRAND} sends all four: the new practices and the ones that moved every week, the stuck and revalidation lists once a month, for your states, sorted best-first with a ready opener for each. <a href="{root}#free">A preview of this week's list is free</a>, and every plan starts with 14 days free.</p>
 """,
         "faqs": [
             ("Where can I find newly enrolled healthcare providers?", "New NPI registrations are in CMS's free NPPES Weekly Update file. Providers "
@@ -1381,7 +1383,7 @@ def _g_billing(f: dict, root: str) -> dict:
 <h2>Established practices are worth a call too</h2>
 <p>New practices aren't the only ones changing how they bill. Every weekly file also shows practices that moved, and a move means a new address to update with every payer.{monthly}</p>
 <h2>Build the list yourself, or get it</h2>
-<p>The weekly file is free: here's <a href="../new-npi-provider-list/">how to filter it</a>. If you'd rather have the result, {BRAND} sends it every week for your state and categories (or everything within a set distance of your ZIP code), sorted best-first, with websites, emails and Google ratings for organizations. See <a href="../nppes-download-vs-panelready/">how the two compare</a>, or <a href="{root}#free">get two lists free</a>.</p>
+<p>The weekly file is free: here's <a href="../new-npi-provider-list/">how to filter it</a>. If you'd rather have the result, {BRAND} sends it every week for your state and categories (or everything within a set distance of your ZIP code), sorted best-first, with websites, emails and Google ratings for organizations. See <a href="../nppes-download-vs-panelready/">how the two compare</a>, or <a href="{root}#free">get a free preview</a>.</p>
 """,
         "faqs": [
             ("How do medical billing companies find new clients?", "Mostly through referrals, partnerships and outreach. For outreach, the most "
@@ -1398,7 +1400,7 @@ def _g_billing(f: dict, root: str) -> dict:
 
 def _g_compare(f: dict, root: str) -> dict:
     rows = [
-        ("Cost", "Free", f"${LOCAL_PRICE} to ${NATIONAL_PRICE} a month; two lists free, no card"),
+        ("Cost", "Free", f"${LOCAL_PRICE} to ${NATIONAL_PRICE} a month; 14 days free on every plan, and a free preview with no card"),
         ("Source", "CMS NPPES Weekly Update", "The same file, records unaltered"),
         ("New practices only", "You filter by enumeration date and entity type", "Done: organizations and sole proprietors, employees dropped"),
         ("Your territory", "You filter by state and taxonomy code", "By state and category, by specialty, or by miles from a ZIP code"),
@@ -1422,7 +1424,7 @@ def _g_compare(f: dict, root: str) -> dict:
         "answer": (f'Both start from the same free CMS file. If you\'re comfortable with a 300-column CSV (or a script) and want every field, '
                    f'download the NPPES weekly file and filter it yourself: it costs nothing. If you want the finished list every week, filtered '
                    f'to your territory, sorted best-first and with websites and emails for organizations, {BRAND} costs ${LOCAL_PRICE} to '
-                   f'${NATIONAL_PRICE} a month, and two lists are free to try.'),
+                   f'${NATIONAL_PRICE} a month; every plan starts with 14 days free, and a preview of this week\'s list is free with no card.'),
         "body": f"""
 <h2>Side by side</h2>
 <div class="tscroll"><table class="wraptab stack"><thead><tr><th></th><th>NPPES download (do it yourself)</th><th>{BRAND}</th></tr></thead><tbody>{table}</tbody></table></div>
@@ -1440,14 +1442,15 @@ def _g_compare(f: dict, root: str) -> dict:
 </ul>
 <h2>Other options</h2>
 <p>The <a href="{NPI_API}" rel="nofollow">NPI Registry search and API</a> are free for looking up providers you already know, but they can't filter by registration date. Commercial healthcare provider databases are built for breadth across established providers rather than for the week a practice registers.</p>
-<p>Last week's file had {fmt(f["total"])} new practices and sole proprietors nationwide; see any state's count on <a href="{root}states/">the state pages</a>, or <a href="{root}#free">get two lists free</a>.</p>
+<p>Last week's file had {fmt(f["total"])} new practices and sole proprietors nationwide; see any state's count on <a href="{root}states/">the state pages</a>, or <a href="{root}#free">get a free preview</a>.</p>
 """,
         "faqs": [
             ("Is PanelReady's data different from NPPES?", "No. PanelReady uses CMS's NPPES weekly file as published and doesn't alter records. "
              "It filters and sorts them and adds lookups (websites, emails, Google ratings, an OIG exclusion check) on top."),
             ("How much does PanelReady cost?", f"${LOCAL_PRICE} a month for a local area, ${CAT_PRICE} for one state and one category, ${ALL_PRICE} "
              f"for one state with every category, ${MULTI_PRICE} for three states and ${NATIONAL_PRICE} for every state. Yearly billing is the "
-             "price of ten months, and two lists are free with no card."),
+             "price of ten months. Every plan starts with 14 days free (PayPal takes the first payment on day 14; cancel before then and you "
+             "pay nothing), and a preview of this week's list is free with no card."),
             ("Can I open the NPPES weekly file in Excel?", "Yes, but it's a ZIP of large CSV files with more than 300 columns, so filtering it by "
              "hand takes a while. The monthly full file is too big for Excel."),
         ],
@@ -1600,10 +1603,11 @@ def write_llms(data: dict, gs: list[dict]):
         "- Six categories: behavioral health; medical practices & clinics; dental; therapy & rehab; home care & senior living; DME, pharmacy & transport. "
         "Fifty specialty groups within them.",
         f"- Prices (monthly, PayPal): local area ${LOCAL_PRICE}; one state + one category ${CAT_PRICE}; one state, every category ${ALL_PRICE}; "
-        f"three states ${MULTI_PRICE}; every state ${NATIONAL_PRICE}. Yearly = 10 months. Two lists free, no card. 90-day guarantee.",
+        f"three states ${MULTI_PRICE}; every state ${NATIONAL_PRICE}. Yearly = 10 months. Every plan starts with 14 days free (first payment on day 14; cancel before then and pay nothing). "
+        f"Free preview with no card: this week's list for one state, every practice named, the best 10 with full contact details. 90-day guarantee.",
         "",
         "## Main pages",
-        f"- [Home]({SITE}/): what's in the list, a sample, pricing and the free-trial form",
+        f"- [Home]({SITE}/): what's in the list, a sample, pricing and the free-preview form",
         f"- [New practices by state]({SITE}/states/): this week's counts, trends, cities and specialties for every state",
         f"- [Live search]({SITE}/search/): search and filter the newest practices",
         "",
@@ -1720,7 +1724,7 @@ ACCOUNT_BODY = """
   <form id="linkForm" novalidate><label for="lkEmail">Email</label><input type="email" id="lkEmail" placeholder="you@company.com" autocomplete="email" required>
   <input type="text" name="website" id="lkHp" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px" aria-hidden="true">
   <button class="cta" type="submit">Email me a sign-in link</button><div class="msg" id="linkMsg"></div></form>
-  <p class="help" style="margin-top:14px">Not a subscriber yet? <a href="../#pricing">See plans</a> or <a href="../#free">get two lists free</a>.</p>
+  <p class="help" style="margin-top:14px">Not a subscriber yet? <a href="../#pricing">See plans</a> (14 days free) or <a href="../#free">get a free preview</a>.</p>
 </div>
 
 <div class="card up hide" id="lockedBox"><h2>For subscribers</h2><p class="help" id="lockedText"></p><a class="cta" href="../#pricing">See plans</a></div>
@@ -1829,8 +1833,9 @@ ACCOUNT_BODY = """
     // trial, free digest, cancelled, unsubscribed and one-time buyers: no lists or settings here, just the way back in
     $('planline').textContent = 'Account pages are for active PanelReady subscribers.';
     var s = a.status || '', why;
-    if (s === 'trial') why = 'You\\'re on the free trial: your two free lists come by email. Subscribe to open your account page, with past lists, Search & export, territory, teammates and Roster Watch.';
-    else if (s === 'free') why = 'Your free trial has ended. Subscribe to open your account page and get the full lists every week.';
+    if (s === 'trial' && a.trial_until) why = 'You\\'re on your 14 free days: your full lists come by email. Your account page, with past lists, Search & export, territory, teammates and Roster Watch, opens with your first payment.';
+    else if (s === 'trial') why = 'You\\'re on the free preview: it comes by email. Start a plan (14 days free) to get the full lists every week; your account page opens with your first payment.';
+    else if (s === 'free') why = 'You\\'re on the free weekly digest. Start a plan (14 days free) to get the full lists every week; your account page opens with your first payment.';
     else if (s === 'week_sent' || s === 'week_pending') why = 'Your one-time list comes by email. Subscribe to open your account page and get the full lists every week.';
     else why = 'Your subscription has ended. Subscribe again with the same email to reopen your account page: your territory and teammates are kept.';
     $('lockedText').textContent = why;
@@ -1860,7 +1865,7 @@ ACCOUNT_BODY = """
     if (a.status !== 'paid') {
       show('upsell', true);
       var p = a.plans || {};
-      $('upsellText').textContent = (a.status === 'free' ? 'You\\'re on the free weekly digest (the best new practices by name). ' : 'You\\'re on the free trial. ')
+      $('upsellText').textContent = (a.status === 'free' ? 'You\\'re on the free weekly digest (the best new practices by name). ' : a.trial_until ? 'You\\'re on your 14 free days. ' : 'You\\'re on the free preview. ')
         + 'Plans: $' + (p.local||{}).price + '/mo for a local area, $' + (p.cat||{}).price + ' for one state and category, $' + (p.all||{}).price
         + ' for every category in a state, $' + (p.multi||{}).price + ' for three states, $' + (p.niche||{}).price
         + ' for one specialty in every state, $' + (p.national||{}).price
@@ -2053,7 +2058,7 @@ SEARCH_BODY = """
     <div class="card">
       <div class="hero"><b id="total">0</b><span id="totalText"></span></div>
       <p class="sub" id="totalSub"></p>
-      <div class="btns" id="ctaRow"><a class="cta" id="cta" href="../#free">Get these as a free weekly list</a><a class="cta ghost" href="../#pricing">See plans</a></div>
+      <div class="btns" id="ctaRow"><a class="cta" id="cta" href="../#free">Preview this list free</a><a class="cta ghost" href="../#pricing">See plans</a></div>
     </div>
     <div class="card" id="weekCard" style="margin-top:16px"><h2 style="font-size:20px;margin:0">Week by week</h2>
       <div class="trend" id="weekBars" role="img"></div>
@@ -2069,7 +2074,7 @@ SEARCH_BODY = """
 <section class="prose" style="margin-top:34px">
 <h2>Where the numbers come from</h2>
 <p>New practices come from the federal NPPES registry's weekly files (organizations and sole proprietors; employees and students who get an NPI only to work somewhere else are left out). <b>Moved</b> is a practice whose registered address changed to a new location. <b>Stuck in credentialing</b> is a practice that registered 2 to 12 months ago in a specialty that normally bills Medicare and still isn't on Medicare's public enrollment list. <b>Revalidation due</b> is Medicare's own list of enrollments due from 90 days ago through the next six months. Counts are rebuilt every week; the two monthly lists, every month.</p>
-<p>This page shows counts only. The lists themselves come with the practice phone, the owner's name and own phone, the address, the specialty, a score and an opener for every row: <a href="../#free">two weekly lists are free</a>.</p>
+<p>This page shows counts only. The lists themselves come with the practice phone, the owner's name and own phone, the address, the specialty, a score and an opener for every row: <a href="../#free">a preview of this week's list is free</a>, and every plan starts with 14 days free.</p>
 </section>
 <div class="tip hide" id="tip" role="tooltip"></div>
 </div>
@@ -2346,7 +2351,7 @@ SEARCH_BODY = """
     if (st) q.push('state=' + st); if (S.cat) q.push('cat=' + S.cat);
     if (S.area === 'radius' && /^\\d{5}$/.test(S.zip)) q.push('zip=' + S.zip, 'radius=' + S.miles);
     $('cta').href = '../' + (q.length ? '?' + q.join('&') : '') + '#free';
-    $('cta').textContent = 'Get the full list free';
+    $('cta').textContent = 'Preview this list free';
     // week by week
     $('weekCard').classList.toggle('hide', !weekly);
     if (weekly) {
@@ -2670,6 +2675,8 @@ def refresh_landing(data: dict) -> list[str]:
             s = re.sub(r"<script [^>]*src=\"" + re.escape(BEACON_SRC) + r"\"[^>]*></script>", lambda m: tag, s, count=1)
         else:
             sub("beacon", r'(<script src="chat\.js" defer></script>)', lambda m: m.group(1) + tag)
+    elif BEACON_SRC in s:                                 # switched off (no token): the homepage's tag goes too
+        s = re.sub(r"<script [^>]*src=\"" + re.escape(BEACON_SRC) + r"\"[^>]*></script>", "", s)
     if 'href="guides/"' not in s:                         # one-time: the guides in the homepage footer
         sub("footer guides", r'(<a href="states/">New practices by state</a>)', lambda m: m.group(1) + '<a href="guides/">Guides</a>')
     p.write_text(s, encoding="utf-8")

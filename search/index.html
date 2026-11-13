@@ -117,7 +117,7 @@ table.wraptab td{white-space:normal}@media(max-width:600px){table.stack thead{di
 <body>
 <div class="nav"><div class="wrap">
   <a class="logo" href="../"><svg viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="15" fill="#0f2340"/><rect x="18" y="17" width="28" height="32" rx="4" fill="none" stroke="#ffffff" stroke-width="4.5" stroke-linejoin="round"/><rect x="25" y="13" width="14" height="8" rx="2.5" fill="#ffffff"/><path d="M25 34l5.5 5.5L40 29" fill="none" stroke="#2dd4bf" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg>PanelReady</a>
-  <nav><a href="../search/">Live search</a><a href="../states/">All states</a><a href="../#how">How it works</a><a href="../#pricing">Pricing</a><a class="signin" href="../account/">Account</a><a class="mini" href="../#free">Get 2 lists free</a></nav>
+  <nav><a href="../search/">Live search</a><a href="../states/">All states</a><a href="../#how">How it works</a><a href="../#pricing">Pricing</a><a class="signin" href="../account/">Account</a><a class="mini" href="../#free">Free preview</a></nav>
 </div></div>
 <div class="wrap">
 
@@ -156,7 +156,7 @@ table.wraptab td{white-space:normal}@media(max-width:600px){table.stack thead{di
     <div class="card">
       <div class="hero"><b id="total">0</b><span id="totalText"></span></div>
       <p class="sub" id="totalSub"></p>
-      <div class="btns" id="ctaRow"><a class="cta" id="cta" href="../#free">Get these as a free weekly list</a><a class="cta ghost" href="../#pricing">See plans</a></div>
+      <div class="btns" id="ctaRow"><a class="cta" id="cta" href="../#free">Preview this list free</a><a class="cta ghost" href="../#pricing">See plans</a></div>
     </div>
     <div class="card" id="weekCard" style="margin-top:16px"><h2 style="font-size:20px;margin:0">Week by week</h2>
       <div class="trend" id="weekBars" role="img"></div>
@@ -172,7 +172,7 @@ table.wraptab td{white-space:normal}@media(max-width:600px){table.stack thead{di
 <section class="prose" style="margin-top:34px">
 <h2>Where the numbers come from</h2>
 <p>New practices come from the federal NPPES registry's weekly files (organizations and sole proprietors; employees and students who get an NPI only to work somewhere else are left out). <b>Moved</b> is a practice whose registered address changed to a new location. <b>Stuck in credentialing</b> is a practice that registered 2 to 12 months ago in a specialty that normally bills Medicare and still isn't on Medicare's public enrollment list. <b>Revalidation due</b> is Medicare's own list of enrollments due from 90 days ago through the next six months. Counts are rebuilt every week; the two monthly lists, every month.</p>
-<p>This page shows counts only. The lists themselves come with the practice phone, the owner's name and own phone, the address, the specialty, a score and an opener for every row: <a href="../#free">two weekly lists are free</a>.</p>
+<p>This page shows counts only. The lists themselves come with the practice phone, the owner's name and own phone, the address, the specialty, a score and an opener for every row: <a href="../#free">a preview of this week's list is free</a>, and every plan starts with 14 days free.</p>
 </section>
 <div class="tip hide" id="tip" role="tooltip"></div>
 </div>
@@ -449,7 +449,7 @@ table.wraptab td{white-space:normal}@media(max-width:600px){table.stack thead{di
     if (st) q.push('state=' + st); if (S.cat) q.push('cat=' + S.cat);
     if (S.area === 'radius' && /^\d{5}$/.test(S.zip)) q.push('zip=' + S.zip, 'radius=' + S.miles);
     $('cta').href = '../' + (q.length ? '?' + q.join('&') : '') + '#free';
-    $('cta').textContent = 'Get the full list free';
+    $('cta').textContent = 'Preview this list free';
     // week by week
     $('weekCard').classList.toggle('hide', !weekly);
     if (weekly) {

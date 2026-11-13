@@ -1,7 +1,7 @@
 /* PanelReady help chat (Nov 8, 2026): a free, scripted helper on every page of panelready.co. No AI service and
  * no keys: written answers (KB below) matched to what the visitor types, plus four actions through the signup
  * worker the site already uses:
- *   - start the free trial (POST /signup, the same as the form on the homepage; src "chat|...")
+ *   - send the free preview (POST /signup, the same as the form on the homepage; src "chat|...")
  *   - email a subscriber their account link (POST /link, the same as the account page)
  *   - live counts (GET /search?f=index, the same public counts as panelready.co/search/: no names or contacts)
  *   - pass a typed question to Matt (POST /ask; the PC's hourly run emails it to the PanelReady mailbox with
@@ -47,7 +47,7 @@
      a: "CMS posts each week's file about a week after the week ends, and most registrations in it are one to six days old by then. So a practice is on your list one to two weeks after it registered, typically weeks before it has finished credentialing with its first payer.",
      r: ["when", "source"]},
     {id: "when", t: "When do the lists arrive?", k: ["when", "what day", "monday", "arrive", "schedule", "how often", "weekly", "every week", "frequency"],
-     a: "Every week, usually Monday morning, as soon as that week's federal file is out. On the free trial your first list arrives within minutes of signing up and the second with the following week's file.",
+     a: "Every week, usually Monday morning, as soon as that week's federal file is out. Start a plan (14 days free) or ask for the free preview and your first list arrives within minutes.",
      r: ["fresh", "notgot", "trial"]},
     {id: "real", t: "Are these real practices?", k: ["real practices", "just anyone", "employees", "individuals", "sole proprietor", "who is on the list", "filter", "junk"],
      a: "We keep organizations (practices, clinics, agencies, suppliers) and individuals who flagged themselves as sole proprietors. Employees registering for a new job, students and deactivated numbers are dropped. Roughly one row in three survives.",
@@ -62,7 +62,7 @@
      a: "Yes: the phone and address each practice gave CMS, on every row, plus the owner's own number when the registry lists one. Each row also says how many providers share that phone, which tells a brand-new practice from an established office.",
      r: ["owner", "emails"]},
     {id: "emails", t: "Do I get email addresses?", k: ["email address", "emails", "email addresses", "do you have emails", "contact email"],
-     a: "For organizations, where we can find one, on the free lists too. The registry has phones and addresses but no emails, so we look for each new organization's own website and add the website, email and Google rating we find; we never guess an address. Every email is marked as a person or a shared inbox (info@, office@) and checked that its domain takes mail. Sole proprietors rarely have a website yet, so their rows have the phone and address.",
+     a: "For organizations, where we can find one (on the free preview, for the best 10). The registry has phones and addresses but no emails, so we look for each new organization's own website and add the website, email and Google rating we find; we never guess an address. Every email is marked as a person or a shared inbox (info@, office@) and checked that its domain takes mail. Sole proprietors rarely have a website yet, so their rows have the phone and address.",
      r: ["owner", "crm"]},
     {id: "score", t: "What's the score and the Top 25?", k: ["score", "top 25", "lead score", "priority", "best first", "ranking", "rank", "sorted"],
      a: "Every practice is scored 0 to 100 for how likely it needs credentialing and billing help soon, with the reason (including how many providers share its phone). The best 25 are marked and the list is sorted best-first, so you call the right ones first.",
@@ -73,23 +73,26 @@
     {id: "kindnew", t: "What does \"what kind of new\" mean?", k: ["kind of new", "brand new", "new location", "re-registration", "existing office", "days since"],
      a: "Each row says whether it's a brand-new practice, a new location of a larger organization (named when the registry names it), an owner opening several locations, an established office that just registered as a practice, or a re-registration, plus how many days ago it registered. Brand-new practices need everything set up from scratch.",
      r: ["real", "score"]},
-    {id: "trial", t: "How does the free trial work?", k: ["free trial", "trial", "free lists", "try it", "try first", "two free", "2 free", "no card", "free"],
-     a: "Your next two weekly lists are free: no card, no call. The first arrives within minutes, the second with the following week's federal file. Free lists have the weekly spreadsheet, the practices that moved or changed, the CRM file and the outreach kit; the 90-day history, monthly lists and account page come with a subscription. Afterwards you can subscribe, or do nothing and get a short free weekly digest until you say stop.",
-     r: ["pricing"], go: "trial"},
+    {id: "trial", t: "What's in the free preview?", k: ["preview", "free preview", "free lists", "free list", "two free", "2 free", "no card", "free", "sample list", "see a list"],
+     a: "The free preview is this week's list for your state, with no card and no call: every new practice named, with its city, specialty and score, and the best 10 in full (phone, the owner's direct line, website, email and an opener). It arrives within minutes; one per company. To get every practice in full each week, every plan starts with 14 days free. Do nothing and you get a short free weekly digest until you say stop.",
+     r: ["freedays", "pricing"], go: "trial"},
+    {id: "freedays", t: "How do the 14 free days work?", k: ["14 days", "14 day", "free days", "fourteen", "free trial", "trial", "try it", "try first", "when am i charged", "first payment"],
+     a: "Every plan starts with 14 days free. Pick a plan and approve the subscription with PayPal: your full weekly lists start within minutes and PayPal takes nothing for 14 days. We email you three days before the first payment with the date and the amount. Cancel in your PayPal account before then, or reply STOP and we cancel it for you, and you're never charged. If you stay, your first payment also brings the last 90 days, the monthly lists and your account page. " + L("#pricing", "See plans"),
+     r: ["pricing", "cancel", "trial"]},
     {id: "pricing", t: "How much does it cost?", k: ["price", "pricing", "cost", "how much", "plans", "plan", "rates", "fee", "charge", "expensive", "cheap", "monthly"],
-     a: "<b>$49</b> your local area (5 to 100 miles of a ZIP) · <b>$89</b> one state, one category · <b>$149</b> one whole state (most billing companies) · <b>$199</b> three states · <b>$249</b> one specialty in every state · <b>$499</b> every state. All monthly; pay yearly and get 2 months free. Every plan includes the full weekly list, the last 90 days on day one, the monthly lists, Roster Watch, teammates and the 90-day guarantee. " + L("#pricing", "See pricing"),
-     r: ["trial", "pay", "which"]},
+     a: "<b>$49</b> your local area (5 to 100 miles of a ZIP) · <b>$89</b> one state, one category · <b>$149</b> one whole state (most billing companies) · <b>$199</b> three states · <b>$249</b> one specialty in every state · <b>$499</b> every state. All monthly; pay yearly and get 2 months free. Every plan starts with 14 days free and includes the full weekly list; the last 90 days, the monthly lists, Roster Watch, teammates and the 90-day guarantee come with your first payment. " + L("#pricing", "See pricing"),
+     r: ["freedays", "pay", "which"]},
     {id: "which", t: "Which plan should I pick?", k: ["which plan", "recommend", "best plan", "what plan", "right plan", "difference between plans", "compare plans"],
-     a: "Most billing and credentialing companies take one whole state ($149). If you only serve one kind of practice in one state, one state and one category ($89) is enough; if you work near home, the local plan ($49) covers a radius around your ZIP. Firms that serve one specialty nationwide (ABA, residential treatment, FQHCs, O&amp;P...) take the one-specialty plan ($249), and national firms the every-state plan ($499). Not sure? Start with the two free lists.",
+     a: "Most billing and credentialing companies take one whole state ($149). If you only serve one kind of practice in one state, one state and one category ($89) is enough; if you work near home, the local plan ($49) covers a radius around your ZIP. Firms that serve one specialty nationwide (ABA, residential treatment, FQHCs, O&amp;P...) take the one-specialty plan ($249), and national firms the every-state plan ($499). Not sure? Start with the free preview.",
      r: ["pricing", "trial", "specialties"]},
     {id: "local", t: "Can I get just my local area?", k: ["local", "zip", "radius", "near me", "miles", "my area", "my city", "county", "metro"],
-     a: "Yes. The local plan ($49 a month) covers every new practice within 5 to 100 miles of your ZIP code, every category. The free trial can be local too: on the " + L("#free", "trial form") + ", use a ZIP code and a radius instead of the whole state.",
+     a: "Yes. The local plan ($49 a month) covers every new practice within 5 to 100 miles of your ZIP code, every category. The free preview can be local too: on the " + L("#free", "preview form") + ", use a ZIP code and a radius instead of the whole state.",
      r: ["pricing", "states"]},
     {id: "states", t: "Which states do you cover?", k: ["which states", "what states", "states", "nationwide", "all states", "every state", "my state", "cover", "coverage", "territory", "more than one state", "multiple states"],
      a: "Every state plus DC. Plans cover your local area, one state, three states, or every state; the one-specialty plan covers one specialty in every state. " + L("states/", "See each state's numbers"),
      r: ["pricing", "local", "counts"]},
     {id: "specialties", t: "Can I get only certain specialties?", k: ["specialty", "specialties", "only aba", "only certain", "just one specialty", "filter by", "narrow", "aba", "psychiatry", "physical therapy", "home health", "fqhc", "orthotics", "prosthetics", "o&p", "residential"],
-     a: "Yes. Pick one on the free-trial form, and subscribers can tick as many as they like on their account page: ABA, residential treatment, psychiatry, counselors, primary care, midwives, community health centers (FQHCs and rural health clinics), physical therapy, dental specialists, home health, DME, orthotics &amp; prosthetics and more, 50 in all. Serve one specialty across the country? The one-specialty plan covers it in every state for $249 a month.",
+     a: "Yes. Pick one on the free-preview form, and subscribers can tick as many as they like on their account page: ABA, residential treatment, psychiatry, counselors, primary care, midwives, community health centers (FQHCs and rural health clinics), physical therapy, dental specialists, home health, DME, orthotics &amp; prosthetics and more, 50 in all. Serve one specialty across the country? The one-specialty plan covers it in every state for $249 a month.",
      r: ["categories", "trial", "counts"]},
     {id: "categories", t: "What are the six categories?", k: ["categories", "category", "six categories", "what kinds of practices", "types of practices", "practice types"],
      a: "Behavioral health (counselors, psychologists, psychiatry, ABA, residential treatment, substance use, peer specialists) · Medical practices &amp; clinics (physicians, NPs, PAs, midwives, community health centers and rural health clinics, urgent care, surgery centers) · Dental · Therapy &amp; rehab (PT, OT, speech, chiropractic, podiatry, optometry) · Home care &amp; senior living (home health, hospice, assisted living, IDD group homes, day habilitation) · DME, pharmacy &amp; transport (DME, orthotics &amp; prosthetics, pharmacies, medical transport, ambulance).",
@@ -104,13 +107,13 @@
      a: "Every plan can be paid yearly for the price of ten months (2 months free): flip the Monthly / Yearly switch in " + L("#pricing", "pricing") + ".",
      r: ["pricing", "pay"]},
     {id: "pay", t: "How do I subscribe and pay?", k: ["subscribe", "sign up for a plan", "buy", "purchase", "pay", "payment", "paypal", "credit card", "card", "checkout", "upgrade", "invoice", "charged", "billed", "when do i get charged"],
-     a: "In " + L("#pricing", "Pricing") + ", pick a plan and use its PayPal button. Right after you pay, a short form asks which state (and category or specialty) to send; your first list, with the last 90 days, arrives within minutes. Payments go through PayPal and show as Avery Data Co., the company behind PanelReady.",
+     a: "In " + L("#pricing", "Pricing") + ", pick a plan and use its PayPal button. You approve the subscription and pay nothing for 14 days. Right after, a short form asks which state (and category or specialty) to send, and your first full list arrives within minutes. Payments go through PayPal and show as Avery Data Co., the company behind PanelReady.",
      r: ["avery", "cancel", "pricing"]},
     {id: "avery", t: "Who is Avery Data Co.?", k: ["avery", "avery data", "charge", "statement", "who are you", "company behind", "who runs", "who owns", "about"],
      a: "PanelReady's parent company: a New York business that builds subscription services from public data. It's the name PayPal shows at checkout and on your statement, so a charge from Avery Data Co. is your PanelReady subscription. " + L("about/", "About us"),
      r: ["pay", "contact"]},
     {id: "cancel", t: "How do I cancel?", k: ["cancel", "cancellation", "stop my subscription", "end subscription", "quit", "unsubscribe from plan", "contract", "commitment", "lock in"],
-     a: "Any time, in your PayPal account under Subscriptions: your lists and account page continue to the end of the period you've paid for. Or reply STOP to any email and we cancel the PayPal subscription for you. No contracts, no calls, no forms.",
+     a: "Any time, in your PayPal account (Settings, then Payments, then Automatic payments). Cancel during your 14 free days and you're never charged; after that, your lists and account page continue to the end of the period you've paid for. Or reply STOP to any email and we cancel the PayPal subscription for you. No contracts, no calls, no forms.",
      r: ["guarantee", "stop"]},
     {id: "stop", t: "How do I stop the emails?", k: ["stop emails", "unsubscribe", "stop sending", "remove me", "opt out", "too many emails"],
      a: "Reply STOP to any of our emails and they stop right away (and any PayPal subscription is cancelled for you).",
@@ -131,7 +134,7 @@
      a: "Every Medicare provider has to revalidate every few years, and CMS publishes the due dates: once a month you get the practices in your territory due in the next six months or overdue, soonest first. Every week you also get practices whose location changed; each has to update its address with Medicare and every plan. Both are established practices that already bill.",
      r: ["stuck", "planchanges"]},
     {id: "planchanges", t: "What's the plan-changes list?", k: ["plan changes", "plan-change", "medicare advantage", "medicaid plans", "insurer leaving", "plan exit"],
-     a: "When an insurer stops offering Medicare Advantage in a county, or a state changes its Medicaid plans, those patients have to pick new plans, and their practices need contracts and credentialing with the plans they move to. While a change is coming, every plan (free trial included) gets those practices in its territory once a month.",
+     a: "When an insurer stops offering Medicare Advantage in a county, or a state changes its Medicaid plans, those patients have to pick new plans, and their practices need contracts and credentialing with the plans they move to. While a change is coming, every plan (the 14 free days included) gets those practices in its territory once a month.",
      r: ["stuck", "reval"]},
     {id: "team", t: "Can my team get the lists?", k: ["team", "teammates", "colleague", "coworker", "add users", "more users", "cc", "share with"],
      a: "Yes. Add teammates on your account page and each gets a copy of every list email: 1 on the local plan, 2 on one state and one category, 4 on the whole-state and one-specialty plans, 9 on three states and 14 on every state.",
@@ -143,16 +146,16 @@
      a: "Every email has a file that imports straight into HubSpot or Salesforce, and the spreadsheet opens in Excel or Google Sheets. Or paste a webhook address (Zapier, Make or your own) on your account page and every list is sent to it as JSON the moment it goes out.",
      r: ["inlist", "account"]},
     {id: "account", t: "Where's my account page?", k: ["account page", "account", "my account", "login", "log in", "sign in", "password", "dashboard", "portal"],
-     a: "Subscribers have an account page for past weeks, territory, specialties, teammates, Roster Watch and the webhook. There's no password: every list email carries your private link, or I can email it to you. On the free trial your lists come by email; the account page opens once you subscribe.",
+     a: "Subscribers have an account page for past weeks, territory, specialties, teammates, Roster Watch and the webhook. There's no password: every list email carries your private link, or I can email it to you. During your 14 free days your lists come by email; the account page opens with your first payment.",
      r: ["history", "change"], go: "link"},
     {id: "change", t: "How do I change my state or category?", k: ["change state", "change my state", "change category", "switch", "change territory", "different state", "update my", "wrong state", "add a state", "change specialty"],
-     a: "Subscribers change it any time on their account page (it applies from the next list). On the free trial, reply to any list email with what you'd like and Matt will switch it.",
+     a: "Subscribers change it any time on their account page (it applies from the next list). During your free days, reply to any list email with what you'd like and Matt will switch it.",
      r: ["account", "pricing"]},
     {id: "notgot", t: "I didn't get my list", k: ["didn't get", "did not get", "didnt get", "not received", "haven't received", "no email", "where is my list", "missing", "spam", "not arrive", "never got"],
-     a: "The first free list goes out within minutes of signing up, then weekly. Check your spam or promotions folder for mail from matt@panelready.co, and add it to your contacts. Still nothing after an hour? Tell Matt and he'll resend it.",
+     a: "Your preview, or your first full list, goes out within minutes of signing up. Check your spam or promotions folder for mail from matt@panelready.co, and add it to your contacts. Still nothing after an hour? Tell Matt and he'll resend it.",
      r: ["ask"]},
     {id: "sample", t: "Can I see a sample?", k: ["sample", "example", "demo", "see a list", "preview", "screenshot", "show me"],
-     a: "Yes: " + L("#sample", "real rows from a recent New York list") + " (phones masked) and a full sample spreadsheet to download are on the homepage. Or start the free trial and get your own state's list in minutes.",
+     a: "Yes: " + L("#sample", "real rows from a recent New York list") + " (phones masked) and a full sample spreadsheet to download are on the homepage. Or get the free preview of your own state's list in minutes.",
      r: ["inlist", "trial"]},
     {id: "search", t: "Is there a way to look up counts?", k: ["live search", "search page", "look up", "lookup", "by county", "by zip", "how many in"],
      a: "Yes: the free " + L("search/", "live search") + " shows new practices by state, county, metro, city, ZIP radius, specialty and type for the last 13 weeks, plus practices stuck in credentialing and revalidations due. No names or contacts. Or ask me, e.g. \"how many new ABA practices in Texas?\"",
@@ -383,12 +386,12 @@
 
   var MENU = function () {
     return [chip("How does it work?", function () { answer(BY.how); }), chip("Pricing", function () { answer(BY.pricing); }),
-      chip("Start my free trial", startTrial), chip("What's in a list?", function () { answer(BY.inlist); }),
+      chip("Send me a free preview", startTrial), chip("What's in a list?", function () { answer(BY.inlist); }),
       chip("Live counts", function () { startCounts(""); }), chip("Email me my account link", startLink),
       chip("Talk to a person", function () { startAsk(""); })];
   };
   function greet() {
-    say("Hi! I can answer questions about PanelReady's weekly lists, plans and your account, start your two free lists, look up how many new practices registered, or connect you with a person. What can I help with?", MENU(), 350);
+    say("Hi! I can answer questions about PanelReady's weekly lists, plans and your account, send you a free preview of this week's list, look up how many new practices registered, or connect you with a person. What can I help with?", MENU(), 350);
   }
 
   function setPlaceholder(t) { input.placeholder = t || "Type your question…"; }
@@ -397,7 +400,7 @@
   function answer(e) {
     var chips = (e.r || []).map(function (id) { return BY[id]; }).filter(Boolean).slice(0, 3)
       .map(function (r) { return chip(r.t, function () { answer(r); }); });
-    if (e.go === "trial") chips.unshift(chip("Start my free trial", startTrial));
+    if (e.go === "trial") chips.unshift(chip("Send me a free preview", startTrial));
     if (e.go === "link") chips.unshift(chip("Email me my account link", startLink));
     if (e.go === "counts") chips.unshift(chip("Look up counts", function () { startCounts(""); }));
     if (e.go === "ask") chips.unshift(chip("Talk to a person", function () { startAsk(""); }));
@@ -422,7 +425,7 @@
       return say(/thank|ty/.test(n) ? "You're welcome! Anything else?" : "Hi! What can I help you with?", MENU());
     if (/ (talk|speak|chat) (to|with) | (human|real person|representative) | (call|email|contact) (you|matt|someone|support) /.test(n))
       return startAsk(/\?$/.test(text) && text.length > 25 ? text : "");
-    if (/ (start|begin|sign me up|sign up for (the |a )?(free )?trial|signup for (the |a )?trial|try it|get (my |the )?(two |2 )?free lists?|i want (the |a )?(free )?trial|free trial please) /.test(n)
+    if (/ (start|begin|sign me up|sign up for (the |a )?(free )?trial|signup for (the |a )?trial|try it|get (my |the )?(two |2 )?free lists?|(send|get|want) (me )?(my |the |a )?(free )?preview|free preview please) /.test(n)
         && !/ (how|what|does|is|cost|price) /.test(n))
       return startTrial();
     if (/ (send|email|resend|lost|forgot|need|get) .*(link|log ?in|sign ?in)|can'?t (log|sign) ?in|account link /.test(n))
@@ -462,7 +465,7 @@
   function startTrial() {
     flow = {type: "trial", step: "email", d: {}};
     setPlaceholder("you@yourcompany.com");
-    return say("Great: your next two weekly lists are free, no card. What's your work email?", [cancelChip()]);
+    return say("Great: the preview of this week's list is free, no card. What's your work email?", [cancelChip()]);
   }
   function trialStep(f, text) {
     var d = f.d;
@@ -516,7 +519,7 @@
     return say("Here's what I'll set up:<br><b>" + esc(STATES[d.state]) + "</b> · " + esc(cat) + (sp ? " · " + esc(sp[1]) : "") +
       "<br>to <b>" + esc(d.email) + "</b> (" + esc(d.company) + ")<br>Your first list arrives within minutes. Send it?", confirmChips());
   }
-  function confirmChips() { return [chip("Yes, send my first list", trialSend), chip("Start over", startTrial, true), cancelChip()]; }
+  function confirmChips() { return [chip("Yes, send my preview", trialSend), chip("Start over", startTrial, true), cancelChip()]; }
   function source() {
     var ref = "";
     try { var r = document.referrer ? new URL(document.referrer) : null;
@@ -537,12 +540,12 @@
       if (!j.ok) return say(esc(j.error || "Something was missing.") + " Want to try again?", [chip("Start over", startTrial), cancelChip()]);
       flow = null; setPlaceholder();
       var where = esc(STATES[d.state]);
-      return say((j.note ? "You're already signed up, so nothing new to do: " : "<b>You're in.</b> ") + "Your first free list (" + where +
-        ") is on its way to <b>" + esc(d.email) + "</b> and arrives within minutes; the second comes with next week's federal file. " +
+      return say((j.note ? "You're already signed up, so nothing new to do: " : "<b>You're in.</b> ") + "Your free preview (" + where +
+        ") is on its way to <b>" + esc(d.email) + "</b> and arrives within minutes. " +
         "It's from matt@panelready.co: if you don't see it, check spam.", [chip("What's in a list?", function () { answer(BY.inlist); }), chip("Pricing", function () { answer(BY.pricing); })]);
     }).catch(function () {
       busy = false; flow = null; setPlaceholder();
-      var m = "mailto:" + MAIL + "?subject=" + encodeURIComponent("Two free lists") + "&body=" + encodeURIComponent("Please send me the next two lists.\nState: " +
+      var m = "mailto:" + MAIL + "?subject=" + encodeURIComponent("Free preview") + "&body=" + encodeURIComponent("Please send me the free preview.\nState: " +
         STATES[d.state] + "\nCategory: " + d.cat + (d.spec ? "\nSpecialty: " + d.spec : "") + "\nCompany: " + d.company + "\nEmail: " + d.email);
       return say("That didn't go through on my end. <a href=\"" + m + "\">Send it by email instead</a> and Matt will set it up by hand.");
     });
@@ -560,7 +563,7 @@
       busy = false; flow = null; setPlaceholder();
       if (!j.ok) return say(esc(j.error || "That didn't go through.") + " You can also use the " + L("account/", "account page") + ".", MENU());
       return say("Done. If <b>" + esc(text.toLowerCase()) + "</b> has a PanelReady subscription, a sign-in link is on its way (within the hour). " +
-        "On the free trial? Your lists come by email; the account page opens once you subscribe.", [chip("Pricing", function () { answer(BY.pricing); }), chip("Talk to a person", function () { startAsk(""); }, true)]);
+        "On your 14 free days? Your lists come by email; the account page opens with your first payment.", [chip("Pricing", function () { answer(BY.pricing); }), chip("Talk to a person", function () { startAsk(""); }, true)]);
     }).catch(function () { busy = false; flow = null; setPlaceholder(); return say("I couldn't reach the server. Try the " + L("account/", "account page") + ", or email " + MAIL + "."); });
   }
 
@@ -600,7 +603,7 @@
     var html = "Yes: new " + esc(t.name) + (st ? " in " + esc(STATES[st]) : "") + " are on the lists every week" +
       (catName ? ", in " + esc(catName) : "") + "." + (spec ? " You can also pick <b>" + esc(spec[1]) + "</b> as your specialty so your list carries only those, in one state, or in every state on the one-specialty plan." : "");
     return say(html, [chip(st ? "How many in " + STATES[st] + "?" : "How many this week?", function () { counts(st, t, !st); }),
-      chip("Start my free trial", startTrial), chip("Pricing", function () { answer(BY.pricing); }, true)]);
+      chip("Send me a free preview", startTrial), chip("Pricing", function () { answer(BY.pricing); }, true)]);
   }
 
   // live counts: the public numbers behind panelready.co/search/ (no names or contacts)
@@ -653,7 +656,7 @@
       var html = "New " + esc(what) + " in " + esc(where) + ", week ending " + esc(when) + ":<span class=\"prc-big\">" + wk.toLocaleString("en-US") + "</span>" +
         (wk ? plural(org, "organization") + ", " + plural(wk - org, "sole proprietor") + ". " : "") +
         "The last 4 weeks: <b>" + four.toLocaleString("en-US") + "</b>. Break it down by county, city or ZIP on the " + L("search/", "live search") + ".";
-      return say(html, [chip("Start my free trial", startTrial), chip("Look up another", function () { startCounts(""); }), chip("Pricing", function () { answer(BY.pricing); }, true)]);
+      return say(html, [chip("Send me a free preview", startTrial), chip("Look up another", function () { startCounts(""); }), chip("Pricing", function () { answer(BY.pricing); }, true)]);
     }).catch(function () { return say("The counts are being refreshed right now. Try the " + L("search/", "live search page") + " in a few minutes."); });
   }
 
