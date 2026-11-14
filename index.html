@@ -294,6 +294,60 @@
     *{animation:none!important;transition:none!important}
     .rv{opacity:1;transform:none}
   }
+  /* what's in every list (Nov 13, 2026): three short groups in one panel instead of fourteen boxes */
+  .inc{background:var(--card);border:1px solid var(--line);border-radius:20px;box-shadow:var(--shadow);overflow:hidden}
+  .inc-cols{display:grid;grid-template-columns:repeat(3,1fr)}
+  .inc-col{padding:26px 28px 14px}
+  .inc-col+.inc-col{border-left:1px solid var(--line)}
+  .inc-col h3{font:700 12.5px Inter,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--teal);margin:0 0 6px}
+  .inc details{border-top:1px solid var(--line)}
+  .inc h3+details{border-top:0}
+  .inc summary{list-style:none;cursor:pointer;display:grid;grid-template-columns:1fr auto;gap:1px 14px;padding:13px 0;align-items:start;border-radius:6px}
+  .inc summary::-webkit-details-marker{display:none}
+  .inc summary b{font-family:"Source Serif 4",Georgia,serif;font-size:17px;font-weight:600;color:var(--ink);line-height:1.3;transition:color .2s}
+  .inc summary span{grid-column:1;color:var(--muted);font-size:14px;line-height:1.45}
+  .inc summary:after{content:"+";grid-column:2;grid-row:1/span 2;align-self:center;font:400 21px Inter,sans-serif;color:var(--teal);transition:transform .3s var(--ease)}
+  .inc summary:hover b{color:var(--teal)}
+  .inc summary:focus-visible{outline:2px solid var(--teal);outline-offset:3px}
+  .inc details[open] summary:after{transform:rotate(45deg)}
+  .inc details p{margin:0 0 15px;padding-right:28px;color:var(--body);font-size:14px;line-height:1.6}
+  .inc-foot{margin:0;padding:16px 28px;border-top:1px solid var(--line);background:rgba(14,124,123,.06);font-size:14.5px;color:var(--body)}
+  .inc-foot b{font-family:"Source Serif 4",Georgia,serif;font-size:17px;font-weight:600;color:var(--ink);margin-right:4px}
+  @media (max-width:900px){
+    .inc-cols{grid-template-columns:1fr}
+    .inc-col{padding:22px 20px 8px}
+    .inc-col+.inc-col{border-left:0;border-top:1px solid var(--line)}
+    .inc-foot{padding:16px 20px}
+  }
+  /* pricing, tidied (Nov 13, 2026): six even cards that list only what differs; what every plan has is said once */
+  .plans{grid-template-columns:repeat(3,1fr);gap:16px}
+  .plans .plan{padding:24px 22px 20px;display:flex;flex-direction:column}
+  .plan .per:empty{display:none}
+  .plan .free{margin:8px 0 12px}
+  .plans .plan ul{margin:0 0 18px;flex:1}
+  .plan li{font-size:14.5px;margin:7px 0;line-height:1.5}
+  .fallback:empty{display:none}
+  .once{margin-top:16px;display:flex;align-items:center;gap:8px 22px;flex-wrap:wrap;background:var(--card);border:1px solid var(--line);border-left:4px solid var(--teal);border-radius:16px;padding:16px 22px;box-shadow:var(--shadow)}
+  .once .price{font-size:38px;margin:0;white-space:nowrap}
+  .once .what{flex:1 1 320px;min-width:0}
+  .once .what b{display:block;font-family:"Source Serif 4",Georgia,serif;font-size:18px;font-weight:600;color:var(--ink);line-height:1.3}
+  .once .what span{display:block;font-size:14.5px;color:var(--muted);line-height:1.5;margin-top:2px}
+  .once .cta{padding:12px 20px;font-size:15px;white-space:nowrap}
+  .also{margin:14px 0 0;text-align:center;font-size:14.5px;color:var(--muted)}
+  .allplans{margin-top:22px;background:var(--card2);border:1px solid var(--line);border-radius:16px;padding:22px 26px 16px;display:grid;grid-template-columns:1fr 1fr;gap:6px 44px}
+  .allplans h3{font:700 12.5px Inter,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--teal);margin:0 0 8px}
+  .allplans ul{list-style:none;margin:0;padding:0}
+  .allplans li{position:relative;padding-left:24px;margin:6px 0;font-size:14.5px;color:var(--body);line-height:1.5}
+  .allplans li:before{content:"\2713";position:absolute;left:0;color:var(--green);font-weight:800}
+  .pnotes{display:grid;grid-template-columns:1.25fr 1fr 1fr;gap:10px 30px;margin-top:22px}
+  .pnotes p{margin:0;font-size:13.5px;line-height:1.6;color:var(--muted)}
+  .pnotes b{color:var(--ink)}
+  .offer{margin:16px 0 0;font-size:14.5px;color:var(--muted)}
+  .offer b{color:var(--ink)}
+  .offer+.trust{margin-top:18px}
+  @media (max-width:1000px){.plans{grid-template-columns:repeat(2,1fr)}}
+  @media (max-width:900px){.allplans,.pnotes{grid-template-columns:1fr}.allplans{padding:20px 20px 12px}.allplans div+div{margin-top:10px}}
+  @media (max-width:640px){.plans{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -313,6 +367,7 @@
       <h1>Your next client <em>registered this week.</em> You just don't know it yet.</h1>
       <p class="lead">Every practice has to get an NPI before it can bill a single claim, and the federal registry publishes the new ones every week. PanelReady reads that file, keeps only the real practices, and sends you <b>a spreadsheet for your state and specialty</b> — name, specialty, city, address and phone — while they're still weeks away from credentialing.</p>
       <div class="btns"><a class="cta" href="#free">Get a free preview</a><a class="cta ghost" href="#state">See this week's numbers</a></div>
+      <p class="offer">The preview is free, no card. Every plan starts with <b>14 days free</b>.</p>
       <div class="trust"><span>Federal registry data</span><span>Practices only, no employees</span><span>Practice phone numbers</span><span>Cancel any time</span></div>
     </div>
     <div class="live" aria-label="Real practices from this week's federal file">
@@ -400,21 +455,33 @@ Your spreadsheet: an overview, the Top 25 to call first with an opener for each,
     <div class="eyebrow rv">What's in every list</div>
     <h2 class="rv">Not just names. A list you can work on Monday morning.</h2>
     <p class="sub rv">Anyone can download the federal file. Here's what we add to it, every week, at no extra cost.</p>
-    <div class="cats">
-      <div class="cat rv"><b>Top 25 &amp; lead score</b><span>Every practice scored 0-100 for how likely it needs credentialing and billing help soon, with the reason, including how many providers share its phone. The best 25 are marked and the list is sorted best-first.</span></div>
-      <div class="cat rv"><b>A ready-to-say opener</b><span>A first line for every practice (name, city, date, specialty), a call script and email template, and a file that imports straight into HubSpot or Salesforce.</span></div>
-      <div class="cat rv"><b>The owner's direct line</b><span>The practice's owner or authorized official by name and title, with their own phone number when the registry lists one, and a one-click LinkedIn search for them. Skip the front desk.</span></div>
-      <div class="cat rv"><b>Websites, emails &amp; software</b><span>For organizations, the practice's website, email and Google rating where we can find them, and the practice software its website runs (SimplePractice, athenahealth, Tebra...). Every email is marked as a person or a shared inbox (info@, office@) and checked that its domain takes mail.</span></div>
-      <div class="cat rv"><b>What kind of new it is</b><span>Each row says whether it's a brand-new practice, a new location of a larger organization (named when the registry names it), an owner opening several locations, an established office that just registered as a practice, or a re-registration, plus how many days ago it registered. Brand-new practices need everything set up from scratch.</span></div>
-      <div class="cat rv"><b>Only the specialties you sell to</b><span>Work only with ABA, residential treatment centers or physical therapy? Pick your specialties (50 to choose from: ABA, midwives, community health centers, O&amp;P, DME...) when you sign up or on your account page, and your lists carry only those. Serve one specialty nationwide? There's a plan for that.</span></div>
-      <div class="cat rv"><b>Practices that moved or changed</b><span>Every week: practices whose registered location changed, NPIs that were reactivated, and practices that added a new specialty. Each one needs updated or new enrollments with Medicare and the insurance plans: paid work for you.</span></div>
-      <div class="cat rv"><b>Revalidation due</b><span>Once a month: practices due, or overdue, for Medicare revalidation, soonest first. Established practices that already bill, with a deadline.</span></div>
-      <div class="cat rv"><b>Stuck in credentialing</b><span>Once a month: practices that registered 2-12 months ago, in specialties that commonly enroll with Medicare, and still aren't on Medicare's enrollment list.</span></div>
-      <div class="cat rv"><b>Plan changes</b><span>When an insurer leaves Medicare Advantage in your counties, or your state's Medicaid plans change, you get the practices whose patients must switch plans: who's leaving, how many members, and the owner's name and phone. On Jan 1, 2027, insurers leave 1,495 counties in 45 states.</span></div>
-      <div class="cat rv"><b>OIG &amp; Medicare checks</b><span>Every name checked against the federal OIG exclusion list, flagged when its first Medicare application is waiting on CMS (mid-credentialing) or it has opted out of Medicare, with its fax, state license and every specialty it lists.</span></div>
-      <div class="cat rv"><b>Roster Watch</b><span>Give us your current clients' NPIs. Every week we check each one for exclusions, Medicare opt-outs, deactivations, revalidation deadlines and enrollment changes, and tell you only what changed.</span></div>
-      <div class="cat rv"><b>Your account &amp; your team</b><span>Your first paid list includes the last 90 days. Subscribers get a private account page with past weeks, your territory and your teammates, who get copies of every list; a webhook sends each list to Zapier, Make or your CRM.</span></div>
-      <div class="cat rv"><b>The 90-day guarantee</b><span>Sign at least one new client from your lists in your first 90 days as a subscriber, or tell us, and your next 3 months are free.</span></div>
+    <div class="inc rv">
+      <div class="inc-cols">
+        <div class="inc-col">
+          <h3>On every row</h3>
+          <details><summary><b>Top 25 &amp; lead score</b><span>Scored 0-100 and sorted best-first, with the best 25 marked.</span></summary><p>Every practice scored 0-100 for how likely it needs credentialing and billing help soon, with the reason, including how many providers share its phone. The best 25 are marked and the list is sorted best-first.</p></details>
+          <details><summary><b>A ready-to-say opener</b><span>A first line for every practice, plus a call script.</span></summary><p>A first line for every practice (name, city, date, specialty), a call script and email template, and a file that imports straight into HubSpot or Salesforce.</p></details>
+          <details><summary><b>The owner's direct line</b><span>The owner by name and title, with their own number.</span></summary><p>The practice's owner or authorized official by name and title, with their own phone number when the registry lists one, and a one-click LinkedIn search for them. Skip the front desk.</p></details>
+          <details><summary><b>Websites, emails &amp; software</b><span>Website, email, Google rating and the software they run.</span></summary><p>For organizations, the practice's website, email and Google rating where we can find them, and the practice software its website runs (SimplePractice, athenahealth, Tebra...). Every email is marked as a person or a shared inbox (info@, office@) and checked that its domain takes mail.</p></details>
+          <details><summary><b>What kind of new it is</b><span>Brand-new practice, new location, or a re-registration.</span></summary><p>Each row says whether it's a brand-new practice, a new location of a larger organization (named when the registry names it), an owner opening several locations, an established office that just registered as a practice, or a re-registration, plus how many days ago it registered. Brand-new practices need everything set up from scratch.</p></details>
+        </div>
+        <div class="inc-col">
+          <h3>Extra lists and checks</h3>
+          <details><summary><b>OIG &amp; Medicare checks</b><span>Exclusions, opt-outs and pending applications, flagged.</span></summary><p>Every name checked against the federal OIG exclusion list, flagged when its first Medicare application is waiting on CMS (mid-credentialing) or it has opted out of Medicare, with its fax, state license and every specialty it lists.</p></details>
+          <details><summary><b>Practices that moved or changed</b><span>Weekly: new locations, reactivated NPIs, added specialties.</span></summary><p>Every week: practices whose registered location changed, NPIs that were reactivated, and practices that added a new specialty. Each one needs updated or new enrollments with Medicare and the insurance plans: paid work for you.</p></details>
+          <details><summary><b>Revalidation due</b><span>Monthly: Medicare revalidation deadlines, soonest first.</span></summary><p>Once a month: practices due, or overdue, for Medicare revalidation, soonest first. Established practices that already bill, with a deadline.</p></details>
+          <details><summary><b>Stuck in credentialing</b><span>Monthly: registered months ago, still not on Medicare.</span></summary><p>Once a month: practices that registered 2-12 months ago, in specialties that commonly enroll with Medicare, and still aren't on Medicare's enrollment list.</p></details>
+          <details><summary><b>Plan changes</b><span>When an insurer leaves, the practices that have to switch.</span></summary><p>When an insurer leaves Medicare Advantage in your counties, or your state's Medicaid plans change, you get the practices whose patients must switch plans: who's leaving, how many members, and the owner's name and phone. On Jan 1, 2027, insurers leave 1,495 counties in 45 states.</p></details>
+        </div>
+        <div class="inc-col">
+          <h3>Built around you</h3>
+          <details><summary><b>Only the specialties you sell to</b><span>Pick from 50, from ABA to physical therapy.</span></summary><p>Work only with ABA, residential treatment centers or physical therapy? Pick your specialties (50 to choose from: ABA, midwives, community health centers, O&amp;P, DME...) when you sign up or on your account page, and your lists carry only those. Serve one specialty nationwide? There's a plan for that.</p></details>
+          <details><summary><b>Roster Watch</b><span>We check your current clients' NPIs every week.</span></summary><p>Give us your current clients' NPIs. Every week we check each one for exclusions, Medicare opt-outs, deactivations, revalidation deadlines and enrollment changes, and tell you only what changed.</p></details>
+          <details><summary><b>Your account &amp; your team</b><span>Past lists, teammates and a feed to your CRM.</span></summary><p>Subscribers get a private account page with past weeks, your territory and your teammates, who get copies of every list; a webhook sends each list to Zapier, Make or your CRM.</p></details>
+          <details><summary><b>The last 90 days</b><span>Your first paid list reaches back 90 days.</span></summary><p>Your first paid list includes every new practice that registered in your territory in the last 90 days.</p></details>
+        </div>
+      </div>
+      <p class="inc-foot"><b>The 90-day guarantee.</b> Sign at least one new client from your lists in your first 90 days as a subscriber, or tell us, and your next 3 months are free.</p>
     </div>
   </section>
 
@@ -491,15 +558,15 @@ Your spreadsheet: an overview, the Top 25 to call first with an opener for each,
   <section id="pricing">
     <div class="eyebrow rv">Pricing</div>
     <h2 class="rv">Every plan starts with 14 days free.</h2>
-    <p class="sub rv">Pick the territory you sell into and approve with PayPal. Your full lists start within minutes and nothing is charged for 14 days: cancel in your PayPal account before then and you pay nothing. After that it's the price below until you cancel. With your first payment you also get the last 90 days, the monthly lists, Roster Watch, teammates, your account page and the 90-day guarantee. Just looking? <a href="#free">Get the free preview</a>, no card.</p>
+    <p class="sub rv">Pick the territory you sell into and approve with PayPal. Your full lists start within minutes and nothing is charged for 14 days: cancel in your PayPal account before then and you pay nothing. After that it's the price below until you cancel.</p>
     <div class="bill rv" role="group" aria-label="Billing"><button type="button" class="on" data-b="m">Monthly</button><button type="button" data-b="y">Yearly <small>2 months free</small></button></div>
     <div class="plans">
       <div class="plan rv">
         <div class="name">Your local area</div>
         <div class="price" data-m="49" data-y="490">$49<small>/month</small></div>
         <div class="per" data-y="$490 a year: 2 months free"></div>
-        <div class="free">First 14 days free. Cancel any time.</div>
-        <ul><li>Every new practice within 5-100 miles of your ZIP code</li><li>Every category</li><li>Score, opener and the owner's direct line</li><li>Moved and changed practices weekly; revalidation, stuck and plan-change lists monthly</li><li>The last 90 days with your first payment</li><li>You + 1 teammate; Roster Watch for 100 providers</li></ul>
+        <div class="free">First 14 days free</div>
+        <ul><li>Every new practice within 5-100 miles of your ZIP code</li><li>Every category</li><li>You + 1 teammate; Roster Watch for 100 providers</li></ul>
         <div class="paybox" id="paypal-local"></div>
         <p class="fallback" id="fb-local"></p>
       </div>
@@ -507,8 +574,8 @@ Your spreadsheet: an overview, the Top 25 to call first with an opener for each,
         <div class="name">One state, one category</div>
         <div class="price" data-m="89" data-y="890">$89<small>/month</small></div>
         <div class="per" data-y="$890 a year: 2 months free"></div>
-        <div class="free">First 14 days free. Cancel any time.</div>
-        <ul><li>Weekly spreadsheet for your state and category, top 25 marked</li><li>Websites, emails and practice software</li><li>Moved and changed practices weekly; revalidation, stuck and plan-change lists monthly</li><li>OIG, Medicare opt-out and pending flags; CRM-ready file and webhook</li><li>The last 90 days with your first payment</li><li>You + 2 teammates; Roster Watch for 100 providers</li></ul>
+        <div class="free">First 14 days free</div>
+        <ul><li>Every new practice in your state, in the category you pick</li><li>You + 2 teammates; Roster Watch for 100 providers</li></ul>
         <div class="paybox" id="paypal-cat"></div>
         <p class="fallback" id="fb-cat"></p>
       </div>
@@ -517,8 +584,8 @@ Your spreadsheet: an overview, the Top 25 to call first with an opener for each,
         <div class="name">One whole state</div>
         <div class="price" data-m="149" data-y="1,490">$149<small>/month</small></div>
         <div class="per" data-y="$1,490 a year: 2 months free"></div>
-        <div class="free">First 14 days free. Cancel any time.</div>
-        <ul><li>Every new practice in your state, all six categories, every week</li><li>Everything in the single-category plan</li><li>You + 4 teammates</li><li>Roster Watch for 500 providers</li><li>Priority email support</li></ul>
+        <div class="free">First 14 days free</div>
+        <ul><li>Every new practice in your state, all six categories</li><li>You + 4 teammates; Roster Watch for 500 providers</li><li>Priority email support</li></ul>
         <div class="paybox" id="paypal-all"></div>
         <p class="fallback" id="fb-all"></p>
       </div>
@@ -526,33 +593,47 @@ Your spreadsheet: an overview, the Top 25 to call first with an opener for each,
         <div class="name">Three whole states</div>
         <div class="price" data-m="199" data-y="1,990">$199<small>/month</small></div>
         <div class="per" data-y="$1,990 a year: 2 months free"></div>
-        <div class="free">First 14 days free. Cancel any time.</div>
-        <ul><li>Three states, all six categories, every week</li><li>Everything in the whole-state plan</li><li>You + 9 teammates</li><li>Roster Watch for 2,000 providers</li><li>More than three? Every state is below</li></ul>
+        <div class="free">First 14 days free</div>
+        <ul><li>Three states, all six categories</li><li>You + 9 teammates; Roster Watch for 2,000 providers</li><li>Priority email support</li></ul>
         <div class="paybox" id="paypal-multi"></div>
         <p class="fallback" id="fb-multi"></p>
       </div>
-      <div class="plan wide rv">
-        <div><div class="name">One specialty, every state</div>
-          <div class="price" data-m="249" data-y="2,490">$249<small>/month</small></div>
-          <div class="per" data-y="$2,490 a year: 2 months free"></div>
-          <div class="free">First 14 days free. Cancel any time.</div></div>
-        <ul><li>Every new practice in one specialty, in every state, every week</li><li>For firms that serve one kind of practice nationwide: residential treatment centers, ABA, FQHCs and rural health clinics, orthotics &amp; prosthetics, home health...</li><li>Pick from 50 specialties; switch any time from your account page</li><li>Everything in the whole-state plan; you + 4 teammates; Roster Watch for 500 providers</li></ul>
-        <div><div class="paybox" id="paypal-niche"></div>
-          <p class="fallback" id="fb-niche"></p></div>
+      <div class="plan rv">
+        <div class="name">One specialty, every state</div>
+        <div class="price" data-m="249" data-y="2,490">$249<small>/month</small></div>
+        <div class="per" data-y="$2,490 a year: 2 months free"></div>
+        <div class="free">First 14 days free</div>
+        <ul><li>Every new practice in one specialty, in every state</li><li>50 specialties to pick from: residential treatment, ABA, FQHCs and rural health clinics, orthotics &amp; prosthetics, home health...</li><li>You + 4 teammates; Roster Watch for 500 providers</li><li>Priority email support</li></ul>
+        <div class="paybox" id="paypal-niche"></div>
+        <p class="fallback" id="fb-niche"></p>
       </div>
-      <div class="plan wide rv">
-        <div><div class="name">Every state</div>
-          <div class="price" data-m="499" data-y="4,990">$499<small>/month</small></div>
-          <div class="per" data-y="$4,990 a year: 2 months free"></div>
-          <div class="free">First 14 days free. Cancel any time.</div></div>
-        <ul><li>Every new practice in every state, all six categories, every week, in one spreadsheet</li><li>For billing and credentialing firms that work nationwide</li><li>Narrow it to the specialties you sell to (ABA, psychiatry, PT, home health...)</li><li>Everything in the three-state plan; you + 14 teammates; Roster Watch for 5,000 providers</li></ul>
-        <div><div class="paybox" id="paypal-national"></div>
-          <p class="fallback" id="fb-national"></p></div>
+      <div class="plan rv">
+        <div class="name">Every state</div>
+        <div class="price" data-m="499" data-y="4,990">$499<small>/month</small></div>
+        <div class="per" data-y="$4,990 a year: 2 months free"></div>
+        <div class="free">First 14 days free</div>
+        <ul><li>Every new practice in every state, all six categories, in one spreadsheet</li><li>You + 14 teammates; Roster Watch for 5,000 providers</li><li>Priority email support</li></ul>
+        <div class="paybox" id="paypal-national"></div>
+        <p class="fallback" id="fb-national"></p>
       </div>
     </div>
-    <p class="paynote rv" id="trial-how"><b>How the 14 free days work.</b> You approve the subscription with PayPal today. PayPal takes the first payment 14 days later, then every month (or year) until you cancel, and we email you three days before that first payment with the date and the amount. Cancel in your PayPal account before then, or reply STOP to any of our emails and we cancel it for you, and you're never charged.</p>
-    <p class="paynote rv"><b>Not ready for monthly?</b> Buy just this week's list for one state, every category, for $39 one time: open <a href="/states/">your state's page</a> and use the "Just this week" button. It's emailed to your PayPal address within minutes.</p>
-    <p class="paynote rv">Payments are handled by PayPal and show up as <b>Avery Data Co.</b>, the company behind PanelReady, on your PayPal receipt and card statement. Cancel from your PayPal account any time; your lists continue to the end of the period you've paid for.</p>
+    <div class="once rv" id="week39">
+      <div class="price">$39<small> one time</small></div>
+      <div class="what"><b>Not ready for monthly? Buy just this week's list.</b><span>One state, every category, no subscription. Open your state's page and use the "Just this week" button: it's emailed to your PayPal address within minutes.</span></div>
+      <a class="cta ghost" href="/states/">Pick your state</a>
+    </div>
+    <p class="also rv">Or look first: <a href="#free">get the free preview</a>, no card.</p>
+    <div class="allplans rv">
+      <div><h3>Every plan, from the first minute</h3>
+        <ul><li>The full weekly list, scored and sorted best-first</li><li>An opener and the owner's direct line for every practice</li><li>Websites, emails and practice software</li><li>Practices that moved or changed, OIG and Medicare flags, and a CRM-ready file</li></ul></div>
+      <div><h3>Added with your first payment</h3>
+        <ul><li>Every new practice from the last 90 days</li><li>Revalidation, stuck and plan-change lists every month</li><li>Roster Watch, teammates and your account page</li><li>The 90-day guarantee</li></ul></div>
+    </div>
+    <div class="pnotes rv">
+      <p id="trial-how"><b>How the 14 free days work.</b> You approve the subscription with PayPal today. PayPal takes the first payment 14 days later, then every month (or year) until you cancel, and we email you three days before that first payment with the date and the amount. Cancel in your PayPal account before then, or reply STOP to any of our emails and we cancel it for you, and you're never charged.</p>
+      <p><b>Cancel any time.</b> In your PayPal account, or reply STOP to any of our emails and we cancel it for you. Your lists continue to the end of the period you've paid for.</p>
+      <p><b>Who you pay.</b> PayPal handles the payments. The charge shows as <b>Avery Data Co.</b>, the company behind PanelReady, on your PayPal receipt and card statement.</p>
+    </div>
     <div class="ok" id="thanks"><strong>You're in: your 14 free days have started.</strong> One more thing so your first full list goes out right away: which state, and where to send it?
       <form id="paidForm" novalidate style="margin-top:14px">
         <div class="f2"><div><label for="pdEmail">Send the lists to</label><input type="email" id="pdEmail" name="email" placeholder="you@company.com" required></div><div><label for="pdCompany">Company</label><input type="text" id="pdCompany" name="company" placeholder="Your company"></div></div>
@@ -843,13 +924,14 @@ Your spreadsheet: an overview, the Top 25 to call first with an opener for each,
     box.innerHTML = '';
     if (!planId && id === 'niche') { fb.innerHTML = 'To start the one-specialty plan, email <a href="mailto:matt@panelready.co?subject=PanelReady%20one-specialty%20plan">matt@panelready.co</a> and we\'ll send your payment link the same day. ' + MAIL; return; }
     if (!planId && id === 'national') { fb.innerHTML = 'To start the Every-state plan, email <a href="mailto:matt@panelready.co?subject=PanelReady%20every-state%20plan">matt@panelready.co</a> and we\'ll send your payment link the same day. ' + MAIL; return; }
-    if (!planId || !window.paypal) { fb.innerHTML = planId || !(PLANS[id] || {}).m ? MAIL : 'Yearly billing for this plan: email <a href="mailto:matt@panelready.co">matt@panelready.co</a>. ' + MAIL; return; }
+    if (!planId) { fb.innerHTML = (PLANS[id] || {}).m ? 'Yearly billing for this plan: email <a href="mailto:matt@panelready.co">matt@panelready.co</a>. ' + MAIL : MAIL; return; }
+    if (!window.paypal) { fb.innerHTML = 'PayPal\'s button didn\'t load. Refresh the page to try again, or <a href="#free">get the free preview</a> first, no card.'; return; }
     paypal.Buttons({
       style: { shape: 'pill', color: 'gold', layout: 'vertical', label: 'subscribe' },
       createSubscription: function(data, actions){ return actions.subscription.create({ plan_id: planId, start_time: startTime() }); },
       onApprove: function(data){ afterPay(id, data && data.subscriptionID); }
     }).render('#paypal-' + id);
-    fb.innerHTML = MAIL;
+    fb.innerHTML = '';
   }
   function renderAll(){
     document.querySelectorAll('.plan .price').forEach(function(p){ var y = billing === 'y'; p.innerHTML = '$' + (y ? p.getAttribute('data-y') : p.getAttribute('data-m')) + '<small>/' + (y ? 'year' : 'month') + '</small>'; });
