@@ -15,6 +15,7 @@
 - [Home](https://panelready.co/): what's in the list, a sample, pricing and the free-preview form
 - [New practices by state](https://panelready.co/states/): this week's counts, trends, cities and specialties for every state
 - [Live search](https://panelready.co/search/): search and filter the newest practices
+- [For sales teams](https://panelready.co/sales-teams/): the weekly new-practice feed for software, provider-network and service companies that sell to small practices (same plans)
 
 ## Guides
 - [How to Get a List of Newly Registered NPI Providers (Updated Weekly)](https://panelready.co/guides/new-npi-provider-list/): Where CMS publishes every new NPI, and how to filter the weekly file down to new practices in your state and specialties.

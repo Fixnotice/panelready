@@ -41,6 +41,7 @@ PAYPAL_ME = ""                                       # optional plan B: a PayPal
 WEEK_PRICE = 39                                      # one-time: this week's list for one state, every category
 SMALL_WEEK, SMALL_WEEKS = 25, 4                      # a state under 25 new practices this week sells its last 4 weeks for the $39
 LOCAL_PRICE, CAT_PRICE, ALL_PRICE, MULTI_PRICE, NATIONAL_PRICE = 49, 89, 149, 199, 499   # monthly plans (yearly = 10 months); see pr/plans.py
+NICHE_PRICE = 249                                   # one specialty group, every state
 SAMPLE_STATES = ["VT", "DE", "RI", "AK", "WY", "ND", "SD", "MT", "ME", "NH"]   # the free sample: the first of these with 8-25 rows this week
 BRAND, MAIL = "PanelReady", "matt@panelready.co"
 WEEKS = HERE / "data" / "weeks.json"
@@ -497,7 +498,7 @@ footer{color:var(--dim);font-size:13px;padding:30px 0 40px;border-top:1px solid 
 .prose{max-width:760px}.prose h2{margin-top:30px}.prose p,.prose li{color:var(--muted)}.prose li{margin:6px 0}.prose b{color:var(--ink)}
 .answer{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--teal);border-radius:12px;padding:16px 20px;margin:18px 0 8px;max-width:800px;box-shadow:var(--shadow)}.answer p{margin:0;color:var(--body);font-size:17px}.answer b{color:var(--ink)}
 .byline{font-size:13px;color:var(--dim);margin:2px 0 0}.prose code{font-size:14px;background:var(--bg2);padding:1px 6px;border-radius:5px}.steps li{margin:8px 0}
-table.wraptab td{white-space:normal}@media(max-width:600px){table.stack thead{display:none}table.stack tr{display:block;border-bottom:1px solid var(--line);padding:10px 0}table.stack tr:last-child{border-bottom:0}table.stack td{display:block;border:0;padding:3px 0}table.stack td.n{font-size:15px}table.stack td[data-l]:before{content:attr(data-l) ": ";font-weight:600;color:var(--ink)}}table.wraptab td.n{min-width:120px}.prose .tscroll{margin:12px 0 18px}.prose table{font-size:14px}.prose td{color:var(--body)}
+table.wraptab td{white-space:normal}@media(max-width:600px){table.stack thead{display:none}table.stack tr{display:block;border-bottom:1px solid var(--line);padding:10px 0}table.stack tr:last-child{border-bottom:0}table.stack td{display:block;border:0;padding:3px 0}table.stack td.n{font-size:15px}table.stack td[data-l]:before{content:attr(data-l) ": ";font-weight:600;color:var(--ink)}table.plansfit td.r{text-align:left}}table.wraptab td.n{min-width:120px}.prose .tscroll{margin:12px 0 18px}.prose table{font-size:14px}.prose td{color:var(--body)}
 .gcards{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin:26px 0}@media(max-width:700px){.gcards{grid-template-columns:1fr}}
 .gcard{display:block;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;text-decoration:none;box-shadow:var(--shadow)}.gcard:hover{border-color:var(--teal)}.gcard b{display:block;font-family:"Source Serif 4",Georgia,serif;font-size:19px;font-weight:600;color:var(--ink);line-height:1.25;margin-bottom:6px}.gcard span{color:var(--muted);font-size:14px}
 .all{columns:3;column-gap:20px}.all a{display:block;padding:5px 0;color:var(--ink);text-decoration:none;font-size:15px;break-inside:avoid}.all a small{color:var(--dim);margin-left:6px}
@@ -547,7 +548,7 @@ def shell(title: str, desc: str, path: str, body: str, jsonld: dict | None = Non
 </div></div>
 <div class="wrap">
 {body}
-<footer><div class="flinks"><a href="{root}search/">Live search</a><a href="{root}states/">New practices by state</a><a href="{root}guides/">Guides</a><a href="{root}about/">About</a><a href="{root}contact/">Contact</a><a href="{root}privacy/">Privacy</a><a href="{root}terms/">Terms</a><a href="{root}sample/{SAMPLE_FILE}">Sample spreadsheet</a></div>
+<footer><div class="flinks"><a href="{root}search/">Live search</a><a href="{root}states/">New practices by state</a><a href="{root}guides/">Guides</a><a href="{root}sales-teams/">For sales teams</a><a href="{root}about/">About</a><a href="{root}contact/">Contact</a><a href="{root}privacy/">Privacy</a><a href="{root}terms/">Terms</a><a href="{root}sample/{SAMPLE_FILE}">Sample spreadsheet</a></div>
 {BRAND} · <a href="mailto:{MAIL}">{MAIL}</a> · an {COMPANY} product, New York<br>
 Source: NPPES weekly dissemination files published by CMS. Public data, provided as-is; not affiliated with CMS or any payer. Practice names are from the public registry; phone numbers are masked on this page and complete in the subscriber spreadsheet.</footer>
 </div>
@@ -1158,6 +1159,7 @@ def info_pages(data: dict) -> list[str]:
 <p>We may update these terms; the date at the top changes when we do, and material changes are announced by email to subscribers. These terms are governed by the laws of the State of New York. Questions: <a href="mailto:{MAIL}">{MAIL}</a>.</p>
 </div>
 """)
+    pages["sales-teams"] = sales_teams_page(root)
     out = []
     for slug, (title, desc, body) in pages.items():
         d = HERE / slug
@@ -1165,6 +1167,66 @@ def info_pages(data: dict) -> list[str]:
         (d / "index.html").write_text(shell(f"{title} — {BRAND}", desc, f"{slug}/", body), encoding="utf-8")
         out.append(f"{slug}/")
     return out
+
+
+# ------------------------------------------------------------------ for sales teams (Nov 14, 2026)
+# Software, network and service companies that sell to small practices want new practices the week they open. Same
+# plans and prices as everyone else (pr/plans.py): this page only says which plan fits which kind of seller.
+SALES_PLANS = [   # (who, plan name, ?pay= key, monthly price, people incl. the subscriber)
+    ("One specialty in every state: ABA, physical therapy, chiropractic, general dentistry, dietitians, home care...",
+     "One specialty, every state", "niche", NICHE_PRICE, 5),
+    ("Several specialties, or every kind of practice, nationwide", "Every state", "national", NATIONAL_PRICE, 15),
+    ("A region", "Three whole states", "multi", MULTI_PRICE, 10),
+    ("One state", "One whole state", "all", ALL_PRICE, 5),
+]
+
+
+def sales_teams_page(root: str) -> tuple[str, str, str]:
+    """(title, description, body) of /sales-teams/."""
+    rows = "".join(f'<tr><td>{esc(who)}</td><td class="n">{esc(name)}</td><td class="r" data-l="People">{people}</td>'
+                   f'<td class="r" data-l="Monthly">${price}</td><td><a href="{root}?pay={key}">Start</a></td></tr>'
+                   for who, name, key, price, people in SALES_PLANS)
+    desc = (f"Weekly lists of newly registered U.S. healthcare practices for software, provider-network and service sales "
+            f"teams: the owner, phone, website and the software each practice already runs, by specialty and state.")
+    body = f"""
+<div class="crumbs"><a href="{root}">{BRAND}</a> › For sales teams</div>
+<span class="kicker">For healthcare sales teams</span>
+<h1>Reach new practices <em>before your competitors do</em>.</h1>
+<div class="prose">
+<p class="lead">Every practice registers with the federal NPI registry before it sees its first patient. {BRAND} sends you the ones that registered last week, every week: the practice, the owner, the phone and the software its website already runs, while they're still choosing vendors.</p>
+<h2>Who it's for</h2>
+<ul>
+<li><b>Practice software:</b> EHR, scheduling, billing and patient-reminder companies that sell to small practices.</li>
+<li><b>Provider networks</b> recruiting new therapists and clinicians.</li>
+<li><b>Answering services and malpractice insurance</b>, and anyone else whose best customer is a practice that just opened.</li>
+</ul>
+<h2>What's in each week's list</h2>
+<ul>
+<li>Every new practice and sole proprietor in your territory, sorted best-first, with a score from 0 to 100 and the reason for it.</li>
+<li>The practice's phone and address, and the owner or authorized official by name, with their own number when the registry lists one.</li>
+<li>For organizations: the website, email and Google rating where we can find them, and the <b>practice software its website runs</b> (SimplePractice, athenahealth, Tebra...).</li>
+<li>What kind of new it is: a brand-new practice, a new location of a larger group, or a re-registration.</li>
+<li>Only the specialties you sell to: pick from 50 groups, from ABA and counselors to dentists and home care.</li>
+</ul>
+<h2>How it reaches your team</h2>
+<ul>
+<li>A spreadsheet every Monday, plus a file that imports straight into HubSpot or Salesforce.</li>
+<li>A webhook that sends each list to Zapier, Make or your CRM.</li>
+<li>Teammates get a copy of every list: up to 15 people on the every-state plan.</li>
+</ul>
+</div>
+<section><h2>Which plan fits</h2>
+<div class="card"><div class="tscroll"><table class="wraptab stack plansfit"><thead><tr><th>If you sell to</th><th>Plan</th><th class="r">People</th><th class="r">Monthly</th><th></th></tr></thead><tbody>{rows}</tbody></table></div>
+<p class="note">The same plans and prices everyone gets. Every plan starts with 14 days free, and yearly billing costs ten months. A bigger team than the plan covers? <a href="mailto:{MAIL}?subject=PanelReady%20for%20a%20sales%20team">Email us</a> and we'll add the seats.</p>
+<div class="btns"><a class="cta" href="{root}#pricing">See all plans</a><a class="cta ghost" href="{root}#free">Get a free preview</a></div></div></section>
+<section><div class="prose">
+<h2>Questions sales teams ask</h2>
+<p><b>Is the list exclusive?</b> No. Everyone who subscribes to a territory gets the same list, the same morning.</p>
+<p><b>Where does the data come from?</b> The weekly file CMS publishes from the federal NPI registry, unaltered. Websites, emails, ratings and software come from each practice's own website and its public listing, where we find them.</p>
+<p><b>Can we see it first?</b> Yes: the <a href="{root}#free">free preview</a> is this week's list for one state, every practice named and the best 10 in full. Or <a href="mailto:{MAIL}?subject=PanelReady%20sample%20for%20our%20specialty">email us</a> with your specialty and we'll send last week's practices in it.</p>
+</div></section>
+"""
+    return "New-practice leads for healthcare sales teams", desc, body
 
 
 # ------------------------------------------------------------------ guides: answer-first pages for the questions buyers ask Google and AI assistants
@@ -1610,6 +1672,8 @@ def write_llms(data: dict, gs: list[dict]):
         f"- [Home]({SITE}/): what's in the list, a sample, pricing and the free-preview form",
         f"- [New practices by state]({SITE}/states/): this week's counts, trends, cities and specialties for every state",
         f"- [Live search]({SITE}/search/): search and filter the newest practices",
+        f"- [For sales teams]({SITE}/sales-teams/): the weekly new-practice feed for software, provider-network and service "
+        f"companies that sell to small practices (same plans)",
         "",
         "## Guides",
         *[f"- [{g['title']}]({SITE}/guides/{g['slug']}/): {g['card']}" for g in gs],
@@ -2679,6 +2743,8 @@ def refresh_landing(data: dict) -> list[str]:
         s = re.sub(r"<script [^>]*src=\"" + re.escape(BEACON_SRC) + r"\"[^>]*></script>", "", s)
     if 'href="guides/"' not in s:                         # one-time: the guides in the homepage footer
         sub("footer guides", r'(<a href="states/">New practices by state</a>)', lambda m: m.group(1) + '<a href="guides/">Guides</a>')
+    if 'href="sales-teams/"' not in s:                    # one-time (Nov 14, 2026): the page for software and service sales teams
+        sub("footer sales teams", r'(<a href="guides/">Guides</a>)', lambda m: m.group(1) + '<a href="sales-teams/">For sales teams</a>')
     p.write_text(s, encoding="utf-8")
     return miss
 
