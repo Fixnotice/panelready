@@ -4,7 +4,7 @@
 
 ## Key facts
 - Source: CMS's NPPES Weekly Update file (public data), records unaltered. A practice appears one to two weeks after it registers.
-- Week ending November 8, 2026: 4,952 new practices and sole proprietors nationwide, 2,599 of them organizations.
+- Week ending November 15, 2026: 4,604 new practices and sole proprietors nationwide, 2,452 of them organizations.
 - Monthly, November 2026: 20,640 practices that registered 2-12 months ago and still aren't on Medicare's enrollment list (stuck in credentialing).
 - Monthly, November 2026: 53,257 practices due for Medicare revalidation within six months or overdue.
 - Each list: sorted best-first with the top 25 marked, phone, address, NPI, the owner's direct line where the registry lists it, websites, emails and Google ratings for organizations where found, an OIG exclusion check, and practices that moved that week.
