@@ -327,6 +327,9 @@
   .plans .plan ul{margin:0 0 18px;flex:1}
   .plan li{font-size:14.5px;margin:7px 0;line-height:1.5}
   .fallback:empty{display:none}
+  .plans .paybox{min-height:0}
+  .plan .paystart{width:100%;border:0;cursor:pointer;font-family:Inter,sans-serif;text-align:center}
+  .plan .paystart[disabled]{opacity:.7;cursor:wait;transform:none}
   .once{margin-top:16px;display:flex;align-items:center;gap:8px 22px;flex-wrap:wrap;background:var(--card);border:1px solid var(--line);border-left:4px solid var(--teal);border-radius:16px;padding:16px 22px;box-shadow:var(--shadow)}
   .once .price{font-size:38px;margin:0;white-space:nowrap}
   .once .what{flex:1 1 320px;min-width:0}
@@ -567,6 +570,7 @@ Your spreadsheet: an overview, the Top 25 to call first with an opener for each,
         <div class="per" data-y="$490 a year: 2 months free"></div>
         <div class="free">First 14 days free</div>
         <ul><li>Every new practice within 5-100 miles of your ZIP code</li><li>Every category</li><li>You + 1 teammate; Roster Watch for 100 providers</li></ul>
+        <button type="button" class="cta paystart" data-plan="local">Start 14 days free</button>
         <div class="paybox" id="paypal-local"></div>
         <p class="fallback" id="fb-local"></p>
       </div>
@@ -576,6 +580,7 @@ Your spreadsheet: an overview, the Top 25 to call first with an opener for each,
         <div class="per" data-y="$890 a year: 2 months free"></div>
         <div class="free">First 14 days free</div>
         <ul><li>Every new practice in your state, in the category you pick</li><li>You + 2 teammates; Roster Watch for 100 providers</li></ul>
+        <button type="button" class="cta paystart" data-plan="cat">Start 14 days free</button>
         <div class="paybox" id="paypal-cat"></div>
         <p class="fallback" id="fb-cat"></p>
       </div>
@@ -586,6 +591,7 @@ Your spreadsheet: an overview, the Top 25 to call first with an opener for each,
         <div class="per" data-y="$1,490 a year: 2 months free"></div>
         <div class="free">First 14 days free</div>
         <ul><li>Every new practice in your state, all six categories</li><li>You + 4 teammates; Roster Watch for 500 providers</li><li>Priority email support</li></ul>
+        <button type="button" class="cta paystart" data-plan="all">Start 14 days free</button>
         <div class="paybox" id="paypal-all"></div>
         <p class="fallback" id="fb-all"></p>
       </div>
@@ -595,6 +601,7 @@ Your spreadsheet: an overview, the Top 25 to call first with an opener for each,
         <div class="per" data-y="$1,990 a year: 2 months free"></div>
         <div class="free">First 14 days free</div>
         <ul><li>Three states, all six categories</li><li>You + 9 teammates; Roster Watch for 2,000 providers</li><li>Priority email support</li></ul>
+        <button type="button" class="cta paystart" data-plan="multi">Start 14 days free</button>
         <div class="paybox" id="paypal-multi"></div>
         <p class="fallback" id="fb-multi"></p>
       </div>
@@ -604,6 +611,7 @@ Your spreadsheet: an overview, the Top 25 to call first with an opener for each,
         <div class="per" data-y="$2,490 a year: 2 months free"></div>
         <div class="free">First 14 days free</div>
         <ul><li>Every new practice in one specialty, in every state</li><li>50 specialties to pick from: residential treatment, ABA, FQHCs and rural health clinics, orthotics &amp; prosthetics, home health...</li><li>You + 4 teammates; Roster Watch for 500 providers</li><li>Priority email support</li></ul>
+        <button type="button" class="cta paystart" data-plan="niche">Start 14 days free</button>
         <div class="paybox" id="paypal-niche"></div>
         <p class="fallback" id="fb-niche"></p>
       </div>
@@ -613,6 +621,7 @@ Your spreadsheet: an overview, the Top 25 to call first with an opener for each,
         <div class="per" data-y="$4,990 a year: 2 months free"></div>
         <div class="free">First 14 days free</div>
         <ul><li>Every new practice in every state, all six categories, in one spreadsheet</li><li>You + 14 teammates; Roster Watch for 5,000 providers</li><li>Priority email support</li></ul>
+        <button type="button" class="cta paystart" data-plan="national">Start 14 days free</button>
         <div class="paybox" id="paypal-national"></div>
         <p class="fallback" id="fb-national"></p>
       </div>
@@ -685,7 +694,6 @@ Your spreadsheet: an overview, the Top 25 to call first with an opener for each,
   </footer>
 </div>
 
-<script src="https://www.paypal.com/sdk/js?client-id=BAA7rpxUlDfPux5L-cnPgDlsPHBSqnTQ02gaBEhRztMPVYTII0oWEIL6lqsz7EXDVf9jar7gt83XFtVc_M&vault=true&intent=subscription"></script>
 <script>
 (function(){
   var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -882,7 +890,7 @@ Your spreadsheet: an overview, the Top 25 to call first with an opener for each,
   var TRIAL_DAYS = 14, trialStart = 0;
   function startTime(){ trialStart = Date.now(); return new Date(trialStart + TRIAL_DAYS * 864e5).toISOString().replace(/\.\d{3}Z$/, 'Z'); }
   function trialEnds(){ return new Date((trialStart || Date.now()) + TRIAL_DAYS * 864e5).toLocaleDateString('en-US', { month: 'long', day: 'numeric' }); }
-  var bought = '', billing = 'm';
+  var bought = '', billing = 'm', opened = {};          // opened: cards whose PayPal buttons were asked for
   // ---- one-click links from the trial emails (Nov 8, 2026): ?pay=<plan>&state=..&cat=..&spec=..&zip=..&radius=..#e=<email>
   // pick out that plan's card; after PayPal, fill in the territory and email and send them in (no form to fill)
   var PAY = PLANS[qs.pay] ? { plan: qs.pay, states: String(qs.state || '').toUpperCase().split(',').filter(function(x){ return NAMES[x]; }),
@@ -897,7 +905,8 @@ Your spreadsheet: an overview, the Top 25 to call first with an opener for each,
       card.classList.add('mine');
       var tag = document.createElement('div'); tag.className = 'mine-tag';
       tag.textContent = 'Your plan: ' + words + '. Start your 14 free days with PayPal below: your full lists start right away, and there\'s nothing else to fill in.';
-      var at = card.querySelector('.paybox'); at.parentNode.insertBefore(tag, at);
+      var at = card.querySelector('.paystart'); at.parentNode.insertBefore(tag, at);
+      opened[PAY.plan] = true;            // its PayPal buttons open straight away
       setTimeout(function(){ card.scrollIntoView({behavior: reduce ? 'auto' : 'smooth', block: 'center'}); }, 300);
     }
   }
@@ -920,19 +929,58 @@ Your spreadsheet: an overview, the Top 25 to call first with an opener for each,
       if (ready) $('paidForm').onsubmit.call($('paidForm'), { preventDefault: function(){} });
     }
   }
+  // Nov 20, 2026: PayPal loads on demand. Six cards of PayPal buttons were 7 MB of the page's 7.7 MB (each set is its
+  // own PayPal frame) and popped in late, so each card has one "Start 14 days free" button. PayPal's script loads once,
+  // when the plans come near the screen (or on the first click); a card's PayPal buttons appear when its button is
+  // clicked. A one-click link from an email (?pay=) opens its card's buttons straight away. PayPal Credit and Pay Later
+  // are left out (billing companies pay by PayPal or card).
+  var SDK = 'https://www.paypal.com/sdk/js?client-id=BAA7rpxUlDfPux5L-cnPgDlsPHBSqnTQ02gaBEhRztMPVYTII0oWEIL6lqsz7EXDVf9jar7gt83XFtVc_M&vault=true&intent=subscription&disable-funding=credit,paylater';
+  var START = 'Start 14 days free', sdkLoading = false, sdkWait = [];
+  function withPayPal(fn){
+    if (window.paypal) { if (fn) fn(true); return; }
+    if (fn) sdkWait.push(fn);
+    if (sdkLoading) return;
+    sdkLoading = true;
+    var s = document.createElement('script'); s.src = SDK; s.async = true;
+    function done(ok){ sdkLoading = false; var w = sdkWait; sdkWait = []; w.forEach(function(f){ f(ok); }); }
+    s.onload = function(){ done(!!window.paypal); };
+    s.onerror = function(){ s.parentNode.removeChild(s); done(false); };
+    document.head.appendChild(s);
+  }
+  function startBtn(id){ return document.querySelector('.paystart[data-plan="' + id + '"]'); }
   function sub(id){
-    var fb = $('fb-' + id), box = $('paypal-' + id), planId = (PLANS[id] || {})[billing];
-    box.innerHTML = '';
+    var fb = $('fb-' + id), box = $('paypal-' + id), btn = startBtn(id), planId = (PLANS[id] || {})[billing];
+    box.innerHTML = ''; fb.innerHTML = '';
+    btn.style.display = 'none'; btn.disabled = false; btn.textContent = START;
     if (!planId && id === 'niche') { fb.innerHTML = 'To start the one-specialty plan, email <a href="mailto:matt@panelready.co?subject=PanelReady%20one-specialty%20plan">matt@panelready.co</a> and we\'ll send your payment link the same day. ' + MAIL; return; }
     if (!planId && id === 'national') { fb.innerHTML = 'To start the Every-state plan, email <a href="mailto:matt@panelready.co?subject=PanelReady%20every-state%20plan">matt@panelready.co</a> and we\'ll send your payment link the same day. ' + MAIL; return; }
     if (!planId) { fb.innerHTML = (PLANS[id] || {}).m ? 'Yearly billing for this plan: email <a href="mailto:matt@panelready.co">matt@panelready.co</a>. ' + MAIL : MAIL; return; }
-    if (!window.paypal) { fb.innerHTML = 'PayPal\'s button didn\'t load. Refresh the page to try again, or <a href="#free">get the free preview</a> first, no card.'; return; }
-    paypal.Buttons({
-      style: { shape: 'pill', color: 'gold', layout: 'vertical', label: 'subscribe' },
-      createSubscription: function(data, actions){ return actions.subscription.create({ plan_id: planId, start_time: startTime() }); },
-      onApprove: function(data){ afterPay(id, data && data.subscriptionID); }
-    }).render('#paypal-' + id);
-    fb.innerHTML = '';
+    btn.style.display = '';
+    if (opened[id]) openPay(id);
+  }
+  function openPay(id){
+    var fb = $('fb-' + id), btn = startBtn(id), planId = (PLANS[id] || {})[billing];
+    if (!planId) return;
+    btn.disabled = true; btn.textContent = 'Opening PayPal...';
+    withPayPal(function(ok){
+      if ((PLANS[id] || {})[billing] !== planId) return;     // monthly / yearly changed meanwhile: sub() redid the card
+      if (!ok) { btn.disabled = false; btn.textContent = START; fb.innerHTML = 'PayPal\'s button didn\'t load. Refresh the page to try again, or <a href="#free">get the free preview</a> first, no card.'; return; }
+      $('paypal-' + id).innerHTML = '';
+      paypal.Buttons({
+        style: { shape: 'pill', color: 'gold', layout: 'vertical', label: 'subscribe' },
+        createSubscription: function(data, actions){ return actions.subscription.create({ plan_id: planId, start_time: startTime() }); },
+        onApprove: function(data){ afterPay(id, data && data.subscriptionID); }
+      }).render('#paypal-' + id);
+      btn.style.display = 'none';
+      fb.innerHTML = '';
+    });
+  }
+  document.querySelectorAll('.paystart').forEach(function(b){ b.onclick = function(){
+    var id = b.getAttribute('data-plan'); opened[id] = true; openPay(id); }; });
+  if ('IntersectionObserver' in window && $('pricing')) {       // load PayPal's script as the plans come near
+    var near = new IntersectionObserver(function(es){
+      if (es.some(function(e){ return e.isIntersecting; })) { near.disconnect(); withPayPal(null); } }, { rootMargin: '900px 0px' });
+    near.observe($('pricing'));
   }
   function renderAll(){
     document.querySelectorAll('.plan .price').forEach(function(p){ var y = billing === 'y'; p.innerHTML = '$' + (y ? p.getAttribute('data-y') : p.getAttribute('data-m')) + '<small>/' + (y ? 'year' : 'month') + '</small>'; });
