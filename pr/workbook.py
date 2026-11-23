@@ -243,6 +243,7 @@ FRONT["plans"] = ["name", "plan_change", "effective", "county", "members_affecte
                   "contact_title", "contact_phone", "linkedin_search", "phone", "providers_at_practice", "specialty",
                   "category", "entity", "address", "city", "state", "zip"]
 FRONT["history"] = FRONT["leads"]
+FRONT["stucksample"] = FRONT["stuck"]
 TOP_COLS = ["score", "name", "new_kind", "contact_name", "contact_title", "contact_phone", "linkedin_search", "phone",
             "phone_shared", "email", "email_type", "website", "opener", "specialty", "city", "state", "registered", "npi"]
 
@@ -259,11 +260,19 @@ KINDS = {   # file prefix -> (tab name, title, what it is)
               "Monthly. Established practices that already bill, soonest due first; overdue ones flagged."),
     "stuck": ("Stuck in credentialing", "Practices that look stuck in credentialing",
               "Monthly. Registered 2-12 months ago and still not on Medicare's enrollment list."),
+    "stucksample": ("Still stuck (sample)", "Practices still stuck months after registering",
+                    "A sample of this month's stuck-in-credentialing list: registered 2-12 months ago and still not on "
+                    "Medicare's enrollment list, long after the first-week rush. Subscribers get the whole list monthly."),
     "plans": ("Plan changes", "Practices whose patients must switch health plans",
               "An insurer leaves Medicare Advantage in their county on Jan 1, or the state's Medicaid plans change: their "
               "patients must pick new plans, so they may need contracts and credentialing with the plans patients move to."),
 }
-ORDER = ["leads", "moved", "changes", "plans", "history", "reval", "stuck"]
+ORDER = ["leads", "moved", "changes", "plans", "history", "reval", "stuck", "stucksample"]
+
+
+def helped(r: dict) -> bool:
+    """'Probably already has help' (pr/boost.py already_helped, from the Phone note): sorted last on every tab."""
+    return (r.get("phone_shared") or "").startswith(("Probably already has help", "Same number as"))
 
 
 def kind_of(path: Path) -> str:
@@ -542,9 +551,10 @@ COLUMN_GUIDE = [
     ("Direct phone", "The contact's own number from the registry, when it's different from the practice line. Try it first."),
     ("Practice phone, Fax, Street address", "As the practice filed them with the federal NPI registry."),
     ("Phone note", "The practice phone is on 3 or more of this week's new practices. \"Same owner\" means one owner is "
-     "opening several locations, so the number is theirs. \"Different owners\" means it's most likely the consultant, "
-     "credentialing firm or agency that filed the registrations, not the practice: ask for the owner by name, or try "
-     "the Direct phone first. Those practices score a little lower."),
+     "opening several locations, so the number is theirs. \"Probably already has help\" means the practices have "
+     "different owners, so the number most likely belongs to the consultant, credentialing firm or agency that filed "
+     "the registrations: those practices probably have someone already. They're listed last and never in the Top 25; "
+     "if you call, ask for the owner by name or try the Direct phone first."),
     ("Email, Website, Google rating", "Found for organizations on the practice's own website and on Google. Blank "
      "means none was found yet (most brand-new practices don't have a website in their first weeks)."),
     ("Email type, Email check", "\"Person\" is someone's own address; \"Shared inbox\" is info@, office@ and the like "
@@ -809,7 +819,7 @@ def build_delivery(files: list[Path], out_dir: Path, *, week: str, states: list[
         if not header:
             continue
         if kind in ("leads", "moved", "changes", "reval", "stuck") and any(r.get("score") for r in rows):
-            rows.sort(key=lambda r: -int(float(r.get("score") or 0)))
+            rows.sort(key=lambda r: (helped(r), -int(float(r.get("score") or 0))))
         if kind == "reval":
             rows.sort(key=lambda r: int(float(r.get("days_until_due") or 9999)))
         if kind == "history":
@@ -826,12 +836,14 @@ def build_delivery(files: list[Path], out_dir: Path, *, week: str, states: list[
         title = f"{title}: {where}" if kind != "leads" else f"{title}{days}: {where}"
         tabs.append((tab, columns_for(kind, header, rows), rows, title, f"{len(rows):,} {'row' if len(rows) == 1 else 'rows'}. {sub} "
                      f"Click an NPI to open the official CMS record.", kind))
-    top = [] if sample else [r for r in leads_rows if (r.get("priority") or "").upper().startswith("TOP")]
+    top = [] if sample else [r for r in leads_rows if (r.get("priority") or "").upper().startswith("TOP")
+                             and not helped(r)]
     counts = []
     for tab, cols, rows, *_ , kind in tabs:
         counts.append(({"leads": "New practices", "moved": "Practices that moved", "changes": "Reactivated / new specialty",
                         "history": "New in the last 90 days", "reval": "Due for revalidation",
-                        "stuck": "Stuck in credentialing", "plans": "Affected by plan changes"}[kind], len(rows), tab))
+                        "stuck": "Stuck in credentialing", "stucksample": "Still stuck (a sample)",
+                        "plans": "Affected by plan changes"}[kind], len(rows), tab))
         if kind == "leads" and top:
             counts.insert(1, ("Top picks to call first", len(top), "Top 25"))
     tab_list = []
@@ -885,6 +897,9 @@ def build_delivery(files: list[Path], out_dir: Path, *, week: str, states: list[
         info["cta"] = ("Your account", f"{SITE}/account/")
         info["cta_note"] = ("Past lists, Search & export, territory, teammates and Roster Watch. Sign in with the email "
                             "your lists go to.")
+    if by_kind.get("stucksample") and info.get("note"):
+        info["note"] += (" The Still stuck tab is a sample of the monthly stuck-in-credentialing list: practices "
+                         "months past registering, after the first-week rush.")
     overview(book, info, counts, (top or leads_rows)[:10])
     if top:
         book.table("Top 25", f"Top picks to call first: {where}",

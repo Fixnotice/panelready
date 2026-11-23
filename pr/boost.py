@@ -88,8 +88,8 @@ def score(lead: dict, week_end: Optional[dt.date] = None) -> tuple[int, str]:
     size = int(lead.get("providers_at_practice") or 0)
     if shared == "filer":                            # the number belongs to whoever filed: no size bonus from it
         pts -= 12
-        why.append(f"its phone is on {lead.get('phone_shared_n')} new practices with different owners this week "
-                   f"(probably whoever filed for them)")
+        why.append(f"probably already has help: its phone is on {lead.get('phone_shared_n')} new practices with "
+                   f"different owners this week (likely the credentialing or billing company that filed for them)")
     elif shared == "owner":
         why.append(f"same owner registered {lead.get('phone_shared_n')} new practices this week")
     if shared != "filer" and org and 3 <= size < 200:
@@ -671,6 +671,24 @@ def _phone_digits(p) -> str:
     return d if len(d) == 10 and d[0] not in "01" else ""
 
 
+HELPED = "Probably already has help"
+
+
+def already_helped(r: dict) -> bool:
+    """A practice whose phone is on several of the week's new practices with different owners: most likely the
+    credentialing or billing company that filed for it, so it probably has help already. Nov 19, 2026 (buyers: new
+    practices are swamped with offers): these go to the bottom of every list and are never in the top 25. Older files
+    say "Same number as ..." instead."""
+    if r.get("phone_shared_kind"):
+        return r["phone_shared_kind"] == "filer"
+    return (r.get("phone_shared") or "").startswith((HELPED, "Same number as"))
+
+
+def rank_key(r: dict) -> tuple:
+    """Best-first: practices that probably already have help last, then by score."""
+    return (already_helped(r), -int(float(r.get("score") or 0)))
+
+
 def shared_phone_notes(rows: list[dict]) -> dict:
     """One week's new practices -> {npi: {"kind", "n", "note"}} for every practice whose phone number is on
     SHARED_MIN or more of that week's new practices. kind "owner": the same owner (authorized official) registered
@@ -692,8 +710,9 @@ def shared_phone_notes(rows: list[dict]) -> dict:
         if len(owners) <= max(1, n // 3):
             kind, note = "owner", f"Same owner registered {n} new practices this week (several locations)"
         else:
-            kind, note = "filer", (f"Same number as {n - 1} other new practices with different owners this week: "
-                                   f"probably whoever filed for them, not the practice's own line")
+            kind, note = "filer", (f"{HELPED}: this number is on {n - 1} other new practices with different owners "
+                                   f"this week, likely the credentialing or billing company that filed for them (not the "
+                                   f"practice's own line)")
         for m in members:
             out[m["npi"]] = {"kind": kind, "n": n, "note": note}
     return out
@@ -735,9 +754,9 @@ def upgrade(rows: list[dict], week_end: Optional[dt.date], leie: dict, leie_as_o
                   "social", "medicare_optout", "phone_shared"):
             r.setdefault(k, "")
         out.append(r)
-    out.sort(key=lambda r: (-r["score"], r.get("entity") != "practice/organization", r.get("name", "")))
+    out.sort(key=lambda r: (*rank_key(r), r.get("entity") != "practice/organization", r.get("name", "")))
     for i, r in enumerate(out):
-        r["priority"] = "TOP 25" if i < TOP_N else ""
+        r["priority"] = "TOP 25" if i < TOP_N and not already_helped(r) else ""
     return out
 
 
